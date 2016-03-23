@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block page_content %}
+{% for site in sites %}
+  <div class="jumbotron">
+    <h2><img src="{{ site.image_url }}" />&nbsp;&nbsp;{{ site.displayname }}</h2>
+    <p>{{ site.description }}</p>
+    <p>房间数Top 5:
+      {% for channel in  site.channels.limit(5) %}
+       <a href="{{ url_for('main.channel_room', site_name=site.name, channel_id=channel.id) }}">{{ channel.name }}</a>
+       ({{ channel.roomcount }})&nbsp;&nbsp;
+      {% endfor %}
+    </p>
+    <p><a href="{{ url_for('main.channel', site_id=site.id) }}" class="btn btn-primary">More Detail</a></p>
+  </div>
+{% endfor %}
+{% endblock %}

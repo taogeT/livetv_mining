@@ -1,0 +1,27 @@
+<ul class="rooms">
+  <table class="table table-condensed">
+    <thead>
+      <tr>
+        <th>{{ title_dict['name'] }}</th>
+        <th>{{ title_dict['last_scan_date'] }}</th>
+        <th>{{ title_dict['boardcaster'] }}</th>
+        <th>{{ title_dict['popularity'] }}</th>
+        <th>{{ title_dict['officeid'] }}</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for room in rooms %}
+      <tr>
+        <td>
+          {{ room.name | safe }}<br>
+          <a href="{{ room.url }}" target="_blank">访问官网地址</a>
+        </td>
+        <td>{{ moment(room.last_scan_date).format('YYYY-MM-DD HH:mm:ss') }}</td>
+        <td>{{ room.boardcaster }}</td>
+        <td>{{ room.popularity }}</td>
+        <td>{{ room.officeid if room.officeid else '' }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</ul>

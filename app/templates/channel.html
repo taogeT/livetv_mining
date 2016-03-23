@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block page_content %}
+<div class="page-header">
+  <table class="table">
+    <tbody>
+      <tr>
+        <td width="20%"><img src="{{ site.image_url }}" /></td>
+        <td align="left">
+          <h1>{{ site.name }}</h1>
+          <p><h4>当前频道数：{{ site.channel_count }}</h4></p>
+          <a href="{{ site.url }}" target="_blank">访问官网地址</a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<div class="channel-tabs">
+  {% include "_channels.html" %}
+</div>
+{% if pagination %}
+<div class="pagination">
+{% import "_macros.html" as macros %}
+{{ macros.pagination_widget(pagination, request.endpoint, site_id=site.id) }}
+</div>
+{% endif %}
+{% endblock %}
