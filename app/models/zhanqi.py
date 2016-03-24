@@ -34,9 +34,12 @@ class ZhanqiTVChannel(db.Model, LiveTVChannel):
             if not channel:
                 channel = cls(url=channel_url)
                 current_app.logger.info('新增频道 {}:{}'.format(channel_name, channel_url))
+            else:
+                current_app.logger.info('更新频道 {}:{}'.format(channel_name, channel_url))
             channel.site_id = site.id
             channel.name = channel_name
             channel.image_url = img_element.get_attribute('src')
+            channel.icon_url = img_element.get_attribute('src')
             db.session.add(channel)
         webdriver_client.close()
         db.session.commit()
@@ -44,7 +47,6 @@ class ZhanqiTVChannel(db.Model, LiveTVChannel):
 
 class ZhanqiTVRoom(db.Model, LiveTVRoom):
     __tablename__ = 'zhanqitvroom'
-    WEIGHT_DISPLAYNAME = ''
 
     channel_id = db.Column(db.Integer, db.ForeignKey('zhanqitvchannel.id'))
 
@@ -61,7 +63,7 @@ class ZhanqiTVRoom(db.Model, LiveTVRoom):
             channels = [channel for channel in ZhanqiTVChannel.query.filter_by(site_id=site.id)]
             while len(channels) > 0:
                 channel = channels.pop(0)
-                if channel.url.startswith(site.url) and not cls._scan_room_inner(channel, site.url):
+                if not cls._scan_room_inner(channel, site.url):
                     channels.append(channel)
             return True
 
@@ -93,12 +95,12 @@ class ZhanqiTVRoom(db.Model, LiveTVRoom):
                         if 'window.gameId' in script_row:
                             gameid = script_row[script_row.find('=')+1:script_row.find(';')].strip()
                         elif 'cnt' in script_row:
-                            cnt = script_row[script_row.find(':')+1:script_row.find('//')]
+                            lastindex = script_row.rfind(',') if script_row.find('//') < 0 else script_row.find('//')
+                            cnt = script_row[script_row.find(':')+1:lastindex]
         if 'gameid' not in dir() or 'cnt' not in dir():
             webdriver_client.close()
             return False
         else:
-            print(gameid, cnt)
             a, b = math.frexp(float(cnt))
             a = math.ceil(a)
             size = int(math.ldexp(a, b))
@@ -107,7 +109,10 @@ class ZhanqiTVRoom(db.Model, LiveTVRoom):
         if '系统错误' in room_live_json:
             webdriver_client.close()
             return False
-        room_live_json = json.loads(room_live_json)
+        try:
+            room_live_json = json.loads(room_live_json)
+        except ValueError:
+            return True
         room_scan_results = room_live_json['data']['rooms']
         # 遍历房间，更新数据库
         for room_scan_result in room_scan_results:
@@ -115,11 +120,14 @@ class ZhanqiTVRoom(db.Model, LiveTVRoom):
             room = cls.query.filter_by(url=room_scan_result['url']).one_or_none()
             if not room:
                 room = cls(url=room_scan_result['url'])
+                current_app.logger.info('新增房间 {}:{}'.format(room_scan_result['code'], room_scan_result['title']))
+            else:
+                current_app.logger.info('更新房间 {}:{}'.format(room_scan_result['code'], room_scan_result['title']))
             room.channel = channel
             room.name = room_scan_result['title']
             room.boardcaster = room_scan_result['nickname']
             room.popularity = int(room_scan_result['online'])
-            room.officeid = int(room_scan_result['code'])
+            room.officeid = room_scan_result['code']
             room.follower = room_scan_result['follows']
             room.last_scan_date = datetime.utcnow()
             db.session.add(room)
