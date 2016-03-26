@@ -2,62 +2,60 @@
 from flask import render_template, request, current_app
 
 from . import main
-from ..models import LiveTVSite, get_instance_class
+from ..models import LiveTVSite, LiveTVChannel, LiveTVRoom
 
 
-@main.route('/site')
-def site():
+@main.route('/index')
+def index():
     ''' 直播网站列表 '''
     sites = []
-    for site in LiveTVSite.query.filter_by(valid=True).order_by(LiveTVSite.weight.desc()):
-        channel_class, room_class = get_instance_class(site.name)
-        site.channels = channel_class.query.filter_by(site_id=site.id) \
-                                     .order_by(channel_class.roomcount.desc())
+    for site in LiveTVSite.query.filter_by(valid=True).order_by(LiveTVSite.order_int.asc()):
+        site.channels_order = site.channels.order_by(LiveTVChannel.roomcount.desc())
         sites.append(site)
-    return render_template('site.html', sites=sites)
+    return render_template('index.html', sites=sites)
 
 
-@main.route('/site/<int:site_id>/channel')
-def channel(site_id):
-    ''' 频道列表 '''
+@main.route('/site/<int:site_id>')
+def site(site_id):
+    ''' 网站详细&频道列表 '''
     site = LiveTVSite.query.get_or_404(site_id)
-    channel_class, room_class = get_instance_class(site.name)
-    site.channel_count = channel_class.query.filter_by(site_id=site.id).count()
     page = request.args.get('page', 1, type=int)
-    pagination = channel_class.query.filter_by(site_id=site.id) \
-        .order_by(channel_class.roomcount.desc()).paginate(
+    pagination = site.channels.order_by(LiveTVChannel.roomcount.desc()).paginate(
             page=page,  error_out=False,
             per_page=current_app.config['FLASKY_CHANNELS_PER_PAGE'])
     channels = pagination.items
-    title_dict = {'name': channel_class.name.doc,
-                  'url': channel_class.url.doc,
-                  'image_url': channel_class.image_url.doc,
-                  'last_scan_date': channel_class.last_scan_date.doc,
-                  'roomcount': channel_class.roomcount.doc,
-                  'range': channel_class.range.doc}
-    return render_template('channel.html', channels=channels, pagination=pagination,
+    title_dict = {'name': LiveTVChannel.name.doc,
+                  'url': LiveTVChannel.url.doc,
+                  'image_url': LiveTVChannel.image_url.doc,
+                  'last_crawl_date': LiveTVChannel.last_crawl_date.doc,
+                  'roomcount': LiveTVChannel.roomcount.doc,
+                  'range': LiveTVChannel.range.doc}
+    return render_template('site.html', channels=channels, pagination=pagination,
                            title_dict=title_dict, site=site)
 
 
-@main.route('/<string:site_name>/channel/<int:channel_id>/room')
-def channel_room(site_name, channel_id):
-    ''' 房间列表 '''
-    site = LiveTVSite.query.filter_by(name=site_name).one()
-    channel_class, room_class = get_instance_class(site_name)
-    channel = channel_class.query.get_or_404(channel_id)
+@main.route('/channel/<int:channel_id>')
+def channel(channel_id):
+    ''' 频道详细&房间列表 '''
+    channel = LiveTVChannel.query.get_or_404(channel_id)
     page = request.args.get('page', 1, type=int)
-    pagination = channel.rooms.order_by(room_class.popularity.desc()).paginate(
+    pagination = channel.rooms.order_by(LiveTVRoom.popularity.desc()).paginate(
                     page=page,  error_out=False,
                     per_page=current_app.config['FLASKY_ROOMS_PER_PAGE'])
     rooms = pagination.items
-    title_dict = {'name': room_class.name.doc,
-                  'url': room_class.url.doc,
-                  'popularity': room_class.popularity.doc,
-                  'last_scan_date': room_class.last_scan_date.doc,
-                  'boardcaster': room_class.boardcaster.doc,
-                  'officeid': room_class.officeid.doc}
-    return render_template('room.html', channel=channel, rooms=rooms, site=site,
+    title_dict = {'name': LiveTVRoom.name.doc,
+                  'url': LiveTVRoom.url.doc,
+                  'popularity': LiveTVRoom.popularity.doc,
+                  'last_crawl_date': LiveTVRoom.last_crawl_date.doc,
+                  'boardcaster': LiveTVRoom.boardcaster.doc,
+                  'follower': LiveTVRoom.follower.doc}
+    return render_template('channel.html', channel=channel, rooms=rooms,
                            pagination=pagination, title_dict=title_dict)
+
+
+@main.route('/room/<int:room_id>')
+def room(room_id):
+    ''' 房间详细 '''
 
 
 @main.route('/about-me')

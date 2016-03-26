@@ -3,7 +3,7 @@
     <thead>
       <tr>
         <th>{{ title_dict['name'] }}</th>
-        <th>{{ title_dict['last_scan_date'] }}</th>
+        <th>{{ title_dict['last_crawl_date'] }}</th>
         <th>{{ title_dict['boardcaster'] }}</th>
         <th>{{ title_dict['popularity'] }}</th>
         <th>{{ title_dict['officeid'] }}</th>
@@ -16,12 +16,12 @@
           {{ room.name | safe }}<br>
           <a href="{{ room.url }}" target="_blank">访问官网地址</a>
         </td>
-        <td>{{ moment(room.last_scan_date).format('YYYY-MM-DD HH:mm:ss') }}</td>
+        <td>{{ moment(room.last_crawl_date).format('YYYY-MM-DD HH:mm:ss') }}</td>
         <td>{{ room.boardcaster }}</td>
         <td>{{ room.popularity }}</td>
         <td>{{ room.officeid if room.officeid else '' }}</td>
       </tr>
-      {% endfor %}
+    {% endfor %}
     </tbody>
   </table>
 </ul>

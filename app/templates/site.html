@@ -1,17 +1,27 @@
 {% extends "base.html" %}
 
 {% block page_content %}
-{% for site in sites %}
-  <div class="jumbotron">
-    <h2><img src="{{ site.image_url }}" />&nbsp;&nbsp;{{ site.displayname }}</h2>
-    <p>{{ site.description }}</p>
-    <p>房间数Top 5:
-      {% for channel in  site.channels.limit(5) %}
-       <a href="{{ url_for('main.channel_room', site_name=site.name, channel_id=channel.id) }}">{{ channel.name }}</a>
-       ({{ channel.roomcount }})&nbsp;&nbsp;
-      {% endfor %}
-    </p>
-    <p><a href="{{ url_for('main.channel', site_id=site.id) }}" class="btn btn-primary">More Detail</a></p>
-  </div>
-{% endfor %}
+<div class="page-header">
+  <table class="table">
+    <tbody>
+      <tr>
+        <td width="20%"><img src="{{ site.image_url }}" /></td>
+        <td align="left">
+          <h1>{{ site.displayname }}</h1>
+          <p><h4>当前频道数：{{ site.channels.count() }}</h4></p>
+          <a href="{{ site.url }}" target="_blank">访问官网地址</a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<div class="channel-tabs">
+  {% include "_channels.html" %}
+</div>
+{% if pagination %}
+<div class="pagination">
+{% import "_macros.html" as macros %}
+{{ macros.pagination_widget(pagination, 'main.site', site_id=site.id) }}
+</div>
+{% endif %}
 {% endblock %}

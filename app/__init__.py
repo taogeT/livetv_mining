@@ -23,10 +23,13 @@ def create_app(config_name):
     moment.init_app(app)
     db.init_app(app)
 
+    from .crawler import crawler as crawler_blueprint
+    app.register_blueprint(crawler_blueprint)
+
     from .main import main as main_blueprint
     app.register_blueprint(main_blueprint)
 
-    from .main.views import site
-    app.add_url_rule('/', 'main.index', site)
+    from .main.views import index
+    app.add_url_rule('/', 'main.root', index)
 
     return app

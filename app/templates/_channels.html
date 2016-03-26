@@ -4,7 +4,7 @@
       <tr>
         <th>{{ title_dict['image_url'] }}</th>
         <th>{{ title_dict['name'] }}</th>
-        <th>{{ title_dict['last_scan_date'] }}</th>
+        <th>{{ title_dict['last_crawl_date'] }}</th>
         <th>{{ title_dict['roomcount'] }}</th>
         <th>{{ title_dict['range'] }}</th>
       </tr>
@@ -19,10 +19,10 @@
         </td>
         <td>
           {{ channel.name | safe }}<br>
-          <a href="{{ url_for('main.channel_room', site_name=site.name, channel_id=channel.id) }}">查看房间</a><br>
+          <a href="{{ url_for('main.channel', channel_id=channel.id) }}">查看房间</a><br>
           <a href="{{ channel.url }}" target="_blank">访问官网地址</a>
         </td>
-        <td>{{ moment(channel.last_scan_date).format('YYYY-MM-DD HH:mm:ss') }}</td>
+        <td>{{ moment(channel.last_crawl_date).format('YYYY-MM-DD HH:mm:ss') }}</td>
         <td>{{ channel.roomcount }}</td>
         <td>
         {% if channel.range > 0 %}
