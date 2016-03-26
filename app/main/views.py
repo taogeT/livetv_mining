@@ -9,7 +9,7 @@ from ..models import LiveTVSite, get_instance_class
 def site():
     ''' 直播网站列表 '''
     sites = []
-    for site in LiveTVSite.query.order_by(LiveTVSite.weight.desc()):
+    for site in LiveTVSite.query.filter_by(valid=True).order_by(LiveTVSite.weight.desc()):
         channel_class, room_class = get_instance_class(site.name)
         site.channels = channel_class.query.filter_by(site_id=site.id) \
                                      .order_by(channel_class.roomcount.desc())

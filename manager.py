@@ -55,7 +55,7 @@ def scan(site=None, channel=False, room=False):
         print('At Least Choose One Scan Mode: --channel/--room')
         sys.exit(1)
     if site:
-        siteobj = LiveTVSite.query.filter_by(name=site).one_or_none()
+        siteobj = LiveTVSite.query.filter_by(name=site, valid=True).one_or_none()
         if not siteobj:
             print('Site {} dose not exist'.format(site))
             sys.exit(1)
@@ -66,7 +66,7 @@ def scan(site=None, channel=False, room=False):
         livetv_class_list = [(siteobj.name, siteobj.scan_url, livetv_class_tuple)]
     else:
         livetv_class_list = []
-        for siteobj in LiveTVSite.query.all():
+        for siteobj in LiveTVSite.query.filter_by(valid=True):
             livetv_class_tuple = LiveTVConfig.get(siteobj.name)
             if not livetv_class_tuple:
                 print('Site {} Configuration dose not exist'.format(site))

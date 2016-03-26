@@ -15,8 +15,10 @@ class LiveTVSite(db.Model):
     scan_url = db.Column(db.String(256), index=True, doc='扫描链接')
     image_url = db.Column(db.String(1024), unique=True, index=True, doc='图片')
     since_date = db.Column(db.DateTime, default=datetime.utcnow, doc='新增时间')
+    last_scan_date = db.Column(db.DateTime, doc='最近一次扫描时间')
     weight = db.Column(db.Integer, index=True, doc='权重')
     description = db.Column(db.String(1024), doc='描述')
+    valid = db.Column(db.Boolean, default=True, doc='有效')
 
 
 class LiveTVChannel(object):
@@ -56,15 +58,31 @@ class LiveTVRoom(object):
         ''' 扫描房间 Override '''
 
 
+class LiveTVScanChannelRecord(object):
+    ''' 扫描频道数据保存，作为曲线图基础数据 '''
+    id = db.Column(db.Integer, primary_key=True)
+    roomcount = db.Column(db.Integer, default=0, doc='活动房间总数')
+    since_date = db.Column(db.DateTime, default=datetime.utcnow, doc='新增日期')
+
+
+class LiveTVScanRoomRecord(object):
+    ''' 扫描房间数据保存，作为曲线图基础数据 '''
+    id = db.Column(db.Integer, primary_key=True)
+    popularity = db.Column(db.Integer, index=True, doc='人气')
+    since_date = db.Column(db.DateTime, default=datetime.utcnow, doc='新增日期')
+
+
 def get_webdirver_client():
     return webdriver.PhantomJS()
 
 from .douyu import DouyuTVChannel, DouyuTVRoom
 from .zhanqi import ZhanqiTVChannel, ZhanqiTVRoom
+from .huya import HuyaTVChannel, HuyaTVRoom
 
 LiveTVConfig = {
     'douyu': (DouyuTVChannel, DouyuTVRoom),
     'zhanqi': (ZhanqiTVChannel, ZhanqiTVRoom),
+    'huya': (HuyaTVChannel, HuyaTVRoom),
 }
 
 

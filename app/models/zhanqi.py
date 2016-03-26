@@ -40,6 +40,7 @@ class ZhanqiTVChannel(db.Model, LiveTVChannel):
             channel.name = channel_name
             channel.image_url = img_element.get_attribute('src')
             channel.icon_url = img_element.get_attribute('src')
+            channel.last_scan_date = datetime.utcnow()
             db.session.add(channel)
         webdriver_client.close()
         db.session.commit()
@@ -69,7 +70,7 @@ class ZhanqiTVRoom(db.Model, LiveTVRoom):
 
     @classmethod
     def _scan_room_inner(cls, channel, site_url):
-        ''' 扫描房间, 目前需要弹出firefox浏览器，需改进 '''
+        ''' 扫描房间 '''
         current_app.logger.info('开始扫描频道{}: {}'.format(channel.name, channel.url))
         webdriver_client = get_webdirver_client()
         webdriver_client.get(channel.url)
@@ -80,7 +81,6 @@ class ZhanqiTVRoom(db.Model, LiveTVRoom):
         except NoSuchElementException:
             pass
         # 查找信息div[contains(@class, 'demo') and contains(@class, 'other')]
-        # <div class="tabc"  data-cnt="12"  data-id="82" data-page="1" >
         try:
             div_element = webdriver_client.find_element_by_xpath('//div[contains(@class, \'tabc\') and contains(@class, \'active\')]')
             gameid = div_element.get_attribute('data-id')
@@ -105,14 +105,16 @@ class ZhanqiTVRoom(db.Model, LiveTVRoom):
             a = math.ceil(a)
             size = int(math.ldexp(a, b))
         webdriver_client.get(site_url + '/api/static/game.lives/{}/{}-1.json'.format(gameid, size))
-        room_live_json = webdriver_client.find_element_by_tag_name('body').get_attribute('innerHTML')
+        room_live_json = webdriver_client.find_element_by_tag_name('body').text
         if '系统错误' in room_live_json:
             webdriver_client.close()
             return False
         try:
             room_live_json = json.loads(room_live_json)
         except ValueError:
-            return True
+            current_app.logger.error('获取房间信息解析失败，重试')
+            webdriver_client.close()
+            return False
         room_scan_results = room_live_json['data']['rooms']
         # 遍历房间，更新数据库
         for room_scan_result in room_scan_results:
