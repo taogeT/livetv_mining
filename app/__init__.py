@@ -4,14 +4,16 @@ from flask import Flask
 from flask.ext.bootstrap import Bootstrap
 from flask.ext.moment import Moment
 from flask.ext.sqlalchemy import SQLAlchemy
+from flask.ext.celery import Celery
 
-from config import config
+from config import config, Config
 
 import os
 
 bootstrap = Bootstrap()
 moment = Moment()
 db = SQLAlchemy()
+celery = Celery(broker=Config.CELERY_BROKER_URL)
 
 
 def create_app(config_name):
@@ -22,6 +24,7 @@ def create_app(config_name):
     bootstrap.init_app(app)
     moment.init_app(app)
     db.init_app(app)
+    celery.init_app(app)
 
     from .crawler import crawler as crawler_blueprint
     app.register_blueprint(crawler_blueprint)

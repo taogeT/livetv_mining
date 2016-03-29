@@ -48,7 +48,8 @@ def channel(channel_id):
                   'popularity': LiveTVRoom.popularity.doc,
                   'last_crawl_date': LiveTVRoom.last_crawl_date.doc,
                   'boardcaster': LiveTVRoom.boardcaster.doc,
-                  'follower': LiveTVRoom.follower.doc}
+                  'follower': LiveTVRoom.follower.doc,
+                  'officeid': LiveTVRoom.officeid.doc}
     return render_template('channel.html', channel=channel, rooms=rooms,
                            pagination=pagination, title_dict=title_dict)
 

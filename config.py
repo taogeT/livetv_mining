@@ -1,10 +1,12 @@
 # -*- coding: UTF-8 -*-
+from datetime import timedelta
+
 import os
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 
 class Config(object):
-    SECRET_KEY = os.environ.get('SECRET_KEY') or 'iVFJyTDbJdMSxB7h4cstgnyopGmDykHwz9XSYYl'
+    SECRET_KEY = os.environ.get('SECRET_KEY') or 'iVFJyTDbJdM'
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True
     FLASKY_ADMIN = os.environ.get('FLASKY_ADMIN')
     SQLALCHEMY_TRACK_MODIFICATIONS = True
@@ -13,6 +15,15 @@ class Config(object):
     DOUYU_MAIN_URL = 'http://www.douyutv.com'
     FLASKY_CHANNELS_PER_PAGE = 20
     FLASKY_ROOMS_PER_PAGE = 20
+    CELERY_BROKER_URL = 'redis://localhost:6379/0'
+    CELERY_RESULT_BACKEND = 'redis://localhost:6379/1'
+    CELERY_TIMEZONE = 'UTC'
+    CELERYBEAT_SCHEDULE = {
+        'crawl-every-30-minutes': {
+            'task': 'app.tasks.crawl_timed_task',
+            'schedule': timedelta(minutes=30),
+        }
+    }
 
     @staticmethod
     def init_app(app):
