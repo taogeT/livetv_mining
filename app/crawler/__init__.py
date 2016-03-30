@@ -16,7 +16,7 @@ def get_webdirver_client():
     return driver
 
 
-from . import douyu, huya, zhanqi
+from . import douyu, huya, zhanqi, views
 
 
 def crawl_channel(site_url, inner_func):

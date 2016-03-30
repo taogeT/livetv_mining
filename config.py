@@ -24,6 +24,9 @@ class Config(object):
             'schedule': timedelta(minutes=30),
         }
     }
+    CELERY_SUPERVISOR_LOGFILE = os.path.join(basedir, 'ghostdriver.log')
+    CELERY_SUPERVISOR_INTERVAL = '15 mins'
+    CELERY_SUPERVISOR_ROWCOUNT = 100
 
     @staticmethod
     def init_app(app):
