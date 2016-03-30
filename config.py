@@ -19,9 +19,9 @@ class Config(object):
     CELERY_RESULT_BACKEND = 'redis://localhost:6379/1'
     CELERY_TIMEZONE = 'UTC'
     CELERYBEAT_SCHEDULE = {
-        'crawl-every-30-minutes': {
+        'crawl-every-15-minutes': {
             'task': 'app.tasks.crawl_timed_task',
-            'schedule': timedelta(minutes=30),
+            'schedule': timedelta(minutes=15),
         }
     }
     CELERY_SUPERVISOR_LOGFILE = os.path.join(basedir, 'ghostdriver.log')
