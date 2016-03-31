@@ -16,6 +16,8 @@ class Config(object):
     FLASKY_CHANNELS_PER_PAGE = 20
     FLASKY_ROOMS_PER_PAGE = 20
     CELERY_TIMEZONE = 'UTC'
+    CELERY_ACCEPT_CONTENT = ['pickle', 'json', 'msgpack', 'yaml']
+    CELERY_SUPERVISOR_ROWCOUNT = 100
     CELERY_SUPERVISOR_INTERVAL = 15
     CELERYBEAT_SCHEDULE = {
         'crawl-every-15-minutes': {
@@ -23,7 +25,6 @@ class Config(object):
             'schedule': timedelta(minutes=CELERY_SUPERVISOR_INTERVAL),
         }
     }
-    CELERY_SUPERVISOR_ROWCOUNT = 100
 
     @staticmethod
     def init_app(app):

@@ -7,7 +7,6 @@ from .. import db
 from ..models import LiveTVChannel, LiveTVRoom, LiveTVChannelData, LiveTVRoomData
 from . import get_webdirver_client
 
-import requests
 import json
 
 ROOM_API = 'http://api.douyutv.com/api/v1/live'
@@ -15,11 +14,9 @@ ROOM_API = 'http://api.douyutv.com/api/v1/live'
 
 def crawl_channel_inner(site):
     current_app.logger.info('调用目录接口:{}'.format(site.crawl_url))
-    resp = requests.get(site.crawl_url)
-    if resp.status_code != 200:
-        current_app.logger.error('调用接口失败，status_code: {} content:\n{}'.format(resp.status_code, resp.content))
-        return False
-    respjson = resp.json()
+    webdirver_client = get_webdirver_client()
+    webdirver_client.get(site.crawl_url)
+    respjson = json.loads(webdirver_client.page_source)
     if respjson['error'] != 0:
         current_app.logger.error('调用接口失败:{}'.format(respjson['data']))
         return False
