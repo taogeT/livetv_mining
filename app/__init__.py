@@ -13,12 +13,13 @@ import os
 bootstrap = Bootstrap()
 moment = Moment()
 db = SQLAlchemy()
-celery = Celery(broker=Config.CELERY_BROKER_URL)
+celery = Celery()
 
 
 def create_app(config_name):
-    app = Flask(__name__)
+    app = Flask(__name__, instance_relative_config=True)
     app.config.from_object(config[config_name])
+    app.config.from_pyfile('config.py', silent=True)
     config[config_name].init_app(app)
 
     bootstrap.init_app(app)

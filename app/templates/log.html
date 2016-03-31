@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block page_content %}
-<h3>当前爬虫扫描间隔：{{ g.celery_interval }}</h3>
+<h3>当前爬虫扫描间隔：{{ g.celery_interval }} 分钟</h3>
 <pre id="crawllog" style="white-space: pre-wrap;word-wrap: break-word;">
 {{ crawllog }}
 </pre>
