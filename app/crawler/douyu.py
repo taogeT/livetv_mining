@@ -16,7 +16,18 @@ def crawl_channel_inner(site):
     current_app.logger.info('调用目录接口:{}'.format(site.crawl_url))
     webdirver_client = get_webdirver_client()
     webdirver_client.get(site.crawl_url)
-    respjson = json.loads(webdirver_client.page_source)
+    try:
+        pre_element = webdirver_client.find_element_by_tag_name('pre')
+    except NoSuchElementException:
+        current_app.logger.error('调用接口失败: 内容获取失败')
+        webdirver_client.close()
+        return False
+    try:
+        respjson = json.loads(pre_element.get_attribute('innerHTML'))
+    except ValueError:
+        current_app.logger.error('调用接口失败: 内容解析json失败')
+        webdirver_client.close()
+        return False
     if respjson['error'] != 0:
         current_app.logger.error('调用接口失败:{}'.format(respjson['data']))
         return False

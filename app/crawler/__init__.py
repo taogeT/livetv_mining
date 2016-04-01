@@ -11,7 +11,7 @@ crawler = Blueprint('crawler', __name__)
 
 
 def get_webdirver_client():
-    driver = webdriver.PhantomJS()
+    driver = webdriver.PhantomJS(service_args=['--disk-cache=true', '--load-images=false'])
     driver.set_page_load_timeout(30)
     return driver
 
