@@ -54,6 +54,7 @@ def crawl_channel_inner(site):
 
 
 def crawl_room_inner(channel):
+    channel.rooms.update({'last_active': False})
     channel_api_url = '{}/{}'.format(ROOM_API, channel.officeid)
     current_app.logger.info('开始扫描频道{}: {}'.format(channel.name, channel_api_url))
     crawl_offset, crawl_limit = 0, 99
@@ -91,6 +92,7 @@ def crawl_room_inner(channel):
             room.popularity = room_json['online']
             room.officeid = room_json['room_id']
             room.follower = room_json['fans']
+            room.last_active = True
             room.last_crawl_date = datetime.utcnow()
             room_data = LiveTVRoomData(room=room, popularity=room.popularity)
             db.session.add(room, room_data)

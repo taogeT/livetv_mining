@@ -52,6 +52,7 @@ class LiveTVRoom(db.Model):
     popularity = db.Column(db.Integer, index=True, doc='人气/观众')
     reward = db.Column(db.Integer, index=True, doc='酬劳')
     boardcaster = db.Column(db.String(128), doc='主播名')
+    last_active = db.Column(db.Boolean, index=True, default=False, doc='最近一次扫描有参与')
     last_crawl_date = db.Column(db.DateTime, index=True, doc='最近一次扫描时间')
     officeid = db.Column(db.String(128), index=True, doc='官方ID')
     follower = db.Column(db.Integer, index=True, doc='关注')
