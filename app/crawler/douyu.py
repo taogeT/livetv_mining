@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 from flask import current_app
-from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from datetime import datetime
 
 from .. import db
@@ -30,6 +30,7 @@ def crawl_channel_inner(site):
         return False
     if respjson['error'] != 0:
         current_app.logger.error('调用接口失败:{}'.format(respjson['data']))
+        webdirver_client.close()
         return False
     for channel_json in respjson['data']:
         channel = LiveTVChannel.query.filter_by(url=channel_json['game_url']).one_or_none()
@@ -48,20 +49,21 @@ def crawl_channel_inner(site):
     site.last_crawl_date = datetime.utcnow()
     db.session.add(site)
     db.session.commit()
+    webdirver_client.close()
     return True
 
 
 def crawl_room_inner(channel):
     channel_api_url = '{}/{}'.format(ROOM_API, channel.officeid)
     current_app.logger.info('开始扫描频道{}: {}'.format(channel.name, channel_api_url))
-    crawl_offset, crawl_limit = 0, 95
+    crawl_offset, crawl_limit = 0, 99
     crawl_room_count = 0
     webdirver_client = get_webdirver_client()
     while True:
-        webdirver_client.get('{}?offset={}&limit={}'.format(channel_api_url, str(crawl_offset), str(crawl_limit)))
         try:
+            webdirver_client.get('{}?offset={}&limit={}'.format(channel_api_url, str(crawl_offset), str(crawl_limit)))
             pre_element = webdirver_client.find_element_by_tag_name('pre')
-        except NoSuchElementException:
+        except (NoSuchElementException, TimeoutException):
             current_app.logger.error('调用接口失败: 内容获取失败')
             webdirver_client.close()
             return False
