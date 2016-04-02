@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block page_content %}
+  <div class="jumbotron" style="text-align: center;">
+    <h2>{{ room.name }}</h2>
+    <h4>
+      人气：{{ room.popularity }}&nbsp;&nbsp;
+      关注：{{ room.follower }}&nbsp;&nbsp;
+      更新时间：{{ moment(room.last_crawl_date).format('YYYY-MM-DD HH:mm:ss') }}&nbsp;&nbsp;
+      <a href="{{ room.url }}" class="btn btn-success" role="button">访问官网地址</a>
+    </h4>
+  </div>
+  <div class="row">
+    <div class="col-lg-4">
+      <table class="table table-striped table-bordered">
+        <thead>
+          <tr style="background-color: #9C9C9C">
+            <td align="center"><b>日期</b></td>
+            <td align="center"><b>人气</b></td>
+          </tr>
+        </thead>
+        <tbody>
+        {% for dataset in room.dataset_popularity %}
+          <tr>
+            <td align="center">{{ moment(dataset.since_date).format('YYYY-MM-DD HH:mm:ss') }}</td>
+            <td align="center">{{ dataset.popularity }}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="col-lg-8">
+      <h2>图表Building...</h2>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-lg-4">
+      <table class="table table-striped table-bordered">
+        <thead>
+          <tr style="background-color: #9C9C9C">
+            <td align="center"><b>日期</b></td>
+            <td align="center"><b>关注</b></td>
+          </tr>
+        </thead>
+        <tbody>
+        {% for dataset in room.dataset_follower %}
+          <tr>
+            <td align="center">{{ moment(dataset.since_date).format('YYYY-MM-DD HH:mm:ss') }}</td>
+            <td align="center">{{ dataset.follower }}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="col-lg-8">
+      <h2>图表Building...</h2>
+    </div>
+  </div>
+{% endblock %}

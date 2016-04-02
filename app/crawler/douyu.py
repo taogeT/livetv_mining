@@ -20,17 +20,17 @@ def crawl_channel_inner(site):
         pre_element = webdirver_client.find_element_by_tag_name('pre')
     except NoSuchElementException:
         current_app.logger.error('调用接口失败: 内容获取失败')
-        webdirver_client.close()
+        webdirver_client.quit()
         return False
     try:
         respjson = json.loads(pre_element.get_attribute('innerHTML'))
     except ValueError:
         current_app.logger.error('调用接口失败: 内容解析json失败')
-        webdirver_client.close()
+        webdirver_client.quit()
         return False
     if respjson['error'] != 0:
         current_app.logger.error('调用接口失败:{}'.format(respjson['data']))
-        webdirver_client.close()
+        webdirver_client.quit()
         return False
     for channel_json in respjson['data']:
         channel = LiveTVChannel.query.filter_by(url=channel_json['game_url']).one_or_none()
@@ -49,7 +49,7 @@ def crawl_channel_inner(site):
     site.last_crawl_date = datetime.utcnow()
     db.session.add(site)
     db.session.commit()
-    webdirver_client.close()
+    webdirver_client.quit()
     return True
 
 
@@ -66,17 +66,17 @@ def crawl_room_inner(channel):
             pre_element = webdirver_client.find_element_by_tag_name('pre')
         except (NoSuchElementException, TimeoutException):
             current_app.logger.error('调用接口失败: 内容获取失败')
-            webdirver_client.close()
+            webdirver_client.quit()
             return False
         try:
             respjson = json.loads(pre_element.get_attribute('innerHTML'))
         except ValueError:
             current_app.logger.error('调用接口失败: 内容解析json失败')
-            webdirver_client.close()
+            webdirver_client.quit()
             return False
         if respjson['error'] != 0:
             current_app.logger.error('调用接口失败:{}'.format(respjson['data']))
-            webdirver_client.close()
+            webdirver_client.quit()
             return False
         for room_json in respjson['data']:
             room_json['url'] = channel.site.url + room_json['url']
@@ -94,7 +94,7 @@ def crawl_room_inner(channel):
             room.follower = room_json['fans']
             room.last_active = True
             room.last_crawl_date = datetime.utcnow()
-            room_data = LiveTVRoomData(room=room, popularity=room.popularity)
+            room_data = LiveTVRoomData(room=room, popularity=room.popularity, follower=room.follower)
             db.session.add(room, room_data)
         crawl_room_count += len(respjson['data'])
         if len(respjson['data']) < crawl_limit:
@@ -107,5 +107,5 @@ def crawl_room_inner(channel):
     channel_data = LiveTVChannelData(channel=channel, roomcount=channel.roomcount)
     db.session.add(channel, channel_data)
     db.session.commit()
-    webdirver_client.close()
+    webdirver_client.quit()
     return True

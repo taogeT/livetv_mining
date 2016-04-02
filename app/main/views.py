@@ -8,10 +8,7 @@ from ..models import LiveTVSite, LiveTVChannel, LiveTVRoom
 @main.route('/index')
 def index():
     ''' 直播网站列表 '''
-    sites = []
-    for site in LiveTVSite.query.filter_by(valid=True).order_by(LiveTVSite.order_int.asc()):
-        site.channels_order = site.channels.order_by(LiveTVChannel.roomcount.desc())
-        sites.append(site)
+    sites = [site for site in LiveTVSite.query.filter_by(valid=True).order_by(LiveTVSite.order_int.asc())]
     return render_template('index.html', sites=sites)
 
 
@@ -39,7 +36,8 @@ def channel(channel_id):
     ''' 频道详细&房间列表 '''
     channel = LiveTVChannel.query.get_or_404(channel_id)
     page = request.args.get('page', 1, type=int)
-    pagination = channel.rooms.order_by(LiveTVRoom.popularity.desc()).paginate(
+    pagination = channel.rooms.filter_by(last_active=True) \
+                        .order_by(LiveTVRoom.popularity.desc()).paginate(
                     page=page,  error_out=False,
                     per_page=current_app.config['FLASKY_ROOMS_PER_PAGE'])
     rooms = pagination.items
@@ -57,6 +55,8 @@ def channel(channel_id):
 @main.route('/room/<int:room_id>')
 def room(room_id):
     ''' 房间详细 '''
+    room = LiveTVRoom.query.get_or_404(room_id)
+    return render_template('room.html', room=room)
 
 
 @main.route('/about-me')

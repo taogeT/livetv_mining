@@ -18,9 +18,9 @@ class Config(object):
     CELERY_TIMEZONE = 'UTC'
     CELERY_ACCEPT_CONTENT = ['pickle', 'json', 'msgpack', 'yaml']
     CELERY_SUPERVISOR_ROWCOUNT = 100
-    CELERY_SUPERVISOR_INTERVAL = 15
+    CELERY_SUPERVISOR_INTERVAL = 30
     CELERYBEAT_SCHEDULE = {
-        'crawl-every-15-minutes': {
+        'crawl-every-time': {
             'task': 'app.tasks.crawl_timed_task',
             'schedule': timedelta(minutes=CELERY_SUPERVISOR_INTERVAL),
         }

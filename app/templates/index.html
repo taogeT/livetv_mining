@@ -2,16 +2,65 @@
 
 {% block page_content %}
 {% for site in sites %}
-  <div class="jumbotron">
-    <h2><img src="{{ site.image_url }}" />&nbsp;&nbsp;{{ site.displayname }}</h2>
-    <p>{{ site.description }}</p>
-    <p>房间数Top 5:
-      {% for channel in  site.channels_order.limit(5) %}
-       <a href="{{ url_for('main.channel', channel_id=channel.id) }}">{{ channel.name }}</a>
-       ({{ channel.roomcount }})&nbsp;&nbsp;
-      {% endfor %}
-    </p>
-    <p><a href="{{ url_for('main.site', site_id=site.id) }}" class="btn btn-primary">More Detail</a></p>
+  <div class="jumbotron" style="text-align: center;">
+    <h1><img src="{{ site.image_url }}" />{{ site.displayname }}</h1>
+    <p class="lead">{{ site.description }}  <a href="{{ url_for('main.site', site_id=site.id) }}" class="btn btn-success" role="button">更多内容</a></p>
+  </div>
+  <div class="row">
+    <div class="col-lg-8">
+      <h2>房间人气 TOP{{ site.roomtop.count() }}</h2>
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>排名</th>
+            <th>房间名</th>
+            <th>主播</th>
+            <th>频道</th>
+            <th>人气</th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for room in site.roomtop %}
+          <tr>
+            <td>{{ loop.index }}</td>
+            <td><a href="{{ url_for('main.room', room_id=room.id) }}">{{ room.name }}</a></td>
+            <td>{{ room.boardcaster }}</td>
+            <td><a href="{{ url_for('main.channel', channel_id=room.channel.id) }}">{{ room.channel.name }}</a></td>
+            <td>{{ room.popularity }}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="col-lg-4">
+      <h2>频道房间数 TOP{{ site.channeltop.count() }}</h2>
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>排名</th>
+            <th>频道</th>
+            <th>房间数</th>
+            <th>房间增幅</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for channel in site.channeltop %}
+          <tr>
+            <td>{{ loop.index }}</td>
+            <td><a href="{{ url_for('main.channel', channel_id=channel.id) }}">{{ channel.name }}</a></td>
+            <td>{{ channel.roomcount }}</td>
+            <td>
+            {% if channel.range > 0 %}
+              <span class="glyphicon glyphicon-arrow-up" aria-hidden="true">{{ channel.range }}</span>
+            {% else %}
+              <span class="glyphicon glyphicon-arrow-down" aria-hidden="true">{{ channel.range }}</span>
+            {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
   </div>
 {% endfor %}
 {% endblock %}
