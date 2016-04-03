@@ -1,4 +1,5 @@
 {% macro pagination_widget(pagination, endpoint, fragment='') %}
+<nav style="text-align: center">
 <ul class="pagination">
   <li {% if not pagination.has_prev %}class="disabled"{% endif %}>
     <a href="{{ url_for(endpoint, page=pagination.page - 1, **kwargs) + fragment if pagination.has_prev else 'javascript:void(0)' }}">&laquo;</a>
@@ -16,4 +17,5 @@
     <a href="{{ url_for(endpoint, page=pagination.page + 1, **kwargs) + fragment if pagination.has_next else 'javascript:void(0)' }}">&raquo;</a>
   </li>
 </ul>
+</nav>
 {% endmacro%}

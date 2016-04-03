@@ -1,3 +1,4 @@
+
 <ul class="rooms">
   <table class="table table-condensed">
     <thead>
@@ -6,7 +7,6 @@
         <th>{{ title_dict['last_crawl_date'] }}</th>
         <th>{{ title_dict['boardcaster'] }}</th>
         <th>{{ title_dict['popularity'] }}</th>
-        <th>{{ title_dict['officeid'] }}</th>
       </tr>
     </thead>
     <tbody>
@@ -19,7 +19,6 @@
         <td>{{ moment(room.last_crawl_date).format('YYYY-MM-DD HH:mm:ss') }}</td>
         <td>{{ room.boardcaster }}</td>
         <td>{{ room.popularity }}</td>
-        <td>{{ room.officeid if room.officeid else '' }}</td>
       </tr>
     {% endfor %}
     </tbody>

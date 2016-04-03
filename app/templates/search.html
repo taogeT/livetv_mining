@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% import "bootstrap/wtf.html" as wtf%}
+
+{% block navbar_li_search %}class="active"{% endblock %}
+
+{% block page_content %}
+<h3>搜索站点房间</h3>
+{{ wtf.quick_form(form, form_type='horizontal', horizontal_columns=('lg', 2, 5)) }}
+{% if rooms %}
+<div class="channel-tabs">
+  {% include "_rooms.html" %}
+</div>
+{% endif %}
+{% if over_query_count %}
+<div class="alert alert-warning" role="alert">搜索结果过多，请输入更精确查询条件！</div>
+{% endif %}
+{% endblock %}

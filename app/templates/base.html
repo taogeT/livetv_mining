@@ -25,13 +25,16 @@
     </div>
     <div class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-        <li><a href="{{ url_for('main.index') }}">Home</a></li>
+        <li {% block navbar_li_home %}{% endblock %}><a href="{{ url_for('main.index') }}">Home</a></li>
       </ul>
       <ul class="nav navbar-nav">
-        <li><a href="{{ url_for('crawler.log') }}">Log</a></li>
+        <li {% block navbar_li_log %}{% endblock %}><a href="{{ url_for('crawler.log') }}">Log</a></li>
+      </ul>
+      <ul class="nav navbar-nav">
+        <li {% block navbar_li_search %}{% endblock %}><a href="{{ url_for('main.search') }}">Search</a></li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        <li><a href="{{ url_for('main.about_me') }}">About Me</a></li>
+        <li {% block navbar_li_aboutme %}{% endblock %}><a href="{{ url_for('main.about_me') }}">About Me</a></li>
       </ul>
     </div>
   </div>

@@ -55,6 +55,13 @@ class LiveTVChannel(db.Model):
     rooms = db.relationship('LiveTVRoom', backref='channel', lazy='dynamic')
     dataset = db.relationship('LiveTVChannelData', backref='channel', lazy='dynamic')
 
+    @classmethod
+    def title(cls):
+        return {'name': cls.name.doc, 'url': cls.url.doc,
+                'image_url': cls.image_url.doc, 'range': cls.range.doc,
+                'last_crawl_date': cls.last_crawl_date.doc,
+                'roomcount': cls.roomcount.doc}
+
 
 class LiveTVRoom(db.Model):
     __tablename__ = 'livetv_room'
@@ -86,6 +93,13 @@ class LiveTVRoom(db.Model):
         return self.dataset.filter(LiveTVRoomData.follower != None) \
                            .order_by(LiveTVRoomData.since_date.desc()) \
                            .limit(LiveTVRoomData.LATEST_NUM)
+
+    @classmethod
+    def title(cls):
+        return {'name': cls.name.doc, 'url': cls.url.doc,
+                'popularity': cls.popularity.doc, 'follower': cls.follower.doc,
+                'last_crawl_date': cls.last_crawl_date.doc,
+                'boardcaster': cls.boardcaster.doc}
 
 
 class LiveTVChannelData(db.Model):
