@@ -2,6 +2,8 @@
 from . import celery
 from .crawler import LiveTVCrawler
 
+import gc
+
 
 @celery.task
 def crawl_timed_task():
@@ -11,6 +13,8 @@ def crawl_timed_task():
     crawler.channel()
     # 房间扫描
     crawler.room()
+    # 回收资源
+    gc.collect()
 
 
 @celery.task
