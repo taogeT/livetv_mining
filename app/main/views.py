@@ -1,9 +1,11 @@
 # -*- coding: UTF-8 -*-
-from flask import render_template, request, current_app, redirect, url_for
+from flask import render_template, request, current_app, json
+from pytz import timezone, utc as pytz_utc
+from datetime import datetime, timedelta
 
 from . import main
 from .forms import SearchRoomForm
-from ..models import LiveTVSite, LiveTVChannel, LiveTVRoom
+from ..models import LiveTVSite, LiveTVChannel, LiveTVRoom, LiveTVRoomData
 
 
 @main.route('/index')
@@ -44,7 +46,44 @@ def channel(channel_id):
 def room(room_id):
     ''' 房间详细 '''
     room = LiveTVRoom.query.get_or_404(room_id)
-    return render_template('room.html', room=room)
+    dsttz = timezone('Asia/Shanghai')
+    popdatex, popnumy = [], []
+    for popdate, popnum in _dataset_split_time(room.dataset_popularity, times=24, hours=1):
+        popdate = popdate.replace(tzinfo=pytz_utc).astimezone(dsttz)
+        popdatex.insert(0, popdate.strftime('%H:%M'))
+        popnumy.insert(0, popnum)
+    followdatex, follownumy = [], []
+    for followdate, follownum in _dataset_split_time(room.dataset_follower, times=7, days=1):
+        followdate = followdate.replace(tzinfo=pytz_utc).astimezone(dsttz)
+        followdatex.insert(0, followdate.strftime('%m/%d'))
+        follownumy.insert(0, follownum)
+    return render_template('room.html', room=room,
+                           datasetorder=room.dataset.order_by(LiveTVRoomData.since_date.desc()),
+                           popularity_dataset=(json.dumps(popdatex), json.dumps(popnumy)),
+                           follower_dataset=(json.dumps(followdatex), json.dumps(follownumy)))
+
+
+def _dataset_split_time(datalist, times, days=0, seconds=0, hours=0, minutes=0,
+                        weeks=0, microseconds=0, milliseconds=0):
+    datetd = timedelta(days=days, seconds=seconds, microseconds=microseconds,
+                       milliseconds=milliseconds, minutes=minutes, hours=hours,
+                       weeks=weeks)
+    dateutc = datetime.utcnow()
+    dateutc_old = dateutc - datetd
+    datasplitlist = []
+    while times > 0:
+        datafound = False
+        for index, data in enumerate(datalist):
+            if data[0] > dateutc_old:
+                datasplitlist.append((dateutc, [datasplit[1] for datasplit in datalist[index:]]))
+                datalist = datalist[:index]
+                datafound = True
+                break
+        if not datafound:
+            datasplitlist.append((dateutc, [0]))
+        dateutc, dateutc_old = dateutc_old, dateutc_old - datetd
+        times -= 1
+    return [(datasplit[0], int(sum(datasplit[1]) / len(datasplit[1]))) for datasplit in datasplitlist]
 
 
 @main.route('/search', methods=['GET', 'POST'])
@@ -75,4 +114,4 @@ def search():
 @main.route('/about-me')
 def about_me():
     ''' 关于我 '''
-    return 'Building...'
+    return render_template('aboutme.html')

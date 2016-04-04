@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from . import db
 
@@ -63,6 +63,18 @@ class LiveTVChannel(db.Model):
                 'roomcount': cls.roomcount.doc}
 
 
+class LiveTVRoomData(db.Model):
+    __tablename__ = 'livetv_room_data'
+    ''' 扫描房间数据保存，作为曲线图基础数据 '''
+    id = db.Column(db.Integer, primary_key=True)
+    popularity = db.Column(db.Integer, index=True, doc='人气')
+    reward = db.Column(db.Integer, index=True, doc='酬劳')
+    follower = db.Column(db.Integer, index=True, doc='关注')
+    since_date = db.Column(db.DateTime, default=datetime.utcnow, doc='新增日期')
+
+    room_id = db.Column(db.Integer, db.ForeignKey('livetv_room.id'))
+
+
 class LiveTVRoom(db.Model):
     __tablename__ = 'livetv_room'
     ''' 房间 '''
@@ -82,17 +94,31 @@ class LiveTVRoom(db.Model):
     channel_id = db.Column(db.Integer, db.ForeignKey('livetv_channel.id'))
     dataset = db.relationship('LiveTVRoomData', backref='room', lazy='dynamic')
 
+    def _dataset_filter(self, days=0, seconds=0, microseconds=0, hours=0,
+                        milliseconds=0, minutes=0, weeks=0):
+        dateutc_older = datetime.utcnow() - timedelta(days=days, seconds=seconds,
+                            microseconds=microseconds, milliseconds=milliseconds,
+                            minutes=minutes, hours=hours, weeks=weeks)
+        return self.dataset.filter(LiveTVRoomData.since_date > dateutc_older) \
+                           .order_by(LiveTVRoomData.since_date.asc())
+
     @property
     def dataset_popularity(self):
-        return self.dataset.filter(LiveTVRoomData.popularity != None) \
-                           .order_by(LiveTVRoomData.since_date.desc()) \
-                           .limit(LiveTVRoomData.LATEST_NUM)
+        ''' 24小时内人气数据 '''
+        datasetlist = []
+        for roomdata in self._dataset_filter(days=1):
+            if isinstance(roomdata.popularity, int):
+                datasetlist.append((roomdata.since_date, roomdata.popularity))
+        return datasetlist
 
     @property
     def dataset_follower(self):
-        return self.dataset.filter(LiveTVRoomData.follower != None) \
-                           .order_by(LiveTVRoomData.since_date.desc()) \
-                           .limit(LiveTVRoomData.LATEST_NUM)
+        ''' 一周内关注数据 '''
+        datasetlist = []
+        for roomdata in self._dataset_filter(weeks=1):
+            if isinstance(roomdata.follower, int):
+                datasetlist.append((roomdata.since_date, roomdata.follower))
+        return datasetlist
 
     @classmethod
     def title(cls):
@@ -110,16 +136,3 @@ class LiveTVChannelData(db.Model):
     since_date = db.Column(db.DateTime, default=datetime.utcnow, doc='新增日期')
 
     channel_id = db.Column(db.Integer, db.ForeignKey('livetv_channel.id'))
-
-
-class LiveTVRoomData(db.Model):
-    __tablename__ = 'livetv_room_data'
-    LATEST_NUM = 8
-    ''' 扫描房间数据保存，作为曲线图基础数据 '''
-    id = db.Column(db.Integer, primary_key=True)
-    popularity = db.Column(db.Integer, index=True, doc='人气')
-    reward = db.Column(db.Integer, index=True, doc='酬劳')
-    follower = db.Column(db.Integer, index=True, doc='关注')
-    since_date = db.Column(db.DateTime, default=datetime.utcnow, doc='新增日期')
-
-    room_id = db.Column(db.Integer, db.ForeignKey('livetv_room.id'))

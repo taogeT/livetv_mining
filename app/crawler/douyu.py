@@ -79,18 +79,17 @@ def crawl_room_inner(channel):
             webdirver_client.quit()
             return False
         for room_json in respjson['data']:
-            room_json['url'] = channel.site.url + room_json['url']
-            room = LiveTVRoom.query.filter_by(url=room_json['url']).one_or_none()
+            room = LiveTVRoom.query.filter_by(officeid=room_json['room_id']).one_or_none()
             if not room:
-                room = LiveTVRoom(url=room_json['url'])
+                room = LiveTVRoom(officeid=room_json['room_id'])
                 current_app.logger.info('新增房间 {}:{}'.format(room_json['room_id'], room_json['room_name']))
             else:
                 current_app.logger.info('更新房间 {}:{}'.format(room_json['room_id'], room_json['room_name']))
             room.channel = channel
+            room.url = channel.site.url + room_json['url']
             room.name = room_json['room_name']
             room.boardcaster = room_json['nickname']
             room.popularity = room_json['online']
-            room.officeid = room_json['room_id']
             room.follower = room_json['fans']
             room.last_active = True
             room.last_crawl_date = datetime.utcnow()

@@ -14,49 +14,68 @@
     </h4>
   </div>
   <div class="row">
-    <div class="col-lg-4">
+    <div class="col-lg-3">
       <table class="table table-striped table-bordered">
         <thead>
           <tr style="background-color: #9C9C9C">
             <td align="center"><b>日期</b></td>
             <td align="center"><b>人气</b></td>
-          </tr>
-        </thead>
-        <tbody>
-        {% for dataset in room.dataset_popularity %}
-          <tr>
-            <td align="center">{{ moment(dataset.since_date).format('YYYY-MM-DD HH:mm:ss') }}</td>
-            <td align="center">{{ dataset.popularity }}</td>
-          </tr>
-        {% endfor %}
-        </tbody>
-      </table>
-    </div>
-    <div class="col-lg-8">
-      <h2>图表Building...</h2>
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-lg-4">
-      <table class="table table-striped table-bordered">
-        <thead>
-          <tr style="background-color: #9C9C9C">
-            <td align="center"><b>日期</b></td>
             <td align="center"><b>关注</b></td>
           </tr>
         </thead>
         <tbody>
-        {% for dataset in room.dataset_follower %}
+        {% for dataset in datasetorder.limit(15) %}
           <tr>
             <td align="center">{{ moment(dataset.since_date).format('YYYY-MM-DD HH:mm:ss') }}</td>
+            <td align="center">{{ dataset.popularity }}</td>
             <td align="center">{{ dataset.follower }}</td>
           </tr>
         {% endfor %}
         </tbody>
       </table>
     </div>
-    <div class="col-lg-8">
-      <h2>图表Building...</h2>
+    <div class="col-lg-9">
+      <h4>24小时内人气值变化</h4>
+      <canvas id="popularityChart" width="900" height="400"></canvas>
+      <h4>一周内关注变化</h4>
+      <canvas id="followerChart" width="900" height="400"></canvas>
     </div>
   </div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="//cdn.bootcss.com/Chart.js/1.0.2/Chart.js"></script>
+<script>
+var popdata = {
+    labels : {{ popularity_dataset[0] | safe }},
+    datasets : [
+        {
+            fillColor : "rgba(151,187,205,0.5)",
+            strokeColor : "rgba(220,220,220,1)",
+            pointColor : "rgba(220,220,220,1)",
+            pointStrokeColor : "#fff",
+            data : {{ popularity_dataset[1] }}
+        }
+    ]
+}
+var popctx = document.getElementById("popularityChart").getContext("2d")
+var popChart = new Chart(popctx).Line(popdata)
+
+var foldata = {
+    labels : {{ follower_dataset[0] | safe }},
+    datasets : [
+        {
+            fillColor : "rgba(151,187,205,0.5)",
+            strokeColor : "rgba(220,220,220,1)",
+            pointColor : "rgba(220,220,220,1)",
+            pointStrokeColor : "#fff",
+            data : {{ follower_dataset[1] }}
+        }
+    ]
+}
+folctx = document.getElementById("followerChart").getContext("2d");
+folChart = new Chart(folctx).Line(foldata);
+
+</script>
 {% endblock %}
