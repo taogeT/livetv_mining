@@ -51,13 +51,13 @@ def room(room_id):
     popdatex, popnumy = [], []
     for popdate, popnum in _dataset_split_time(room.dataset_popularity, times=24, hours=1):
         popdate = popdate.replace(tzinfo=pytz_utc).astimezone(dsttz)
-        popdatex.insert(0, popdate.strftime('%H:%M'))
-        popnumy.insert(0, popnum)
+        popdatex.append(popdate.strftime('%H:%M'))
+        popnumy.append(popnum)
     followdatex, follownumy = [], []
-    for followdate, follownum in _dataset_split_time(room.dataset_follower, times=7, days=1):
+    for followdate, follownum in _dataset_split_time(room.dataset_follower, times=7, days=1, fix_miss=False):
         followdate = followdate.replace(tzinfo=pytz_utc).astimezone(dsttz)
-        followdatex.insert(0, followdate.strftime('%m/%d'))
-        follownumy.insert(0, follownum)
+        followdatex.append(followdate.strftime('%m/%d'))
+        follownumy.append(follownum)
     return render_template('room.html', room=room,
                            datasetorder=room.dataset.order_by(LiveTVRoomData.since_date.desc()),
                            popularity_dataset=(json.dumps(popdatex), json.dumps(popnumy)),
@@ -65,7 +65,7 @@ def room(room_id):
 
 
 def _dataset_split_time(datalist, times, days=0, seconds=0, hours=0, minutes=0,
-                        weeks=0, microseconds=0, milliseconds=0):
+                        weeks=0, microseconds=0, milliseconds=0, fix_miss=True):
     datetd = timedelta(days=days, seconds=seconds, microseconds=microseconds,
                        milliseconds=milliseconds, minutes=minutes, hours=hours,
                        weeks=weeks)
@@ -76,12 +76,12 @@ def _dataset_split_time(datalist, times, days=0, seconds=0, hours=0, minutes=0,
         datafound = False
         for index, data in enumerate(datalist):
             if data[0] > dateutc_old:
-                datasplitlist.append((dateutc, [datasplit[1] for datasplit in datalist[index:]]))
+                datasplitlist.insert(0, (dateutc, [datasplit[1] for datasplit in datalist[index:]]))
                 datalist = datalist[:index]
                 datafound = True
                 break
-        if not datafound:
-            datasplitlist.append((dateutc, [0]))
+        if fix_miss and not datafound:
+            datasplitlist.insert(0, (dateutc, [0]))
         dateutc, dateutc_old = dateutc_old, dateutc_old - datetd
         times -= 1
     return [(datasplit[0], int(sum(datasplit[1]) / len(datasplit[1]))) for datasplit in datasplitlist]
