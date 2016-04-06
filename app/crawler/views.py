@@ -3,15 +3,17 @@ from flask import render_template, current_app, g, jsonify
 
 from . import crawler
 
+import codecs
+
 
 def _log():
     rowcount = current_app.config['CELERY_SUPERVISOR_ROWCOUNT']
     crawllog = ''
-    with open(current_app.config['CELERY_SUPERVISOR_LOGFILE'], 'r', encoding='utf-8') as crawllogfile:
+    with codecs.open(current_app.config['CELERY_SUPERVISOR_LOGFILE'], 'r', encoding='utf-8') as crawllogfile:
         crawllines = crawllogfile.readlines()
         for crawllogrow in crawllines[0-rowcount:]:
             crawllog += crawllogrow
-    return crawllog
+    return crawllog.encode('latin-1').decode('unicode_escape')
 
 
 @crawler.route('/log', methods=['GET'])
