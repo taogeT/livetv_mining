@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block navbar_li_aboutme %}class="active"{% endblock %}
+
+{% block page_content %}
+{{ mdhtml | safe }}
+<table>
+  <tbody>
+    <tr align="center">
+      <td><b>微信扫码捐赠</b></td>
+      <td><b>支付宝钱包扫码捐赠</b></td>
+    </tr>
+    <tr align="center">
+      <td><img width="80%" height="80%" src="{{ url_for('static', filename='weixin_pay.png') }}"></td>
+      <td><img src="{{ url_for('static', filename='zhifubao_pay.jpg') }}"></td>
+    </tr>
+  </tbody>
+</table>
+{% endblock %}

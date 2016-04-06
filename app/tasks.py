@@ -15,10 +15,3 @@ def crawl_timed_task():
     crawler.room()
     # 回收资源
     gc.collect()
-
-
-@celery.task
-def test_task(x):
-    ''' 测试任务 '''
-    import math
-    return math.pow(x, 2)

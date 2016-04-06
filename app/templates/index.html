@@ -4,14 +4,14 @@
 
 {% block page_content %}
 {% for site in sites %}
-  <div class="jumbotron" style="text-align: center;">
+  <div class="jumbotron jumbotron-fixed" style="text-align: center;">
     <h1><img src="{{ site.image_url }}" />{{ site.displayname }}</h1>
     <p class="lead">{{ site.description }}  <a href="{{ url_for('main.site', site_id=site.id) }}" class="btn btn-success" role="button">更多内容</a></p>
   </div>
   <div class="row">
     <div class="col-lg-8">
       <h2>房间人气 TOP{{ site.roomtop.count() }}</h2>
-      <table class="table table-striped">
+      <table class="table">
         <thead>
           <tr>
             <th>排名</th>
@@ -36,7 +36,7 @@
     </div>
     <div class="col-lg-4">
       <h2>频道房间数 TOP{{ site.channeltop.count() }}</h2>
-      <table class="table table-striped">
+      <table class="table">
         <thead>
           <tr>
             <th>排名</th>

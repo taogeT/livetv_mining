@@ -2,6 +2,7 @@
 from flask import render_template, request, current_app, json
 from pytz import timezone, utc as pytz_utc
 from datetime import datetime, timedelta
+from markdown import markdown
 
 from . import main
 from .forms import SearchRoomForm
@@ -111,7 +112,9 @@ def search():
                            title_dict=LiveTVRoom.title(), over_query_count=False)
 
 
-@main.route('/about-me')
-def about_me():
-    ''' 关于我 '''
-    return render_template('aboutme.html')
+@main.route('/about')
+def about():
+    ''' 关于 '''
+    with open('ABOUT.md', 'r') as mdf:
+        mdhtml = markdown(mdf.read())
+    return render_template('about.html', mdhtml=mdhtml)

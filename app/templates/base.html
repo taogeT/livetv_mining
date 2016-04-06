@@ -1,15 +1,14 @@
 {% extends "bootstrap/base.html" %}
 
-{% block head %}
-{{ super() }}
+{% block styles %}
 <link rel="shortcut icon" href="https://avatars2.githubusercontent.com/u/6917395?v=3&s=200" type="image/x-icon">
 <link rel="icon" href="https://avatars2.githubusercontent.com/u/6917395?v=3&s=200" type="image/x-icon">
+<link href="//cdn.bootcss.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
+<link href="//cdn.bootcss.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" rel="stylesheet">
 <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 {% endblock%}
 
-{% block title %}My LiveTV{% endblock %}
-
-{% block body_attribs %}{% endblock body_attribs %}
+{% block title %}LiveTV Mining{% endblock %}
 
 {% block navbar %}
 <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -21,20 +20,20 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="/">My LiveTV</a>
+      <a class="navbar-brand" href="/">LiveTV Mining</a>
     </div>
     <div class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-        <li {% block navbar_li_home %}{% endblock %}><a href="{{ url_for('main.index') }}">Home</a></li>
+        <li {% block navbar_li_home %}{% endblock %}><a href="{{ url_for('main.index') }}">首页</a></li>
       </ul>
       <ul class="nav navbar-nav">
-        <li {% block navbar_li_log %}{% endblock %}><a href="{{ url_for('crawler.log') }}">Log</a></li>
+        <li {% block navbar_li_search %}{% endblock %}><a href="{{ url_for('main.search') }}">搜索</a></li>
       </ul>
       <ul class="nav navbar-nav">
-        <li {% block navbar_li_search %}{% endblock %}><a href="{{ url_for('main.search') }}">Search</a></li>
+        <li {% block navbar_li_log %}{% endblock %}><a href="{{ url_for('crawler.log') }}">爬虫日志</a></li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        <li {% block navbar_li_aboutme %}{% endblock %}><a href="{{ url_for('main.about_me') }}">About Me</a></li>
+        <li {% block navbar_li_aboutme %}{% endblock %}><a href="{{ url_for('main.about') }}">关于</a></li>
       </ul>
     </div>
   </div>
@@ -43,20 +42,19 @@
 
 {% block content %}
 <div class="container">
-  {% for message in get_flashed_messages() %}
-  <div class="alert alert-warning">
-    <button type="button" class="close" data-dismiss="alert">&times;</button>
-    {{ message }}
-  </div>
-  {% endfor %}
-   <div class="container">
-  {% block page_content %}{% endblock %}
-  </div>
+{% block page_content %}{% endblock %}
 </div>
+<footer class="footer">
+  <div class="container">
+    <p>LiveTV Mining 是通过爬虫收集直播网站频道、房间等数据，并进行图表制作和数据分析。由作者 <a href="{{url_for('main.about')}}">taogeT</a> 独立设计开发完成。</p>
+    <p>源代码受 <a rel="license" href="https://github.com/taogeT/livetv_mining/blob/master/LICENSE" target="_blank">GPL</a> 开源协议保护，地址 <a href="https://github.com/taogeT/livetv_mining">GitHub 仓库</a>。开发过程在线直播: <a href="http://www.douyu.com/557520">直播地址</a>。</p>
+  </div>
+</footer>
 {% endblock %}
 
 {% block scripts %}
-{{ super() }}
-{{ moment.include_moment() }}
+<script src="//cdn.bootcss.com/jquery/1.12.0/jquery.min.js"></script>
+<script src="//cdn.bootcss.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+{{ moment.include_moment(local_js="//cdn.bootcss.com/moment.js/2.11.2/moment-with-locales.min.js") }}
 {{ moment.lang('zh-cn') }}
 {% endblock %}
