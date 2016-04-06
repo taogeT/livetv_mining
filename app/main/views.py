@@ -8,6 +8,8 @@ from . import main
 from .forms import SearchRoomForm
 from ..models import LiveTVSite, LiveTVChannel, LiveTVRoom, LiveTVRoomData
 
+import codecs
+
 
 @main.route('/index')
 def index():
@@ -115,6 +117,6 @@ def search():
 @main.route('/about')
 def about():
     ''' 关于 '''
-    with open('ABOUT.md', 'r') as mdf:
+    with codecs.open('ABOUT.md', 'r', encoding='utf-8') as mdf:
         mdhtml = markdown(mdf.read())
     return render_template('about.html', mdhtml=mdhtml)
