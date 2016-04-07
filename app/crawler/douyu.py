@@ -15,10 +15,10 @@ ROOM_API = 'http://api.douyutv.com/api/v1/live'
 def crawl_channel_inner(site):
     current_app.logger.info('调用目录接口:{}'.format(site.crawl_url))
     webdirver_client = get_webdirver_client()
-    webdirver_client.get(site.crawl_url)
     try:
+        webdirver_client.get(site.crawl_url)
         pre_element = webdirver_client.find_element_by_tag_name('pre')
-    except NoSuchElementException:
+    except (NoSuchElementException, TimeoutException):
         current_app.logger.error('调用接口失败: 内容获取失败')
         webdirver_client.quit()
         return False

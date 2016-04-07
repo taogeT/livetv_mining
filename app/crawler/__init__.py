@@ -7,6 +7,7 @@ from functools import reduce
 from ..models import LiveTVSite
 
 import sys
+import time
 
 crawler = Blueprint('crawler', __name__)
 
@@ -14,7 +15,7 @@ crawler = Blueprint('crawler', __name__)
 def get_webdirver_client():
     desiredcap = DesiredCapabilities.PHANTOMJS
     desiredcap['phantomjs.page.settings.userAgent'] = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.87 Safari/537.36'
-    command_line_args = ['--disk-cache=true', '--load-images=false']
+    command_line_args = ['--load-images=false']
     driver = webdriver.PhantomJS(desired_capabilities=desiredcap, service_args=command_line_args)
     driver.set_page_load_timeout(30)
     return driver
@@ -25,7 +26,10 @@ from . import douyu, huya, zhanqi, views
 
 def crawl_channel(site_url, inner_func):
     site = LiveTVSite.query.filter_by(url=site_url, valid=True).one()
-    inner_func(site)
+    finished = False
+    while not finished:
+        finished = inner_func(site)
+        time.sleep(5)
 
 
 def crawl_room(site_url, inner_func, channel_url=None):

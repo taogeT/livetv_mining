@@ -1,8 +1,22 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
-import os
 from app import create_app, celery
-from app.tasks import *
+from app.crawler import LiveTVCrawler
+
+import os
+import gc
 
 app = create_app(os.getenv('FLASK_CONFIG') or 'default')
-app.app_context().push()
+
+
+@celery.task
+def crawl_timed_task():
+    ''' 扫描定时任务 '''
+    with app.app_context():
+        crawler = LiveTVCrawler()
+        # 频道扫描
+        crawler.channel()
+        # 房间扫描
+        crawler.room()
+    # 回收资源
+    gc.collect()
