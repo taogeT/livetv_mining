@@ -12,7 +12,7 @@ import time
 crawler = Blueprint('crawler', __name__)
 
 
-def get_webdirver_client():
+def get_webdriver_client():
     desiredcap = DesiredCapabilities.PHANTOMJS
     desiredcap['phantomjs.page.settings.userAgent'] = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.87 Safari/537.36'
     command_line_args = ['--load-images=false']
@@ -21,7 +21,7 @@ def get_webdirver_client():
     return driver
 
 
-from . import douyu, huya, zhanqi, views
+from . import douyu, zhanqi, panda, views
 
 
 def crawl_channel(site_url, inner_func):

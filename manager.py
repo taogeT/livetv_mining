@@ -6,7 +6,6 @@ from flask.ext.migrate import Migrate, MigrateCommand
 from app import create_app, db
 from app.models import LiveTVSite
 from app.crawler import LiveTVCrawler
-from app.tasks import crawl_timed_task
 
 import os
 import sys
@@ -17,8 +16,7 @@ migrate = Migrate(app, db)
 
 
 def make_shell_context():
-    return dict(app=app, db=db, crawl_timed_task=crawl_timed_task,
-                LiveTVSite=LiveTVSite, LiveTVCrawler=LiveTVCrawler)
+    return dict(app=app, db=db, LiveTVSite=LiveTVSite, LiveTVCrawler=LiveTVCrawler)
 
 manager.add_command('shell', Shell(make_context=make_shell_context))
 manager.add_command('db', MigrateCommand)
