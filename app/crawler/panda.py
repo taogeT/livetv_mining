@@ -10,7 +10,6 @@ from ..models import LiveTVChannel, LiveTVRoom, LiveTVChannelData, LiveTVRoomDat
 from . import get_webdriver_client
 
 import json
-import requests
 
 ROOM_LIST_API = 'http://www.panda.tv/ajax_sort?pageno={}&pagenum={}&classification='
 ROOM_API = 'http://www.panda.tv/api_room?roomid={}'
@@ -26,7 +25,7 @@ def crawl_channel_inner(site):
         return False
     current_app.logger.info('扫描主目录:{}'.format(site.crawl_url))
     try:
-        dirul = WebDriverWait(webdriver_client, 300).until(lambda x: x.find_element_by_xpath('//ul[contains(@class,\'video-list\')]'))
+        dirul = WebDriverWait(webdriver_client, 30).until(lambda x: x.find_element_by_xpath('//ul[contains(@class,\'video-list\')]'))
     except TimeoutException:
         current_app.logger.error('调用接口失败: 等待读取频道内容失败')
         webdriver_client.quit()

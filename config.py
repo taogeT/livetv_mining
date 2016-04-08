@@ -22,7 +22,7 @@ class Config(object):
     CELERY_SUPERVISOR_INTERVAL = 30
     CELERYBEAT_SCHEDULE = {
         'crawl-every-time': {
-            'task': 'app.tasks.crawl_timed_task',
+            'task': 'celery_run.crawl_timed_task',
             'schedule': timedelta(minutes=CELERY_SUPERVISOR_INTERVAL),
         }
     }

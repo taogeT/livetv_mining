@@ -21,7 +21,7 @@ def crawl_channel_inner(site):
         return False
     current_app.logger.info('扫描主目录:{}'.format(site.crawl_url))
     try:
-        dirul = WebDriverWait(webdriver_client, 300).until(lambda x: x.find_element_by_xpath('//ul[@id=\'game-list-panel\']'))
+        dirul = WebDriverWait(webdriver_client, 30).until(lambda x: x.find_element_by_xpath('//ul[@id=\'game-list-panel\']'))
     except TimeoutException:
         current_app.logger.error('调用接口失败: 等待读取频道内容失败')
         webdriver_client.quit()
