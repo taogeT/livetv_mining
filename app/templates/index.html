@@ -5,8 +5,8 @@
 {% block page_content %}
 {% for site in sites %}
   <div class="jumbotron jumbotron-fixed" style="text-align: center;">
-    <h1><img src="{{ site.image_url }}" />{{ site.displayname }}</h1>
-    <p class="lead">{{ site.description }}  <a href="{{ url_for('main.site', site_id=site.id) }}" class="btn btn-success" role="button">更多内容</a></p>
+    <h1><img src="{{ site.image_url }}" /></h1>
+    <p class="lead">{{ site.description }}  <a href="{{ url_for('main.site', site_id=site.id) }}">更多内容</a></p>
   </div>
   <div class="row">
     <div class="col-lg-8">
