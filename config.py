@@ -24,17 +24,17 @@ class Config(object):
         'crawl-douyu': {
             'task': 'celery_run.crawl_timed_task',
             'schedule': timedelta(minutes=CELERY_SUPERVISOR_INTERVAL),
-            'args': ('douyu')
+            'args': ['douyu']
         },
         'crawl-panda': {
             'task': 'celery_run.crawl_timed_task',
             'schedule': timedelta(minutes=CELERY_SUPERVISOR_INTERVAL),
-            'args': ('panda')
+            'args': ['panda']
         },
         'crawl-zhanqi': {
             'task': 'celery_run.crawl_timed_task',
             'schedule': timedelta(minutes=CELERY_SUPERVISOR_INTERVAL),
-            'args': ('zhanqi')
+            'args': ['zhanqi']
         }
     }
 

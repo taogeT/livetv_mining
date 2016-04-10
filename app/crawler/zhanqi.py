@@ -107,7 +107,7 @@ def crawl_room_inner(channel):
             room.url = channel.site.url + room_crawl_result['url']
             room.boardcaster = room_crawl_result['nickname']
             room.popularity = int(room_crawl_result['online'])
-            room.follower = room_crawl_result['follows']
+            room.follower = 0 if isinstance(room_crawl_result['follows'], bool) else room_crawl_result['follows']
             room.last_active = True
             room.last_crawl_date = datetime.utcnow()
             room_data = LiveTVRoomData(room=room, popularity=room.popularity, follower=room.follower)

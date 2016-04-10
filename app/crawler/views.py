@@ -13,7 +13,7 @@ def _log():
         crawllines = crawllogfile.readlines()
         for crawllogrow in crawllines[0-rowcount:]:
             crawllog += crawllogrow
-    return crawllog.encode('latin-1').decode('unicode_escape')
+    return crawllog
 
 
 @crawler.route('/log', methods=['GET'])
