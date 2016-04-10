@@ -21,9 +21,20 @@ class Config(object):
     CELERY_SUPERVISOR_ROWCOUNT = 100
     CELERY_SUPERVISOR_INTERVAL = 30
     CELERYBEAT_SCHEDULE = {
-        'crawl-every-time': {
+        'crawl-douyu': {
             'task': 'celery_run.crawl_timed_task',
             'schedule': timedelta(minutes=CELERY_SUPERVISOR_INTERVAL),
+            'args': ('douyu')
+        },
+        'crawl-panda': {
+            'task': 'celery_run.crawl_timed_task',
+            'schedule': timedelta(minutes=CELERY_SUPERVISOR_INTERVAL),
+            'args': ('panda')
+        },
+        'crawl-zhanqi': {
+            'task': 'celery_run.crawl_timed_task',
+            'schedule': timedelta(minutes=CELERY_SUPERVISOR_INTERVAL),
+            'args': ('zhanqi')
         }
     }
 
