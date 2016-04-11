@@ -18,21 +18,21 @@ class Config(object):
     FLASKY_SEARCH_PER_PAGE = 30
     CELERY_TIMEZONE = 'UTC'
     CELERY_ACCEPT_CONTENT = ['pickle', 'json', 'msgpack', 'yaml']
-    CELERY_SUPERVISOR_ROWCOUNT = 100
+    CELERY_SUPERVISOR_ROWCOUNT = 80
     CELERY_SUPERVISOR_INTERVAL = 30
     CELERYBEAT_SCHEDULE = {
         'crawl-douyu': {
-            'task': 'celery_run.crawl_timed_task',
+            'task': 'app.tasks.crawl_timed_task',
             'schedule': timedelta(minutes=CELERY_SUPERVISOR_INTERVAL),
             'args': ['douyu']
         },
         'crawl-panda': {
-            'task': 'celery_run.crawl_timed_task',
+            'task': 'app.tasks.crawl_timed_task',
             'schedule': timedelta(minutes=CELERY_SUPERVISOR_INTERVAL),
             'args': ['panda']
         },
         'crawl-zhanqi': {
-            'task': 'celery_run.crawl_timed_task',
+            'task': 'app.tasks.crawl_timed_task',
             'schedule': timedelta(minutes=CELERY_SUPERVISOR_INTERVAL),
             'args': ['zhanqi']
         }

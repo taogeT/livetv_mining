@@ -22,6 +22,8 @@
 
 ####历程
 
+* 2016-04-10 完成数据库升级(Sqlite->Postgresql)，解决内存泄露问题。
+
 * 2016-04-08 完成熊猫、战旗爬虫开发，上线进行数据收集。
 
 * 2016-04-06 域名 [http://www.zhengwentao.com](http://www.zhengwentao.com) 申请完毕，正式建站。
