@@ -6,7 +6,7 @@ from markdown import markdown
 
 from . import main
 from .forms import SearchRoomForm
-from ..models import LiveTVSite, LiveTVChannel, LiveTVRoom, LiveTVRoomData
+from ..models import LiveTVSite, LiveTVChannel, LiveTVRoom
 
 import codecs
 
