@@ -50,41 +50,43 @@ def room(room_id):
     ''' 房间详细 '''
     room = LiveTVRoom.query.get_or_404(room_id)
     dsttz = timezone('Asia/Shanghai')
+    yesdatex, yesnumy = [], []
+    for yesdate, yesnum in format_chart_split(room.dataset_yesterday, times=24, hours=1):
+        yesdate = yesdate.replace(tzinfo=pytz_utc).astimezone(dsttz)
+        yesdatex.append(yesdate.strftime('%H:%M'))
+        yesnumy.append(yesnum)
     popdatex, popnumy = [], []
-    for popdate, popnum in _dataset_split_time(room.dataset_popularity, times=24, hours=1):
+    for popdate, popnum in format_chart_split(room.dataset_popularity, times=7, days=1):
         popdate = popdate.replace(tzinfo=pytz_utc).astimezone(dsttz)
-        popdatex.append(popdate.strftime('%H:%M'))
+        popdatex.append(popdate.strftime('%m/%d'))
         popnumy.append(popnum)
     followdatex, follownumy = [], []
-    for followdate, follownum in _dataset_split_time(room.dataset_follower, times=7, days=1, fix_miss=False):
+    for followdate, follownum in format_chart_split(room.dataset_follower, times=7, days=1):
         followdate = followdate.replace(tzinfo=pytz_utc).astimezone(dsttz)
         followdatex.append(followdate.strftime('%m/%d'))
         follownumy.append(follownum)
     return render_template('room.html', room=room,
-                           datasetorder=room.dataset.order_by(LiveTVRoomData.since_date.desc()),
+                           yesterday_dataset=(json.dumps(yesdatex), json.dumps(yesnumy)),
                            popularity_dataset=(json.dumps(popdatex), json.dumps(popnumy)),
                            follower_dataset=(json.dumps(followdatex), json.dumps(follownumy)))
 
 
-def _dataset_split_time(datalist, times, days=0, seconds=0, hours=0, minutes=0,
-                        weeks=0, microseconds=0, milliseconds=0, fix_miss=True):
-    datetd = timedelta(days=days, seconds=seconds, microseconds=microseconds,
-                       milliseconds=milliseconds, minutes=minutes, hours=hours,
-                       weeks=weeks)
-    dateutc = datetime.utcnow()
-    dateutc_old = dateutc - datetd
+def format_chart_split(datalist, times, hours=0, days=0):
+    datetd = timedelta(days=days, hours=hours)
+    dateutc = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
+    dateutc_split = dateutc - datetd
     datasplitlist = []
     while times > 0:
         datafound = False
         for index, data in enumerate(datalist):
-            if data[0] > dateutc_old:
+            if data[0] > dateutc_split:
                 datasplitlist.insert(0, (dateutc, [datasplit[1] for datasplit in datalist[index:]]))
                 datalist = datalist[:index]
                 datafound = True
                 break
-        if fix_miss and not datafound:
+        if not datafound:
             datasplitlist.insert(0, (dateutc, [0]))
-        dateutc, dateutc_old = dateutc_old, dateutc_old - datetd
+        dateutc, dateutc_split = dateutc_split, dateutc_split - datetd
         times -= 1
     return [(datasplit[0], int(sum(datasplit[1]) / len(datasplit[1]))) for datasplit in datasplitlist]
 

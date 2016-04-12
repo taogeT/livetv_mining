@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 
 from . import db
 
@@ -94,19 +94,27 @@ class LiveTVRoom(db.Model):
     channel_id = db.Column(db.Integer, db.ForeignKey('livetv_channel.id'))
     dataset = db.relationship('LiveTVRoomData', backref='room', lazy='dynamic')
 
-    def _dataset_filter(self, days=0, seconds=0, microseconds=0, hours=0,
-                        milliseconds=0, minutes=0, weeks=0):
-        dateutc_older = datetime.utcnow() - timedelta(days=days, seconds=seconds,
-                            microseconds=microseconds, milliseconds=milliseconds,
-                            minutes=minutes, hours=hours, weeks=weeks)
-        return self.dataset.filter(LiveTVRoomData.since_date > dateutc_older) \
-                           .order_by(LiveTVRoomData.since_date.asc())
+    def _dataset_filter(self, days=0, weeks=0):
+        todaytime = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
+        yesterdaytime = todaytime - timedelta(days=days, weeks=weeks)
+        return self.dataset.order_by(LiveTVRoomData.since_date.asc()) \
+                           .filter(LiveTVRoomData.since_date >= yesterdaytime) \
+                           .filter(LiveTVRoomData.since_date < todaytime)
+
+    @property
+    def dataset_yesterday(self):
+        ''' 昨日人气数据 '''
+        datasetlist = []
+        for roomdata in self._dataset_filter(days=1):
+            if isinstance(roomdata.popularity, int):
+                datasetlist.append((roomdata.since_date, roomdata.popularity))
+        return datasetlist
 
     @property
     def dataset_popularity(self):
-        ''' 24小时内人气数据 '''
+        ''' 一周内人气数据 '''
         datasetlist = []
-        for roomdata in self._dataset_filter(days=1):
+        for roomdata in self._dataset_filter(weeks=1):
             if isinstance(roomdata.popularity, int):
                 datasetlist.append((roomdata.since_date, roomdata.popularity))
         return datasetlist
