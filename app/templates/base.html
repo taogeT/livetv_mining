@@ -2,8 +2,8 @@
 
 {% block metas %}
 {{ super() }}
-<meta name="keywords" content="直播,直播网站,直播网站排名,数据挖掘,爬虫,数据分析,Python">
-<meta name="description" content="爬虫收集直播网站房间实时数据，提供图表显示和分析">
+<meta name="keywords" content="直播,直播排名,爬虫,Python,Selenium,数据挖掘">
+<meta name="description" content="爬虫收集直播网站实时数据，提供图表显示和分析">
 <meta name="author" content="https://github.com/taogeT">
 {% endblock%}
 
@@ -15,7 +15,7 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 {% endblock%}
 
-{% block title %}直播平台爬虫_数据实时收集展示{% endblock %}
+{% block title %}Tao蜘蛛-直播平台爬虫{% endblock %}
 
 {% block navbar %}
 <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -27,7 +27,7 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="/">LiveTV Mining</a>
+      <a class="navbar-brand" href="/">Tao蜘蛛</a>
     </div>
     <div class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
@@ -53,7 +53,7 @@
 </div>
 <footer class="footer">
   <div class="container">
-    <p>LiveTV Mining 是通过爬虫收集直播网站频道、房间等数据，并进行图表制作和数据分析。由作者 <a href="{{url_for('main.about')}}">taogeT</a> 独立设计开发完成。</p>
+    <p>Tao蜘蛛 爬虫收集直播网站频道、房间等数据，并进行图表制作和数据分析。由作者 <a href="{{url_for('main.about')}}">taogeT</a> 独立开发完成。</p>
     <p>源代码受 <a rel="license" href="https://github.com/taogeT/livetv_mining/blob/master/LICENSE" target="_blank">GPL</a> 开源协议保护，地址 <a href="https://github.com/taogeT/livetv_mining">GitHub 仓库</a>。开发过程在线直播: <a href="http://www.douyu.com/557520">直播地址</a>。</p>
   </div>
 </footer>
