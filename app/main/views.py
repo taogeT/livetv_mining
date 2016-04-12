@@ -65,7 +65,11 @@ def room(room_id):
         followdate = followdate.replace(tzinfo=pytz_utc).astimezone(dsttz)
         followdatex.append(followdate.strftime('%m/%d'))
         follownumy.append(follownum)
-    return render_template('room.html', room=room,
+    currdate = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
+    currday = currdate.strftime('%m.%d')
+    yesterdate = currdate - timedelta(days=1)
+    yesterday = yesterdate.strftime('%m.%d')
+    return render_template('room.html', room=room, daytext=(yesterday, currday),
                            yesterday_dataset=(json.dumps(yesdatex), json.dumps(yesnumy)),
                            popularity_dataset=(json.dumps(popdatex), json.dumps(popnumy)),
                            follower_dataset=(json.dumps(followdatex), json.dumps(follownumy)))
