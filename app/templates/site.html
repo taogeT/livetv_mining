@@ -21,9 +21,9 @@
   {% include "_channels.html" %}
 </div>
 {% if pagination %}
-<div class="pagination">
-{% import "_macros.html" as macros %}
-{{ macros.pagination_widget(pagination, 'main.site', site_id=site.id) }}
+<div style="text-align: center">
+{% import "bootstrap/pagination.html" as macros %}
+{{ macros.render_pagination(pagination, endpoint='main.site', args={'site_id': site.id}) }}
 </div>
 {% endif %}
 {% endblock %}
