@@ -34,7 +34,9 @@ def crawl_channel(site_url, inner_func):
 
 def crawl_room(site_url, inner_func, channel_url=None):
     site = LiveTVSite.query.filter_by(url=site_url, valid=True).one()
-    channels = site.channels.filter_by(url=channel_url).all() if channel_url else site.channels.all()
+    channels = site.channels.filter_by(valid=True)
+    if channel_url:
+        channels = channels.filter_by(url=channel_url)
     while len(channels) > 0:
         channel = channels.pop(0)
         if not inner_func(channel):

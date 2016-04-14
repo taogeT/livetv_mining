@@ -25,6 +25,7 @@ def crawl_channel_inner(site):
         except TimeoutException:
             current_app.logger.error('调用接口失败: 等待读取频道内容失败')
             return False
+        site.channels.update({'valid': False})
         for channel_a_element in dirul.find_elements_by_xpath('./li/div/a'):
             p_element = channel_a_element.find_element_by_xpath('./p')
             img_element = channel_a_element.find_element_by_xpath('./img')
@@ -40,6 +41,7 @@ def crawl_channel_inner(site):
             channel.name = channel_name
             channel.image_url = img_element.get_attribute('src')
             channel.icon_url = img_element.get_attribute('src')
+            channel.valid = True
             db.session.add(channel)
         site.last_crawl_date = datetime.utcnow()
         db.session.add(site)

@@ -30,6 +30,7 @@ def crawl_channel_inner(site):
         if respjson['error'] != 0:
             current_app.logger.error('调用接口失败:{}'.format(respjson['data']))
             return False
+        site.channels.update({'valid': False})
         for channel_json in respjson['data']:
             channel = LiveTVChannel.query.filter_by(url=channel_json['game_url']).one_or_none()
             if not channel:
@@ -43,6 +44,7 @@ def crawl_channel_inner(site):
             channel.short_name = channel_json['short_name']
             channel.image_url = channel_json['game_src']
             channel.icon_url = channel_json['game_icon']
+            channel.valid = True
             db.session.add(channel)
         site.last_crawl_date = datetime.utcnow()
         db.session.add(site)

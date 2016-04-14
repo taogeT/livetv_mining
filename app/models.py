@@ -25,13 +25,14 @@ class LiveTVSite(db.Model):
     @property
     def channeltop(self):
         ''' 全站频道排序，目前以房间数目排序 '''
-        return self.channels.order_by(LiveTVChannel.roomcount.desc()).limit(self.TOP_NUM)
+        return self.channels.filter_by(valid=True).order_by(LiveTVChannel.roomcount.desc()).limit(self.TOP_NUM)
 
     @property
     def roomtop(self):
         ''' 全站房间排序，目前以人气排序 '''
         return LiveTVRoom.query.join(LiveTVChannel).join(LiveTVSite) \
                          .filter(LiveTVSite.id == self.id) \
+                         .filter(LiveTVChannel.valid == True) \
                          .filter(LiveTVRoom.last_active == True) \
                          .order_by(LiveTVRoom.popularity.desc()).limit(self.TOP_NUM)
 
@@ -50,6 +51,7 @@ class LiveTVChannel(db.Model):
     last_crawl_date = db.Column(db.DateTime, index=True, doc='最近一次扫描时间')
     range = db.Column(db.Integer, index=True, default=0, doc='房间增减幅度')
     roomcount = db.Column(db.Integer, index=True, default=0, doc='活动房间总数')
+    valid = db.Column(db.Boolean, default=True, doc='有效')
 
     site_id = db.Column(db.Integer, db.ForeignKey('livetv_site.id'))
     rooms = db.relationship('LiveTVRoom', backref='channel', lazy='dynamic')

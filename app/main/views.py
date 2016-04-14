@@ -23,7 +23,7 @@ def site(site_id):
     ''' 网站详细&频道列表 '''
     site = LiveTVSite.query.get_or_404(site_id)
     page = request.args.get('page', 1, type=int)
-    pagination = site.channels.order_by(LiveTVChannel.roomcount.desc()).paginate(
+    pagination = site.channels.filter_by(valid=True).order_by(LiveTVChannel.roomcount.desc()).paginate(
             page=page,  error_out=False,
             per_page=current_app.config['FLASKY_CHANNELS_PER_PAGE'])
     channels = pagination.items
@@ -100,7 +100,7 @@ def search():
     ''' 导航栏搜索 '''
     page = request.args.get('page', 1, type=int)
     form = SearchRoomForm()
-    form.site_name.choices = [(site.name, site.displayname) for site in LiveTVSite.query.filter_by(valid=True)]
+    form.site_name.choices = [(site.name, site.displayname) for site in LiveTVSite.query.filter_by(valid=True).order_by(LiveTVSite.order_int.asc())]
     if form.validate_on_submit():
         pagination = LiveTVRoom.query.join(LiveTVChannel).join(LiveTVSite) \
                                .filter(LiveTVSite.name == form.site_name.data) \
