@@ -37,6 +37,7 @@ def crawl_room(site_url, inner_func, channel_url=None):
     channels = site.channels.filter_by(valid=True)
     if channel_url:
         channels = channels.filter_by(url=channel_url)
+    channels = channels.all()
     while len(channels) > 0:
         channel = channels.pop(0)
         if not inner_func(channel):
