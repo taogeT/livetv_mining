@@ -16,10 +16,8 @@
   <div class="row" style="text-align: center;">
     <h4>{{ daytext[0] }} 8点到 {{ daytext[1] }} 8点人气走势</h4>
     <canvas id="yesterdayChart" width="900" height="400"></canvas>
-    <h4>一周内人气值变化</h4>
+    <h4>一周内人气值变化，</h4>
     <canvas id="popularityChart" width="900" height="400"></canvas>
-    <h4>一周内关注变化</h4>
-    <canvas id="followerChart" width="900" height="400"></canvas>
   </div>
 {% endblock %}
 
@@ -56,21 +54,5 @@ var popdata = {
 }
 var popctx = document.getElementById("popularityChart").getContext("2d")
 var popChart = new Chart(popctx).Line(popdata)
-
-var foldata = {
-    labels : {{ follower_dataset[0] | safe }},
-    datasets : [
-        {
-            fillColor : "rgba(151,187,205,0.5)",
-            strokeColor : "rgba(220,220,220,1)",
-            pointColor : "rgba(220,220,220,1)",
-            pointStrokeColor : "#fff",
-            data : {{ follower_dataset[1] }}
-        }
-    ]
-}
-folctx = document.getElementById("followerChart").getContext("2d")
-folChart = new Chart(folctx).Line(foldata)
-
 </script>
 {% endblock %}

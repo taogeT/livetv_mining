@@ -15,7 +15,7 @@ import codecs
 def index():
     ''' 直播网站列表 '''
     sites = [site for site in LiveTVSite.query.filter_by(valid=True).order_by(LiveTVSite.order_int.asc())]
-    return render_template('index.html', sites=sites)
+    return render_template('main/index.html', sites=sites)
 
 
 @main.route('/site/<int:site_id>')
@@ -27,7 +27,7 @@ def site(site_id):
             page=page,  error_out=False,
             per_page=current_app.config['FLASKY_CHANNELS_PER_PAGE'])
     channels = pagination.items
-    return render_template('site.html', channels=channels, pagination=pagination,
+    return render_template('main/site.html', channels=channels, pagination=pagination,
                            title_dict=LiveTVChannel.title(), site=site)
 
 
@@ -41,7 +41,7 @@ def channel(channel_id):
                     page=page,  error_out=False,
                     per_page=current_app.config['FLASKY_ROOMS_PER_PAGE'])
     rooms = pagination.items
-    return render_template('channel.html', channel=channel, rooms=rooms,
+    return render_template('main/channel.html', channel=channel, rooms=rooms,
                            pagination=pagination, title_dict=LiveTVRoom.title())
 
 
@@ -60,19 +60,13 @@ def room(room_id):
         popdate = popdate.replace(tzinfo=pytz_utc).astimezone(dsttz)
         popdatex.append(popdate.strftime('%m/%d'))
         popnumy.append(popnum)
-    followdatex, follownumy = [], []
-    for followdate, follownum in format_chart_split(room.dataset_follower, times=7, days=1):
-        followdate = followdate.replace(tzinfo=pytz_utc).astimezone(dsttz)
-        followdatex.append(followdate.strftime('%m/%d'))
-        follownumy.append(follownum)
     currdate = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
     currday = currdate.strftime('%m.%d')
     yesterdate = currdate - timedelta(days=1)
     yesterday = yesterdate.strftime('%m.%d')
-    return render_template('room.html', room=room, daytext=(yesterday, currday),
+    return render_template('main/room.html', room=room, daytext=(yesterday, currday),
                            yesterday_dataset=(json.dumps(yesdatex), json.dumps(yesnumy)),
-                           popularity_dataset=(json.dumps(popdatex), json.dumps(popnumy)),
-                           follower_dataset=(json.dumps(followdatex), json.dumps(follownumy)))
+                           popularity_dataset=(json.dumps(popdatex), json.dumps(popnumy)))
 
 
 def format_chart_split(datalist, times, hours=0, days=0):
@@ -116,7 +110,7 @@ def search():
         return render_template('search.html', rooms=rooms, form=form,
                                pagination=pagination, title_dict=LiveTVRoom.title(),
                                over_query_count=len(rooms) > current_app.config['FLASKY_SEARCH_PER_PAGE'])
-    return render_template('search.html', form=form, rooms=[], pagination=None,
+    return render_template('main/search.html', form=form, rooms=[], pagination=None,
                            title_dict=LiveTVRoom.title(), over_query_count=False)
 
 
