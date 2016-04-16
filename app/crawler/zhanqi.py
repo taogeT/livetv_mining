@@ -1,14 +1,18 @@
 # -*- coding: UTF-8 -*-
 from flask import current_app
 from selenium.webdriver.support.ui import WebDriverWait
-from selenium.common.exceptions import NoSuchElementException, TimeoutException
+from selenium.common.exceptions import TimeoutException
 from datetime import datetime
 
 from .. import db
-from ..models import LiveTVChannel, LiveTVRoom, LiveTVChannelData, LiveTVRoomData
+from ..models import LiveTVChannel, LiveTVRoom
+from ..models.crawler import LiveTVChannelData, LiveTVRoomData
 from . import get_webdriver_client
 
 import json
+import re
+
+ROOM_API = 'http://www.zhanqi.tv/api/static/game.lives/{}/{}-{}.json'
 
 
 def crawl_channel_inner(site):
@@ -57,68 +61,70 @@ def crawl_room_inner(channel):
     current_app.logger.info('开始扫描频道{}: {}'.format(channel.name, channel.url))
     webdriver_client = get_webdriver_client()
     try:
-        try:
-            webdriver_client.get(channel.url)
-        except TimeoutException:
-            current_app.logger.error('调用接口失败: 内容获取失败')
-            return False
-        try:
-            webdriver_client.find_element_by_xpath('//p[@class=\'no-videoList-title\']')
-            return True
-        except NoSuchElementException:
-            pass
-        try:
-            div_element = webdriver_client.find_element_by_xpath('//div[contains(@class, \'tabc\') and contains(@class, \'active\')]')
-            gameid = div_element.get_attribute('data-id')
-            cnt = div_element.get_attribute('data-cnt')
-            if not gameid and not cnt:
-                raise NoSuchElementException('normal tab')
-        except NoSuchElementException:
+        if not channel.officeid:
+            try:
+                webdriver_client.get(channel.url)
+            except TimeoutException:
+                current_app.logger.error('调用接口失败: 内容获取失败')
+                return False
             for script in webdriver_client.find_elements_by_tag_name('script'):
                 if 'window.gameId' in script.get_attribute('innerHTML'):
                     for script_row in script.get_attribute('innerHTML').split('\n'):
                         if 'window.gameId' in script_row:
                             gameid = script_row[script_row.find('=')+1:script_row.find(';')].strip()
-                        elif 'cnt' in script_row:
-                            lastindex = script_row.rfind(',') if script_row.find('//') < 0 else script_row.find('//')
-                            cnt = script_row[script_row.find(':')+1:lastindex].strip()
-        if 'gameid' not in dir() or 'cnt' not in dir():
-            current_app.logger.error('获取房间信息解析失败，找不到gameid & cnt，重试...')
-            return False
-        webdriver_client.get('{}/api/static/game.lives/{}/{}-1.json'.format(channel.site.url, gameid, cnt))
-        room_live_json = webdriver_client.find_element_by_tag_name('body').get_attribute('innerHTML')
-        if '系统错误' in room_live_json:
-            current_app.logger.error('获取房间信息解析失败，重试')
-            return False
-        try:
-            room_live_json = json.loads(room_live_json)
-        except ValueError:
-            current_app.logger.error('获取房间信息解析失败，{}'.format(room_live_json))
-            return True
-        room_crawl_results = room_live_json['data']['rooms']
-        # 遍历房间，更新数据库
-        for room_crawl_result in room_crawl_results:
-            room = LiveTVRoom.query.filter_by(officeid=room_crawl_result['code']).one_or_none()
-            if not room:
-                room = LiveTVRoom(officeid=room_crawl_result['code'])
-                current_app.logger.info('新增房间 {}:{}'.format(room_crawl_result['code'], room_crawl_result['title']))
+            if 'gameid' not in dir() or not gameid:
+                div_element = webdriver_client.find_element_by_xpath('//div[contains(@class, \'tabc\') and contains(@class, \'active\')]')
+                gameid = div_element.get_attribute('data-id')
+            if gameid:
+                channel.officeid = gameid
             else:
-                current_app.logger.info('更新房间 {}:{}'.format(room_crawl_result['code'], room_crawl_result['title']))
-            room.channel = channel
-            room.name = room_crawl_result['title']
-            room.url = channel.site.url + room_crawl_result['url']
-            room.boardcaster = room_crawl_result['nickname']
-            room.popularity = int(room_crawl_result['online'])
-            if isinstance(room_crawl_result['follows'], bool) or not isinstance(room_crawl_result['follows'], int):
-                room.follower = 0
+                current_app.logger.error('获取房间信息解析失败，找不到gameid，重试...')
+                return False
+        crawl_pageno, crawl_pagenum = 1, 100
+        crawl_room_count = 0
+        while True:
+            webdriver_client.get(ROOM_API.format(channel.officeid, crawl_pagenum, crawl_pageno))
+            room_live_json = webdriver_client.find_element_by_tag_name('body').get_attribute('innerHTML')
+            if '系统错误' in room_live_json:
+                current_app.logger.error('获取房间信息失败，重试')
+                return False
+            try:
+                room_live_json = re.sub('\"title\":\"([^\"]*)\"([^\",]*)",',
+                                        lambda x: '"title":"{}",'.format(x.group(0)[9:-1].replace('"', '')),
+                                        room_live_json)
+                room_live_json = json.loads(room_live_json)
+            except ValueError:
+                current_app.logger.error('获取房间信息解析json.loads失败, {}'.format(room_live_json))
+                return False
+            room_crawl_results = room_live_json['data']['rooms']
+            # 遍历房间，更新数据库
+            for room_crawl_result in room_crawl_results:
+                room = LiveTVRoom.query.filter_by(officeid=room_crawl_result['code']).one_or_none()
+                if not room:
+                    room = LiveTVRoom(officeid=room_crawl_result['code'])
+                    current_app.logger.info('新增房间 {}:{}'.format(room_crawl_result['code'], room_crawl_result['title']))
+                else:
+                    current_app.logger.info('更新房间 {}:{}'.format(room_crawl_result['code'], room_crawl_result['title']))
+                room.channel = channel
+                room.name = room_crawl_result['title']
+                room.url = channel.site.url + room_crawl_result['url']
+                room.boardcaster = room_crawl_result['nickname']
+                room.popularity = int(room_crawl_result['online'])
+                if isinstance(room_crawl_result['follows'], bool) or not isinstance(room_crawl_result['follows'], int):
+                    room.follower = 0
+                else:
+                    room.follower = room_crawl_result['follows']
+                room.last_active = True
+                room.last_crawl_date = datetime.utcnow()
+                room_data = LiveTVRoomData(room=room, popularity=room.popularity, follower=room.follower)
+                db.session.add(room, room_data)
+            crawl_room_count += len(room_crawl_results)
+            if len(room_crawl_results) < crawl_pagenum:
+                break
             else:
-                room.follower = room_crawl_result['follows']
-            room.last_active = True
-            room.last_crawl_date = datetime.utcnow()
-            room_data = LiveTVRoomData(room=room, popularity=room.popularity, follower=room.follower)
-            db.session.add(room, room_data)
-        channel.range = len(room_crawl_results) - channel.roomcount
-        channel.roomcount = len(room_crawl_results)
+                crawl_pageno += 1
+        channel.range = crawl_room_count - channel.roomcount
+        channel.roomcount = crawl_room_count
         channel.last_crawl_date = datetime.utcnow()
         channel_data = LiveTVChannelData(channel=channel, roomcount=channel.roomcount)
         db.session.add(channel, channel_data)

@@ -1,12 +1,12 @@
 # -*- coding: UTF-8 -*-
 from flask import current_app
 from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.remote.command import Command
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from datetime import datetime
 
 from .. import db
-from ..models import LiveTVChannel, LiveTVRoom, LiveTVChannelData, LiveTVRoomData
+from ..models import LiveTVChannel, LiveTVRoom
+from ..models.crawler import LiveTVChannelData, LiveTVRoomData
 from . import get_webdriver_client
 
 import json
@@ -80,7 +80,8 @@ def crawl_room_inner(channel):
             if respjson['errno'] != 0:
                 current_app.logger.error('调用频道接口失败:{}'.format(respjson['data']))
                 return False
-            for room_json in respjson['data']['items']:
+            crawl_room_results = respjson['data']['items']
+            for room_json in crawl_room_results:
                 room = LiveTVRoom.query.filter_by(officeid=room_json['hostid']).one_or_none()
                 if not room:
                     room = LiveTVRoom(officeid=room_json['hostid'])
@@ -92,22 +93,12 @@ def crawl_room_inner(channel):
                 room.url = '{}/{}'.format(channel.site.url, room_json['id'])
                 room.boardcaster = room_json['userinfo']['nickName']
                 room.popularity = room_json['person_num']
-                room_api_url = ROOM_API.format(room_json['id'])
-                try:
-                    webdriver_client.get(room_api_url)
-                except TimeoutException:
-                    current_app.logger.error('调用房间接口失败: 内容获取失败')
-                    return False
-                page_source = webdriver_client.page_source
-                topindex = page_source.find("\"fans\":\"") + len("\"fans\":\"")
-                tailindex = page_source.find("\"", topindex)
-                room.follower = int(page_source[topindex:tailindex])
                 room.last_active = True
                 room.last_crawl_date = datetime.utcnow()
                 room_data = LiveTVRoomData(room=room, popularity=room.popularity, follower=room.follower)
                 db.session.add(room, room_data)
-            crawl_room_count += len(respjson['data']['items'])
-            if len(respjson['data']['items']) < crawl_pagenum:
+            crawl_room_count += len(crawl_room_results)
+            if len(crawl_room_results) < crawl_pagenum:
                 break
             else:
                 crawl_pageno += 1

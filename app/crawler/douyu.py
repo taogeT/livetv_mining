@@ -4,7 +4,8 @@ from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from datetime import datetime
 
 from .. import db
-from ..models import LiveTVChannel, LiveTVRoom, LiveTVChannelData, LiveTVRoomData
+from ..models import LiveTVChannel, LiveTVRoom
+from ..models.crawler import LiveTVChannelData, LiveTVRoomData
 from . import get_webdriver_client
 
 import json
