@@ -36,9 +36,6 @@
       <ul class="nav navbar-nav">
         <li {% block navbar_li_search %}{% endblock %}><a href="{{ url_for('main.search') }}">搜索</a></li>
       </ul>
-      <ul class="nav navbar-nav">
-        <li {% block navbar_li_log %}{% endblock %}><a href="{{ url_for('crawler.log') }}">爬虫日志</a></li>
-      </ul>
       <ul class="nav navbar-nav navbar-right">
         <li {% block navbar_li_aboutme %}{% endblock %}><a href="{{ url_for('main.about') }}">关于</a></li>
       </ul>

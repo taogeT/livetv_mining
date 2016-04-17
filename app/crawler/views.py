@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-from flask import render_template, current_app, g, jsonify
+from flask import current_app, jsonify
 
 from . import crawler
 
@@ -14,13 +14,6 @@ def _log():
         for crawllogrow in crawllines[0-rowcount:]:
             crawllog += crawllogrow
     return crawllog
-
-
-@crawler.route('/log', methods=['GET'])
-def log():
-    ''' 扫描日志 '''
-    g.celery_interval = current_app.config['CELERY_SUPERVISOR_INTERVAL']
-    return render_template('log.html', crawllog=_log())
 
 
 @crawler.route('/api/log', methods=['GET'])
