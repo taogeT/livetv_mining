@@ -4,7 +4,8 @@ from selenium import webdriver
 from selenium.webdriver.phantomjs.webdriver import DesiredCapabilities
 from functools import reduce
 
-from ..models import LiveTVSite
+from ..models import LiveTVSite, LiveTVChannel, LiveTVRoom
+from ..models.crawler import LiveTVChannelData, LiveTVRoomData
 
 import sys
 import time
@@ -21,64 +22,68 @@ def get_webdriver_client():
     return driver
 
 
-from . import douyu, zhanqi, panda, views
-
-
-def crawl_channel(site_url, inner_func):
-    site = LiveTVSite.query.filter_by(url=site_url, valid=True).one()
-    finished = False
-    while not finished:
-        finished = inner_func(site)
-        time.sleep(5)
-
-
-def crawl_room(site_url, inner_func, channel_url=None):
-    site = LiveTVSite.query.filter_by(url=site_url, valid=True).one()
-    channels = site.channels.filter_by(valid=True)
-    if channel_url:
-        channels = channels.filter_by(url=channel_url)
-    channels = channels.all()
-    while len(channels) > 0:
-        channel = channels.pop(0)
-        if not inner_func(channel):
-            channels.append(channel)
-
-
 class LiveTVCrawler(object):
     ''' 爬虫操作 '''
-    def __init__(self, **kwargs):
-        sites = LiveTVSite.query.filter_by(valid=True)
-        if len(kwargs) > 0:
-            sites = sites.filter_by(**kwargs)
-        self.crawlers = {'channel': [], 'room': []}
-        for site in sites.all():
-            site_module_name = '{}.{}'.format(__name__, site.name)
-            site_module = sys.modules.get(site_module_name)
-            site_param = {'site_url': site.url}
-            if site_module:
-                current_app.logger.info('Module {} found.'.format(site_module_name))
-                crawl_channel_inner = getattr(site_module, 'crawl_channel_inner', None)
-                if crawl_channel_inner:
-                    channel_param = dict(site_param, inner_func=crawl_channel_inner)
-                    self.crawlers['channel'].append((crawl_channel, channel_param))
-                else:
-                    current_app.logger.error('Method crawl_channel does not exist.')
-                crawl_room_inner = getattr(site_module, 'crawl_room_inner', None)
-                if crawl_room_inner:
-                    room_param = dict(site_param, inner_func=crawl_room_inner)
-                    self.crawlers['room'].append((crawl_room, room_param))
-                else:
-                    current_app.logger.error('Method crawl_room does not exist.')
-            else:
-                current_app.logger.error('Module {} does not exist.'.format(site_module_name))
 
-    def channel(self):
+    def channels(self):
         ''' 频道爬虫启动 '''
-        for method, kwargs in self.crawlers['channel']:
-            method(**kwargs)
+        site = self._get_site()
+        max_expires = 3
+        while max_expires > 0:
+            if self._channels(site):
+                break
+            else:
+                max_expires -= 1
 
-    def room(self, channel_url=None):
+    def _get_site(self):
+        ''' 获得站点信息，返回数据对象 Override by subclass '''
+
+    def _channels(self, site):
+        ''' 频道爬虫 Override by subclass '''
+
+    def rooms(self, channel_officeid=None, channel_url=None):
         ''' 房间爬虫启动 '''
-        for method, kwargs in self.crawlers['room']:
-            kwargs = dict(kwargs, channel_url=channel_url)
-            method(**kwargs)
+        channels = []
+        if channel_officeid or channel_url:
+            channel_query = LiveTVChannel.query.filter_by(valid=True)
+            if channel_officeid:
+                channel_query = channel_query.filter_by(officeid=channel_officeid)
+            if channel_url:
+                channel_query = channel_query.filter_by(url=channel_url)
+            channel = channel_query.one_or_none()
+            if channel:
+                channels.append(channel)
+        else:
+            site = self._get_site()
+            channels.extend(site.channels.filter_by(valid=True).all())
+        while len(channels) > 0:
+            channel = channels.pop(0)
+            if not self._rooms(channel):
+                channels.append(channel)
+
+    def _rooms(self, channel):
+        ''' 房间爬虫 Override by subclass '''
+
+    def single_room(self, room_officeid=None, room_url=None):
+        if room_officeid or room_url:
+            room_query = LiveTVRoom.query
+            if room_officeid:
+                room_query = room_query.filter_by(officeid=room_officeid)
+            if room_url:
+                room_query = room_query.filter_by(url=room_url)
+            room = room_query.one_or_none()
+            if room:
+                self._single_room(room)
+
+    def _single_room(self, room):
+        ''' 单房间爬虫 Override by subclass '''
+
+
+from . import views, douyu, panda , zhanqi
+
+config = {
+    'douyu': douyu.DouyuCrawler,
+    'panda': panda.PandaCrawler,
+    'zhanqi': zhanqi.ZhanqiCrawler,
+}
+
