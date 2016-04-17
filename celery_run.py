@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 from app import create_app, celery
-from app.crawler import LiveTVCrawler
+from app.crawler import config
 
 import os
 
@@ -13,10 +13,10 @@ def crawl_timed_task(self, site_name):
     ''' 扫描定时任务 '''
     with app.app_context():
         try:
-            crawler = LiveTVCrawler(name=site_name)
-            # 频道扫描
-            crawler.channel()
-            # 房间扫描
-            crawler.room()
+            crawlerclass = config.get(site_name)
+            if crawlerclass:
+                crawlerinstance = crawlerclass()
+                crawlerinstance.channels()
+                crawlerinstance.rooms()
         except Exception as e:
             raise self.retry(exc=e)

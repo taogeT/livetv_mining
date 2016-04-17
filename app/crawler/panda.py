@@ -144,4 +144,5 @@ class PandaCrawler(LiveTVCrawler):
         room_data = LiveTVRoomData(room=room, popularity=room.popularity,
                                    follower=room.follower, reward=room.reward)
         db.session.add(room, room_data)
+        db.session.commit()
         return True
