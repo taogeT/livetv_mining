@@ -107,7 +107,7 @@ def search():
         pagination = pagination.paginate(page=page,  error_out=False,
                                          per_page=current_app.config['FLASKY_SEARCH_PER_PAGE'] + 1)
         rooms = pagination.items
-        return render_template('search.html', rooms=rooms, form=form,
+        return render_template('main/search.html', rooms=rooms, form=form,
                                pagination=pagination, title_dict=LiveTVRoom.title(),
                                over_query_count=len(rooms) > current_app.config['FLASKY_SEARCH_PER_PAGE'])
     return render_template('main/search.html', form=form, rooms=[], pagination=None,

@@ -1,7 +1,7 @@
 # -*- coding: UTF-8 -*-
 from flask.ext.wtf import Form
 from wtforms import StringField, SubmitField, BooleanField, SelectField
-from wtforms.validators import Required, Length
+from wtforms.validators import Length
 
 
 class SearchRoomForm(Form):
