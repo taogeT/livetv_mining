@@ -43,13 +43,11 @@ class LiveTVCrawler(object):
     def _channels(self, site):
         ''' 频道爬虫 Override by subclass '''
 
-    def rooms(self, channel_officeid=None, channel_url=None):
+    def rooms(self, channel_url=None):
         ''' 房间爬虫启动 '''
         channels = []
-        if channel_officeid or channel_url:
+        if channel_url:
             channel_query = LiveTVChannel.query.filter_by(valid=True)
-            if channel_officeid:
-                channel_query = channel_query.filter_by(officeid=channel_officeid)
             if channel_url:
                 channel_query = channel_query.filter_by(url=channel_url)
             channel = channel_query.one_or_none()
@@ -66,11 +64,9 @@ class LiveTVCrawler(object):
     def _rooms(self, channel):
         ''' 房间爬虫 Override by subclass '''
 
-    def single_room(self, room_officeid=None, room_url=None):
-        if room_officeid or room_url:
+    def single_room(self, room_url=None):
+        if room_url:
             room_query = LiveTVRoom.query
-            if room_officeid:
-                room_query = room_query.filter_by(officeid=room_officeid)
             if room_url:
                 room_query = room_query.filter_by(url=room_url)
             room = room_query.one_or_none()

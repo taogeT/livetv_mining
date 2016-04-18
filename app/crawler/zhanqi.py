@@ -53,7 +53,7 @@ class ZhanqiCrawler(LiveTVCrawler):
                     return False
                 channel_crawl_results = respjson['data']['games']
                 for channel_json in channel_crawl_results:
-                    if not channel_json['url'].startswith('/'):
+                    if channel_json['url'].startswith('/'):
                         channel_json['url'] = site.url + channel_json['url']
                     channel = site.channels.filter_by(officeid=channel_json['id']).one_or_none()
                     if not channel:
@@ -98,12 +98,12 @@ class ZhanqiCrawler(LiveTVCrawler):
                     current_app.logger.error('调用接口失败: 内容获取失败')
                     return False
                 try:
-                    respjson = re.sub('\"title\":\"[^\"]*\"[^(\",)]*\",\"gameId\"',
-                                      lambda x: '"title":"{}","gameId"'.format(x.group(0)[9:-9].replace('"', '')),
+                    respjson = re.sub('\"title\":\"[^\"]*\"[^\",]*[\"]+,',
+                                      lambda x: '"title":"{}",'.format(x.group(0)[9:-1].replace('"', '')),
                                       body_element.get_attribute('innerHTML'))
                     respjson = json.loads(respjson)
                 except ValueError:
-                    current_app.logger.error('获取房间信息解析json.loads失败, {}'.format(room_live_json))
+                    current_app.logger.error('获取房间信息解析json.loads失败, {}'.format(respjson))
                     return False
                 if respjson['code'] != 0:
                     current_app.logger.error('调用接口{}失败: 返回错误结果 {}'.format(requrl, respjson['message']))

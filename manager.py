@@ -5,6 +5,7 @@ from flask.ext.migrate import Migrate, MigrateCommand
 
 from app import create_app, db
 from app.crawler import config
+from celery_run import crawl_channels_task, crawl_rooms_task
 
 import os
 import sys
@@ -16,14 +17,16 @@ migrate = Migrate(app, db)
 
 def make_shell_context():
     from app.models import LiveTVSite
-    return dict(app=app, db=db, LiveTVSite=LiveTVSite)
+    return dict(app=app, db=db, LiveTVSite=LiveTVSite,
+                crawl_channels_task=crawl_channels_task,
+                crawl_rooms_task=crawl_rooms_task)
 
 manager.add_command('shell', Shell(make_context=make_shell_context))
 manager.add_command('db', MigrateCommand)
 
 
 @manager.command
-def crawl(site=None, type=None, channel_url=None, room_url=None):
+def crawl(site=None, type=None, channelurl=None, roomurl=None):
     """ Crawl LiveTV URL."""
     if not type:
         print('At Least Input Crawl Type: --type channel/room')
@@ -42,10 +45,10 @@ def crawl(site=None, type=None, channel_url=None, room_url=None):
             crawlerinstance.channels()
         elif type == 'room':
             print('Start Crawl Site Room...')
-            if room_url:
-                crawlerinstance.single_room(room_url=room_url)
+            if roomurl:
+                crawlerinstance.single_room(room_url=roomurl)
             else:
-                crawlerinstance.rooms(channel_url=channel_url)
+                crawlerinstance.rooms(channel_url=channelurl)
 
 
 if __name__ == '__main__':

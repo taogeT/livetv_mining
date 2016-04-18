@@ -20,7 +20,7 @@ class DouyuCrawler(LiveTVCrawler):
         site = LiveTVSite.query.filter_by(name='douyu').one_or_none()
         if not site:
             site = LiveTVSite(name='douyu', url='http://www.douyu.com',
-                              displayname='斗鱼', valid='true', rder_int=1,
+                              displayname='斗鱼', valid='true', order_int=1,
                               image_url='http://staticlive.douyutv.com/common/douyu/images/logo_zb.png',
                               description='斗鱼-全民直播平台')
             db.session.add(site)
