@@ -12,6 +12,8 @@ import time
 
 crawler = Blueprint('crawler', __name__)
 
+from . import views
+
 
 def get_webdriver_client():
     desiredcap = DesiredCapabilities.PHANTOMJS
@@ -79,11 +81,12 @@ class LiveTVCrawler(object):
         ''' 单房间爬虫 Override by subclass '''
 
 
-from . import views, douyu, panda , zhanqi
+from . import douyu, panda , zhanqi, twitch
 
 config = {
     'douyu': douyu.DouyuCrawler,
     'panda': panda.PandaCrawler,
     'zhanqi': zhanqi.ZhanqiCrawler,
+    #'twitch': twitch.TwitchCrawler,
 }
 
