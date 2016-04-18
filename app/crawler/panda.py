@@ -77,7 +77,7 @@ class PandaCrawler(LiveTVCrawler):
         webdriver_client = get_webdriver_client()
         try:
             while True:
-                requrl = ROOM_LIST_API.format(channel.short_name, str(crawl_pageno), str(crawl_pagenum))
+                requrl = ROOM_LIST_API.format(channel.short_name, crawl_pageno, crawl_pagenum)
                 try:
                     webdriver_client.get(requrl)
                     body_element = webdriver_client.find_element_by_tag_name('body')

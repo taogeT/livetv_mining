@@ -63,6 +63,7 @@ class ZhanqiCrawler(LiveTVCrawler):
                         current_app.logger.info('更新频道 {}:{}'.format(channel_json['name'], channel_json['url']))
                     channel.site = site
                     channel.name = channel_json['name']
+                    channel.url = channel_json['url']
                     channel.short_name = channel_json['gameKey']
                     channel.image_url = channel_json['spic']
                     channel.icon_url = channel_json['icon']

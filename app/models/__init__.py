@@ -42,9 +42,9 @@ class LiveTVChannel(db.Model):
     ''' 频道 '''
     id = db.Column(db.Integer, primary_key=True)
     officeid = db.Column(db.String(128), index=True, doc='官方ID')
-    name = db.Column(db.String(128), index=True, doc='名称')
+    name = db.Column(db.String(1024), index=True, doc='名称')
     short_name = db.Column(db.String(128), index=True, doc='简称')
-    url = db.Column(db.String(1024), unique=True, index=True, doc='官网地址')
+    url = db.Column(db.String(1024), index=True, doc='官网地址')
     image_url = db.Column(db.String(1024), doc='图片')
     icon_url = db.Column(db.String(1024), doc='图标')
     since_date = db.Column(db.DateTime, default=datetime.utcnow, doc='新增时间')
@@ -69,8 +69,8 @@ class LiveTVRoom(db.Model):
     __tablename__ = 'livetv_room'
     ''' 房间 '''
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(128), index=True, doc='名称')
-    url = db.Column(db.String(512), index=True, doc='访问URL')
+    name = db.Column(db.String(1024), index=True, doc='名称')
+    url = db.Column(db.String(1024), index=True, doc='访问URL')
     since_date = db.Column(db.DateTime, default=datetime.utcnow, doc='新增日期')
     popularity = db.Column(db.Integer, default=0, index=True, doc='人气/观众')
     reward = db.Column(db.Integer, default=0, index=True, doc='酬劳')

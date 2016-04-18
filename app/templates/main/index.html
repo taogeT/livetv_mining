@@ -39,16 +39,16 @@
       <table class="table">
         <thead>
           <tr>
-            <th>排名</th>
+            <th width="50">排名</th>
             <th>频道</th>
-            <th>房间数</th>
-            <th>房间增幅</th>
+            <th width="70">房间数</th>
+            <th width="50">增幅</th>
           </tr>
         </thead>
         <tbody>
           {% for channel in site.channeltop %}
           <tr>
-            <td>{{ loop.index }}</td>
+            <td align="center">{{ loop.index }}</td>
             <td><a href="{{ url_for('main.channel', channel_id=channel.id) }}">{{ channel.name }}</a></td>
             <td>{{ channel.roomcount }}</td>
             <td>
