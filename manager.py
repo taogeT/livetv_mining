@@ -23,7 +23,7 @@ manager.add_command('db', MigrateCommand)
 
 
 @manager.command
-def crawl(site=None, type=None, channel_url=None):
+def crawl(site=None, type=None, channel_url=None, room_url=None):
     """ Crawl LiveTV URL."""
     if not type:
         print('At Least Input Crawl Type: --type channel/room')
@@ -42,7 +42,10 @@ def crawl(site=None, type=None, channel_url=None):
             crawlerinstance.channels()
         elif type == 'room':
             print('Start Crawl Site Room...')
-            crawlerinstance.rooms(channel_url=channel_url)
+            if room_url:
+                crawlerinstance.single_room(room_url=room_url)
+            else:
+                crawlerinstance.rooms(channel_url=channel_url)
 
 
 if __name__ == '__main__':
