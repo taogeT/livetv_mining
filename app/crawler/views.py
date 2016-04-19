@@ -18,4 +18,4 @@ def _log():
 
 @crawler.route('/api/log', methods=['GET'])
 def api_log():
-    return jsonify({'log': _log()})
+    return jsonify({'log': _log().encode('latin-1').decode('unicode_escape')})
