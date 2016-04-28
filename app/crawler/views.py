@@ -11,11 +11,11 @@ def _log():
     crawllog = ''
     with codecs.open(current_app.config['CELERY_SUPERVISOR_LOGFILE'], 'r', encoding='utf-8') as crawllogfile:
         crawllines = crawllogfile.readlines()
-        for crawllogrow in crawllines[0-rowcount:]:
+        for crawllogrow in crawllines[0 - rowcount:]:
             crawllog += crawllogrow
     return crawllog
 
 
 @crawler.route('/api/log', methods=['GET'])
 def api_log():
-    return jsonify({'log': _log().encode('latin-1').decode('unicode_escape')})
+    return jsonify({'log': _log()})
