@@ -14,10 +14,19 @@ crawler = Blueprint('crawler', __name__)
 
 from . import views
 
+request_headers = {
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+    'Accept-Encoding': 'gzip, deflate, sdch',
+    'Accept-Language': 'zh-CN,zh;q=0.8,en-US;q=0.6,en;q=0.4,ja;q=0.2',
+    'Connection': 'keep-alive',
+    'Host': 'www.zhanqi.tv',
+    'Upgrade-Insecure-Requests': 1,
+    'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.87 Safari/537.36',
+}
+
 
 def get_webdriver_client():
     desiredcap = DesiredCapabilities.PHANTOMJS
-    desiredcap['phantomjs.page.settings.userAgent'] = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.87 Safari/537.36'
     command_line_args = ['--disk-cache=true', '--load-images=false']
     driver = webdriver.PhantomJS(desired_capabilities=desiredcap, service_args=command_line_args)
     driver.set_page_load_timeout(30)
@@ -77,7 +86,7 @@ class LiveTVCrawler(object):
         ''' 单房间爬虫 Override by subclass '''
 
 
-from . import douyu, panda , zhanqi, twitch
+from . import douyu, panda, zhanqi, twitch
 
 config = {
     'douyu': douyu.DouyuCrawler,
