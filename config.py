@@ -23,35 +23,20 @@ class Config(object):
     CELERY_SUPERVISOR_ROWCOUNT = 80
     CELERY_SUPERVISOR_INTERVAL = 30
     CELERYBEAT_SCHEDULE = {
-        'crawl-douyu-channels': {
+        'crawl-douyu': {
             'task': 'celery_run.crawl_task',
             'schedule': timedelta(minutes=CELERY_SUPERVISOR_INTERVAL),
-            'kwargs': {'site_name': 'douyu', 'crawl_type': 'channel'}
+            'kwargs': {'site_name': 'douyu'}
         },
-        'crawl-douyu-rooms': {
+        'crawl-panda': {
             'task': 'celery_run.crawl_task',
             'schedule': timedelta(minutes=CELERY_SUPERVISOR_INTERVAL),
-            'kwargs': {'site_name': 'douyu', 'crawl_type': 'room'}
+            'kwargs': {'site_name': 'panda'}
         },
-        'crawl-panda-channels': {
+        'crawl-zhanqi': {
             'task': 'celery_run.crawl_task',
             'schedule': timedelta(minutes=CELERY_SUPERVISOR_INTERVAL),
-            'kwargs': {'site_name': 'panda', 'crawl_type': 'channel'}
-        },
-        'crawl-panda-rooms': {
-            'task': 'celery_run.crawl_task',
-            'schedule': timedelta(minutes=CELERY_SUPERVISOR_INTERVAL),
-            'kwargs': {'site_name': 'panda', 'crawl_type': 'room'}
-        },
-        'crawl-zhanqi-channels': {
-            'task': 'celery_run.crawl_task',
-            'schedule': timedelta(minutes=CELERY_SUPERVISOR_INTERVAL),
-            'kwargs': {'site_name': 'zhanqi', 'crawl_type': 'channel'}
-        },
-        'crawl-zhanqi-rooms': {
-            'task': 'celery_run.crawl_task',
-            'schedule': timedelta(minutes=CELERY_SUPERVISOR_INTERVAL),
-            'kwargs': {'site_name': 'zhanqi', 'crawl_type': 'room'}
+            'kwargs': {'site_name': 'zhanqi'}
         }
     }
 
