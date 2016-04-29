@@ -4,10 +4,11 @@ from datetime import datetime, timedelta, date
 from .. import db
 from .crawler import LiveTVChannelData, LiveTVRoomData
 
+TOP_NUM = 10
+
 
 class LiveTVSite(db.Model):
     __tablename__ = 'livetv_site'
-    TOP_NUM = 10
     ''' 直播网站 '''
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(128), unique=True, index=True, doc='名称')
@@ -22,19 +23,18 @@ class LiveTVSite(db.Model):
 
     channels = db.relationship('LiveTVChannel', backref='site', lazy='dynamic')
 
-    @property
-    def channeltop(self):
+    def channeltop(self, topnum=TOP_NUM):
         ''' 全站频道排序，目前以房间数目排序 '''
-        return self.channels.filter_by(valid=True).order_by(LiveTVChannel.roomcount.desc()).limit(self.TOP_NUM)
+        return self.channels.filter_by(valid=True) \
+                            .order_by(LiveTVChannel.roomcount.desc()).limit(topnum)
 
-    @property
-    def roomtop(self):
+    def roomtop(self, topnum=TOP_NUM):
         ''' 全站房间排序，目前以人气排序 '''
         return LiveTVRoom.query.join(LiveTVChannel).join(LiveTVSite) \
                          .filter(LiveTVSite.id == self.id) \
                          .filter(LiveTVChannel.valid == True) \
                          .filter(LiveTVRoom.last_active == True) \
-                         .order_by(LiveTVRoom.popularity.desc()).limit(self.TOP_NUM)
+                         .order_by(LiveTVRoom.popularity.desc()).limit(topnum)
 
 
 class LiveTVChannel(db.Model):
@@ -63,6 +63,11 @@ class LiveTVChannel(db.Model):
                 'image_url': cls.image_url.doc, 'range': cls.range.doc,
                 'last_crawl_date': cls.last_crawl_date.doc,
                 'roomcount': cls.roomcount.doc}
+
+    def roomtop(self, topnum=TOP_NUM):
+        ''' 全站房间排序，目前以人气排序 '''
+        return self.rooms.filter_by(last_active=True) \
+                         .order_by(LiveTVRoom.popularity.desc()).limit(topnum)
 
 
 class LiveTVRoom(db.Model):

@@ -17,9 +17,9 @@
     </tbody>
   </table>
 </div>
-<div class="channel-tabs">
-  {% include "_channels.html" %}
-</div>
+{% import "_rank.html" as macros_rank %}
+{{ macros_rank.rank_area(roomtop=site.roomtop(), channeltop=site.channeltop()) }}
+{% include "_channels.html" %}
 {% if pagination %}
 <div style="text-align: center">
 {% import "bootstrap/pagination.html" as macros %}

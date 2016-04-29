@@ -8,61 +8,7 @@
     <h1><img src="{{ site.image_url }}" /></h1>
     <p class="lead">{{ site.description }}  <a href="{{ url_for('main.site', site_id=site.id) }}">更多内容</a></p>
   </div>
-  <div class="row">
-    <div class="col-lg-8">
-      <h2>房间人气 TOP{{ site.roomtop.count() }}</h2>
-      <table class="table">
-        <thead>
-          <tr>
-            <th>排名</th>
-            <th>房间名</th>
-            <th>主播</th>
-            <th>频道</th>
-            <th>人气</th>
-          </tr>
-        </thead>
-        <tbody>
-        {% for room in site.roomtop %}
-          <tr>
-            <td>{{ loop.index }}</td>
-            <td><a href="{{ url_for('main.room', room_id=room.id) }}">{{ room.name }}</a></td>
-            <td>{{ room.boardcaster }}</td>
-            <td><a href="{{ url_for('main.channel', channel_id=room.channel.id) }}">{{ room.channel.name }}</a></td>
-            <td>{{ room.popularity }}</td>
-          </tr>
-        {% endfor %}
-        </tbody>
-      </table>
-    </div>
-    <div class="col-lg-4">
-      <h2>频道房间数 TOP{{ site.channeltop.count() }}</h2>
-      <table class="table">
-        <thead>
-          <tr>
-            <th width="50">排名</th>
-            <th>频道</th>
-            <th width="70">房间数</th>
-            <th width="50">增幅</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for channel in site.channeltop %}
-          <tr>
-            <td align="center">{{ loop.index }}</td>
-            <td><a href="{{ url_for('main.channel', channel_id=channel.id) }}">{{ channel.name }}</a></td>
-            <td>{{ channel.roomcount }}</td>
-            <td>
-            {% if channel.range > 0 %}
-              <span class="glyphicon glyphicon-arrow-up" aria-hidden="true">{{ channel.range }}</span>
-            {% else %}
-              <span class="glyphicon glyphicon-arrow-down" aria-hidden="true">{{ channel.range }}</span>
-            {% endif %}
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-  </div>
+  {% import "_rank.html" as macros_rank %}
+  {{ macros_rank.rank_area(roomtop=site.roomtop(), channeltop=site.channeltop()) }}
 {% endfor %}
 {% endblock %}

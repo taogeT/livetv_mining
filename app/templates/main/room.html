@@ -10,7 +10,6 @@
       频道：<a href="{{ url_for('main.channel', channel_id=room.channel.id) }}">{{ room.channel.name }}</a>&nbsp;&nbsp;
       更新时间：{{ moment(room.last_crawl_date).format('YYYY-MM-DD HH:mm:ss') }}&nbsp;&nbsp;
       人气：{{ room.popularity }}&nbsp;&nbsp;
-      关注：{{ room.follower }}&nbsp;&nbsp;
     </h4>
   </div>
   <div class="row" style="text-align: center;">

@@ -12,7 +12,7 @@ import copy
 
 CHANNEL_API = 'http://www.panda.tv/cate'
 ROOM_LIST_API = 'http://www.panda.tv/ajax_sort?classification={}&pageno={}&pagenum={}'
-ROOM_API = 'http://api.m.panda.tv/ajax_get_liveroom_baseinfo?roomid={}'
+ROOM_API = 'http://www.panda.tv/api_room?roomid={}'
 panda_headers = copy.deepcopy(request_headers)
 panda_headers['Host'] = 'www.panda.tv'
 
