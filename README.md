@@ -12,6 +12,12 @@
 
 ####历程
 
+* 2016-05-08 supervisord+celery配置错误，未设定优先级(priority)，导致beat无法分发任务到worker。supervisord config 添加priority设置优先级。
+
+* 2016-04-30 完成爬虫重构，部署主机测试。
+
+* 2016-04-28 Selenium+Phantomjs 存在资源无法完全释放的问题(too many files open)，查询未发现较妥善全面解决方式。采用定期重启的方式，同时尝试开发其他方式爬虫。
+
 * 2016-04-18 测试效果不理想，频繁出现未获取全部respone时被访问服务器断开连接(ChunkedEncodingError)，恢复使用Selenium。纠正频道/房间唯一标识，过程导致部分数据作废。修改后台重试机制，可在出错频道继续遍历。
 
 * 2016-04-17 重构爬虫模块，部分使用requests替换phantomjs，提升爬虫效率。部署主机测试。

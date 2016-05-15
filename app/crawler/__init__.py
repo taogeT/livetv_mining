@@ -1,8 +1,5 @@
 # -*- coding: UTF-8 -*-
-from flask import current_app, Blueprint
-from selenium import webdriver
-from selenium.webdriver.phantomjs.webdriver import DesiredCapabilities
-from functools import reduce
+from flask import Blueprint
 
 from ..models import LiveTVSite, LiveTVChannel, LiveTVRoom
 from ..models.crawler import LiveTVChannelData, LiveTVRoomData
@@ -23,14 +20,6 @@ request_headers = {
     'Upgrade-Insecure-Requests': 1,
     'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.87 Safari/537.36',
 }
-
-
-def get_webdriver_client():
-    desiredcap = DesiredCapabilities.PHANTOMJS
-    command_line_args = ['--disk-cache=true', '--load-images=false']
-    driver = webdriver.PhantomJS(desired_capabilities=desiredcap, service_args=command_line_args)
-    driver.set_page_load_timeout(30)
-    return driver
 
 
 class LiveTVCrawler(object):
