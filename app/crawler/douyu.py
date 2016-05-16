@@ -84,7 +84,9 @@ class DouyuCrawler(LiveTVCrawler):
                 current_app.logger.error('调用接口{}失败: 返回错误结果{}'.format(requrl, respjson))
                 return False
             for room_json in respjson['data']:
-                room = channel.rooms.filter_by(officeid=room_json['room_id']).one_or_none()
+                room = LiveTVRoom.query.join(LiveTVChannel) \
+                                 .filter(LiveTVChannel.site_id == channel.site.id) \
+                                 .filter(LiveTVRoom.officeid == room_json['room_id']).one_or_none()
                 if not room:
                     room = LiveTVRoom(officeid=room_json['room_id'])
                     current_app.logger.info('新增房间 {}:{}'.format(room_json['room_id'], room_json['room_name']))

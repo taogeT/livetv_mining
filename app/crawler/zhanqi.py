@@ -102,7 +102,9 @@ class ZhanqiCrawler(LiveTVCrawler):
                 return False
             room_crawl_results = respjson['data']['rooms']
             for room_crawl_result in room_crawl_results:
-                room = channel.rooms.filter_by(officeid=room_crawl_result['id']).one_or_none()
+                room = LiveTVRoom.query.join(LiveTVChannel) \
+                                 .filter(LiveTVChannel.site_id == channel.site.id) \
+                                 .filter(LiveTVRoom.officeid == room_crawl_result['id']).one_or_none()
                 if not room:
                     room = LiveTVRoom(officeid=room_crawl_result['id'])
                     current_app.logger.info('新增房间 {}:{}'.format(room_crawl_result['id'], room_crawl_result['title']))
