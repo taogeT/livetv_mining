@@ -103,7 +103,10 @@ class DouyuCrawler(LiveTVCrawler):
                 db.session.add(room, room_data)
             crawl_room_count += len(respjson['data'])
             if len(respjson['data']) < crawl_limit:
-                break
+                if len(respjson['data']) + 1 == crawl_limit:
+                    crawl_offset += crawl_limit - 1
+                else:
+                    break
             else:
                 crawl_offset += crawl_limit
         channel.range = crawl_room_count - channel.roomcount
