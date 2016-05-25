@@ -13,14 +13,14 @@ import codecs
 
 @main.route('/index')
 def index():
-    ''' 直播网站列表 '''
+    """ 直播网站列表 """
     sites = [site for site in LiveTVSite.query.filter_by(valid=True).order_by(LiveTVSite.order_int.asc())]
     return render_template('main/index.html', sites=sites)
 
 
 @main.route('/site/<int:site_id>')
 def site(site_id):
-    ''' 网站详细&频道列表 '''
+    """ 网站详细&频道列表 """
     site = LiveTVSite.query.get_or_404(site_id)
     page = request.args.get('page', 1, type=int)
     pagination = site.channels.filter_by(valid=True).order_by(LiveTVChannel.roomcount.desc()).paginate(
@@ -33,7 +33,7 @@ def site(site_id):
 
 @main.route('/channel/<int:channel_id>')
 def channel(channel_id):
-    ''' 频道详细&房间列表 '''
+    """ 频道详细&房间列表 """
     channel = LiveTVChannel.query.get_or_404(channel_id)
     page = request.args.get('page', 1, type=int)
     pagination = channel.rooms.filter_by(last_active=True) \
@@ -47,7 +47,7 @@ def channel(channel_id):
 
 @main.route('/room/<int:room_id>')
 def room(room_id):
-    ''' 房间详细 '''
+    """ 房间详细 """
     room = LiveTVRoom.query.get_or_404(room_id)
     dsttz = timezone('Asia/Shanghai')
     yesdatex, yesnumy = [], []
@@ -91,7 +91,7 @@ def format_chart_split(datalist, times, hours=0, days=0):
 
 @main.route('/search', methods=['GET', 'POST'])
 def search():
-    ''' 导航栏搜索 '''
+    """ 导航栏搜索 """
     page = request.args.get('page', 1, type=int)
     form = SearchRoomForm()
     form.site_name.choices = [(site.name, site.displayname) for site in LiveTVSite.query.filter_by(valid=True).order_by(LiveTVSite.order_int.asc())]
@@ -116,7 +116,7 @@ def search():
 
 @main.route('/about')
 def about():
-    ''' 关于 '''
+    """ 关于 """
     with codecs.open('ABOUT.md', 'r', encoding='utf-8') as mdf:
         mdhtml = markdown(mdf.read())
     return render_template('about.html', mdhtml=mdhtml)

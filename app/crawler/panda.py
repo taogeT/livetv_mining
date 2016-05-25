@@ -22,8 +22,7 @@ class PandaCrawler(LiveTVCrawler):
     def _get_site(self):
         site = LiveTVSite.query.filter_by(name='panda').one_or_none()
         if not site:
-            site = LiveTVSite(name='panda', displayname='熊猫', order_int=2,
-                              url='http://www.panda.tv', valid='true',
+            site = LiveTVSite(name='panda', displayname='熊猫', order_int=2, url='http://www.panda.tv', valid='true',
                               image_url='http://i8.pdim.gs/8f40398337db212845d4884b68cc7e8d.png',
                               description='熊猫TV_最娱乐的直播平台')
             db.session.add(site)
@@ -137,8 +136,7 @@ class PandaCrawler(LiveTVCrawler):
         room.reward = int(room_respjson['hostinfo']['bamboos'])
         room.last_active = True
         room.last_crawl_date = datetime.utcnow()
-        room_data = LiveTVRoomData(room=room, popularity=room.popularity,
-                                   follower=room.follower, reward=room.reward)
+        room_data = LiveTVRoomData(room=room, popularity=room.popularity, follower=room.follower, reward=room.reward)
         db.session.add(room, room_data)
         db.session.commit()
         return True

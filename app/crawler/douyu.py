@@ -3,8 +3,7 @@ from flask import current_app
 from datetime import datetime
 
 from .. import db
-from . import LiveTVCrawler, LiveTVSite, LiveTVChannel, LiveTVRoom, \
-              LiveTVChannelData, LiveTVRoomData, request_headers
+from . import LiveTVCrawler, LiveTVSite, LiveTVChannel, LiveTVRoom, LiveTVChannelData, LiveTVRoomData, request_headers
 
 import requests
 import copy
@@ -21,8 +20,7 @@ class DouyuCrawler(LiveTVCrawler):
     def _get_site(self):
         site = LiveTVSite.query.filter_by(name='douyu').one_or_none()
         if not site:
-            site = LiveTVSite(name='douyu', url='http://www.douyu.com',
-                              displayname='斗鱼', valid='true', order_int=1,
+            site = LiveTVSite(name='douyu', url='http://www.douyu.com', displayname='斗鱼', valid='true', order_int=1,
                               image_url='http://staticlive.douyutv.com/common/douyu/images/logo_zb.png',
                               description='斗鱼-全民直播平台')
             db.session.add(site)
@@ -144,8 +142,7 @@ class DouyuCrawler(LiveTVCrawler):
             room.reward = int(owner_weight[:-1])
         room.last_active = True
         room.last_crawl_date = datetime.utcnow()
-        room_data = LiveTVRoomData(room=room, popularity=room.popularity,
-                                   follower=room.follower, reward=room.reward)
+        room_data = LiveTVRoomData(room=room, popularity=room.popularity, follower=room.follower, reward=room.reward)
         db.session.add(room, room_data)
         db.session.commit()
         return True

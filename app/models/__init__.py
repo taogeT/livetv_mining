@@ -9,7 +9,7 @@ TOP_NUM = 10
 
 class LiveTVSite(db.Model):
     __tablename__ = 'livetv_site'
-    ''' 直播网站 '''
+    """ 直播网站 """
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(128), unique=True, index=True, doc='名称')
     displayname = db.Column(db.String(128), index=True, doc='显示名称')
@@ -24,12 +24,12 @@ class LiveTVSite(db.Model):
     channels = db.relationship('LiveTVChannel', backref='site', lazy='dynamic')
 
     def channeltop(self, topnum=TOP_NUM):
-        ''' 全站频道排序，目前以房间数目排序 '''
+        """ 全站频道排序，目前以房间数目排序 """
         return self.channels.filter_by(valid=True) \
                             .order_by(LiveTVChannel.roomcount.desc()).limit(topnum)
 
     def roomtop(self, topnum=TOP_NUM):
-        ''' 全站房间排序，目前以人气排序 '''
+        """ 全站房间排序，目前以人气排序 """
         return LiveTVRoom.query.join(LiveTVChannel).join(LiveTVSite) \
                          .filter(LiveTVSite.id == self.id) \
                          .filter(LiveTVChannel.valid == True) \
@@ -39,7 +39,7 @@ class LiveTVSite(db.Model):
 
 class LiveTVChannel(db.Model):
     __tablename__ = 'livetv_channel'
-    ''' 频道 '''
+    """ 频道 """
     id = db.Column(db.Integer, primary_key=True)
     officeid = db.Column(db.String(128), index=True, doc='官方ID')
     name = db.Column(db.String(1024), index=True, doc='名称')
@@ -65,14 +65,14 @@ class LiveTVChannel(db.Model):
                 'roomcount': cls.roomcount.doc}
 
     def roomtop(self, topnum=TOP_NUM):
-        ''' 全站房间排序，目前以人气排序 '''
+        """ 全站房间排序，目前以人气排序 """
         return self.rooms.filter_by(last_active=True) \
                          .order_by(LiveTVRoom.popularity.desc()).limit(topnum)
 
 
 class LiveTVRoom(db.Model):
     __tablename__ = 'livetv_room'
-    ''' 房间 '''
+    """ 房间 """
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(1024), index=True, doc='名称')
     url = db.Column(db.String(1024), index=True, doc='访问URL')
@@ -98,7 +98,7 @@ class LiveTVRoom(db.Model):
 
     @property
     def dataset_yesterday(self):
-        ''' 昨日人气数据 '''
+        """ 昨日人气数据 """
         datasetlist = []
         for roomdata in self._dataset_filter(days=1):
             if isinstance(roomdata.popularity, int):
@@ -107,7 +107,7 @@ class LiveTVRoom(db.Model):
 
     @property
     def dataset_popularity(self):
-        ''' 一周内人气数据 '''
+        """ 一周内人气数据 """
         datasetlist = []
         for roomdata in self._dataset_filter(weeks=1):
             if isinstance(roomdata.popularity, int):
@@ -116,7 +116,7 @@ class LiveTVRoom(db.Model):
 
     @property
     def dataset_follower(self):
-        ''' 一周内关注数据 '''
+        """ 一周内关注数据 """
         datasetlist = []
         for roomdata in self._dataset_filter(weeks=1):
             if isinstance(roomdata.follower, int):
