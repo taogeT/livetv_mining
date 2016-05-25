@@ -11,7 +11,7 @@ app = create_app(os.getenv('FLASK_CONFIG') or 'default')
 
 @celery.task(bind=True, default_retry_delay=10)
 def crawl_task(self, site_name):
-    ''' 扫描定时任务 '''
+    """ 扫描定时任务 """
     try:
         with app.app_context():
             crawlerclass = config.get(site_name)

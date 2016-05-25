@@ -8,9 +8,9 @@ from . import LiveTVCrawler, LiveTVSite, LiveTVChannel, LiveTVRoom, LiveTVChanne
 import requests
 import copy
 
-CHANNEL_API = 'http://open.douyucdn.cn/api/RoomApi/game'
-ROOM_LIST_API = 'http://open.douyucdn.cn/api/RoomApi/live/{}?offset={}&limit={}'
-ROOM_API = 'http://open.douyucdn.cn/api/RoomApi/room/{}'
+CHANNEL_API = 'http://www.douyu.com/api/RoomApi/game'
+ROOM_LIST_API = 'http://www.douyu.com/api/RoomApi/live/{}?offset={}&limit={}'
+ROOM_API = 'http://www.douyu.com/api/RoomApi/room/{}'
 douyu_headers = copy.deepcopy(request_headers)
 douyu_headers['Host'] = 'open.douyucdn.cn'
 
