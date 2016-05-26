@@ -17,9 +17,9 @@
       {% for room in roomtop %}
         <tr>
           <td>{{ loop.index }}</td>
-          <td><a href="{{ url_for('main.room', room_id=room.id) }}">{{ room.name }}</a></td>
+          <td><a href="{{ url_for('crawler.room', room_id=room.id) }}">{{ room.name }}</a></td>
           <td>{{ room.boardcaster }}</td>
-          <td><a href="{{ url_for('main.channel', channel_id=room.channel.id) }}">{{ room.channel.name }}</a></td>
+          <td><a href="{{ url_for('crawler.channel', channel_id=room.channel.id) }}">{{ room.channel.name }}</a></td>
           <td>{{ room.popularity }}</td>
         </tr>
       {% endfor %}
@@ -43,7 +43,7 @@
         {% for channel in channeltop %}
         <tr>
           <td align="center">{{ loop.index }}</td>
-          <td><a href="{{ url_for('main.channel', channel_id=channel.id) }}">{{ channel.name }}</a></td>
+          <td><a href="{{ url_for('crawler.channel', channel_id=channel.id) }}">{{ channel.name }}</a></td>
           <td>{{ channel.roomcount }}</td>
           <td>
           {% if channel.range > 0 %}

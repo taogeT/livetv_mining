@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "crawler/base.html" %}
 
 {% block navbar_li_home %}class="active"{% endblock %}
 
@@ -17,13 +17,13 @@
     </tbody>
   </table>
 </div>
-{% import "_rank.html" as macros_rank %}
+{% import "crawler/_rank.html" as macros_rank %}
 {{ macros_rank.rank_area(roomtop=site.roomtop(), channeltop=site.channeltop()) }}
 {% include "_channels.html" %}
 {% if pagination %}
 <div style="text-align: center">
 {% import "bootstrap/pagination.html" as macros %}
-{{ macros.render_pagination(pagination, endpoint='main.site', args={'site_id': site.id}) }}
+{{ macros.render_pagination(pagination, endpoint='crawler.site', args={'site_id': site.id}) }}
 </div>
 {% endif %}
 {% endblock %}

@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block metas %}
+{{ super() }}
+<meta name="keywords" content="直播,直播排名,爬虫,Python,Selenium,数据挖掘">
+<meta name="description" content="爬虫收集直播网站实时数据，提供图表显示和分析">
+{% endblock%}
+
+{% block styles_private %}
+<link rel="stylesheet" href="{{ url_for('crawler.static', filename='crawler.css') }}">
+{% endblock%}
+
+{% block title %}Tao蜘蛛-直播平台爬虫{% endblock %}
+
+{% block navbar_content %}
+<div class="navbar-header">
+  <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+    <span class="sr-only">Toggle navigation</span>
+    <span class="icon-bar"></span>
+    <span class="icon-bar"></span>
+    <span class="icon-bar"></span>
+  </button>
+  <a class="navbar-brand" href="{{ url_for('crawler.index') }}">Tao蜘蛛</a>
+</div>
+<div class="navbar-collapse collapse">
+  <ul class="nav navbar-nav">
+    <li {% block navbar_li_home %}{% endblock %}><a href="{{ url_for('crawler.index') }}">首页</a></li>
+  </ul>
+  <ul class="nav navbar-nav">
+    <li {% block navbar_li_search %}{% endblock %}><a href="{{ url_for('crawler.search') }}">搜索</a></li>
+  </ul>
+  <ul class="nav navbar-nav navbar-right">
+    <li><a href="{{ url_for('main.about') }}">关于</a></li>
+  </ul>
+  <ul class="nav navbar-nav navbar-right">
+    <li><a href="{{ url_for('main.index') }}">返回项目主页</a></li>
+  </ul>
+</div>
+{% endblock %}
+
+{% block page_footer %}
+<p>Tao蜘蛛 爬虫收集直播网站频道、房间等数据，并进行图表制作和数据分析。</p>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+{{ moment.include_moment(local_js="//cdn.bootcss.com/moment.js/2.11.2/moment-with-locales.min.js") }}
+{{ moment.lang('zh-cn') }}
+{% endblock %}

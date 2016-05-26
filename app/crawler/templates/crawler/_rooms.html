@@ -14,7 +14,7 @@
     {% for room in rooms %}
       <tr>
         <td>
-          <a href="{{ url_for('main.room', room_id=room.id) }}">{{ room.name | safe }}</a><br>
+          <a href="{{ url_for('crawler.room', room_id=room.id) }}">{{ room.name | safe }}</a><br>
           <a href="{{ room.url }}" target="_blank">访问官网地址</a>
         </td>
         <td>{{ moment(room.last_crawl_date).format('YYYY-MM-DD HH:mm:ss') }}</td>

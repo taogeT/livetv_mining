@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "crawler/base.html" %}
 
 {% block navbar_li_home %}class="active"{% endblock %}
 
@@ -16,11 +16,11 @@
     </tr>
   </tbody>
 </table>
-{% include "_rooms.html" %}
+{% include "crawler/_rooms.html" %}
 {% if pagination %}
 <div style="text-align: center">
 {% import "bootstrap/pagination.html" as macros %}
-{{ macros.render_pagination(pagination, endpoint='main.channel', args={'channel_id': channel.id}) }}
+{{ macros.render_pagination(pagination, endpoint='crawler.channel', args={'channel_id': channel.id}) }}
 </div>
 {% endif %}
 {% endblock %}

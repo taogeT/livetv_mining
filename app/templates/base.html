@@ -2,8 +2,6 @@
 
 {% block metas %}
 {{ super() }}
-<meta name="keywords" content="直播,直播排名,爬虫,Python,Selenium,数据挖掘">
-<meta name="description" content="爬虫收集直播网站实时数据，提供图表显示和分析">
 <meta name="author" content="https://github.com/taogeT">
 {% endblock%}
 
@@ -13,13 +11,15 @@
 <link href="//cdn.bootcss.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
 <link href="//cdn.bootcss.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" rel="stylesheet">
 <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+{% block styles_private %}{% endblock%}
 {% endblock%}
 
-{% block title %}Tao蜘蛛-直播平台爬虫{% endblock %}
+{% block title %}taogeT-个人项目展示{% endblock %}
 
 {% block navbar %}
 <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
+    {% block navbar_content %}
     <div class="navbar-header">
       <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
         <span class="sr-only">Toggle navigation</span>
@@ -27,19 +27,17 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="/">Tao蜘蛛</a>
+      <a class="navbar-brand" href="{{ url_for('main.index') }}">taogeT</a>
     </div>
     <div class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-        <li {% block navbar_li_home %}{% endblock %}><a href="{{ url_for('main.index') }}">首页</a></li>
-      </ul>
-      <ul class="nav navbar-nav">
-        <li {% block navbar_li_search %}{% endblock %}><a href="{{ url_for('main.search') }}">搜索</a></li>
+        <li><a href="{{ url_for('crawler.index') }}">直播爬虫</a></li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li {% block navbar_li_aboutme %}{% endblock %}><a href="{{ url_for('main.about') }}">关于</a></li>
       </ul>
     </div>
+    {% endblock %}
   </div>
 </nav>
 {% endblock %}
@@ -50,8 +48,8 @@
 </div>
 <footer class="footer">
   <div class="container">
-    <p>Tao蜘蛛 爬虫收集直播网站频道、房间等数据，并进行图表制作和数据分析。由作者 <a href="{{url_for('main.about')}}">taogeT</a> 独立开发完成。</p>
-    <p>源代码受 <a rel="license" href="https://github.com/taogeT/livetv_mining/blob/master/LICENSE" target="_blank">GPL</a> 开源协议保护，地址 <a href="https://github.com/taogeT/livetv_mining">GitHub 仓库</a>。开发过程在线直播: <a href="http://www.douyu.com/557520">直播地址</a>。</p>
+    {% block page_footer %}{% endblock %}
+    <p>作者 <a href="{{url_for('main.about')}}">taogeT</a> 独立开发完成，源代码受 <a rel="license" href="https://github.com/taogeT/livetv_mining/blob/master/LICENSE" target="_blank">GPL</a> 开源协议保护，地址 <a href="https://github.com/taogeT/livetv_mining">GitHub 仓库</a>。</p>
   </div>
 </footer>
 {% endblock %}
@@ -59,6 +57,4 @@
 {% block scripts %}
 <script src="//cdn.bootcss.com/jquery/1.12.0/jquery.min.js"></script>
 <script src="//cdn.bootcss.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
-{{ moment.include_moment(local_js="//cdn.bootcss.com/moment.js/2.11.2/moment-with-locales.min.js") }}
-{{ moment.lang('zh-cn') }}
 {% endblock %}

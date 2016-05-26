@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "crawler/base.html" %}
 
 {% import "bootstrap/wtf.html" as wtf%}
 
@@ -9,7 +9,7 @@
 {{ wtf.quick_form(form, form_type='horizontal', horizontal_columns=('lg', 2, 5)) }}
 {% if rooms %}
 <div class="channel-tabs">
-  {% include "_rooms.html" %}
+  {% include "crawler/_rooms.html" %}
 </div>
 {% endif %}
 {% if over_query_count %}

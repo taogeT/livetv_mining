@@ -2,9 +2,7 @@
 from flask import current_app
 from datetime import datetime
 
-from .. import db
-from . import LiveTVCrawler, LiveTVSite, LiveTVChannel, LiveTVRoom, \
-              LiveTVChannelData, LiveTVRoomData
+from . import *
 
 import requests
 

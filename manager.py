@@ -16,9 +16,8 @@ migrate = Migrate(app, db)
 
 
 def make_shell_context():
-    from app.models import LiveTVSite
-    return dict(app=app, db=db, LiveTVSite=LiveTVSite,
-                crawl_task=crawl_task)
+    from app.crawler.models import LiveTVSite
+    return dict(app=app, db=db, LiveTVSite=LiveTVSite, crawl_task=crawl_task)
 
 manager.add_command('shell', Shell(make_context=make_shell_context))
 manager.add_command('db', MigrateCommand)

@@ -3,9 +3,7 @@ from flask import current_app
 from datetime import datetime
 from lxml import etree
 
-from .. import db
-from . import LiveTVCrawler, LiveTVSite, LiveTVChannel, LiveTVRoom, \
-              LiveTVChannelData, LiveTVRoomData, request_headers
+from . import *
 
 import requests
 import copy

@@ -1,14 +1,11 @@
 # -*- coding: UTF-8 -*-
-from datetime import datetime
 from flask import Flask
 from flask.ext.bootstrap import Bootstrap
+from flask.ext.celery import Celery
 from flask.ext.moment import Moment
 from flask.ext.sqlalchemy import SQLAlchemy
-from flask.ext.celery import Celery
 
-from config import config, Config
-
-import os
+from config import config
 
 bootstrap = Bootstrap()
 moment = Moment()
@@ -28,12 +25,9 @@ def create_app(config_name):
     celery.init_app(app)
 
     from .crawler import crawler as crawler_blueprint
-    app.register_blueprint(crawler_blueprint)
+    app.register_blueprint(crawler_blueprint, url_prefix='/crawler')
 
     from .main import main as main_blueprint
     app.register_blueprint(main_blueprint)
-
-    from .main.views import index
-    app.add_url_rule('/', 'main.root', index)
 
     return app
