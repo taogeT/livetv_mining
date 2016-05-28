@@ -27,6 +27,9 @@ def create_app(config_name):
     from .crawler import crawler as crawler_blueprint
     app.register_blueprint(crawler_blueprint, url_prefix='/crawler')
 
+    from .weixin import weixin as weixin_blueprint
+    app.register_blueprint(weixin_blueprint, url_prefix='/weixin')
+
     from .main import main as main_blueprint
     app.register_blueprint(main_blueprint)
 

@@ -12,7 +12,6 @@ import codecs
 
 
 @crawler.route('/')
-@crawler.route('/index')
 def index():
     """ 直播网站列表 """
     sites = [site for site in LiveTVSite.query.filter_by(valid=True).order_by(LiveTVSite.order_int.asc())]

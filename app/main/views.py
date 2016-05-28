@@ -8,7 +8,6 @@ import codecs
 
 
 @main.route('/')
-@main.route('/index')
 def index():
     """ 网站基本介绍 """
     return render_template('index.html')
