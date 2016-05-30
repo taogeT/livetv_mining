@@ -5,7 +5,7 @@ from flask.ext.migrate import Migrate, MigrateCommand
 
 from app import create_app, db
 from app.crawler import config
-from celery_run import crawl_task
+from app.tasks import crawl_task
 
 import os
 import sys

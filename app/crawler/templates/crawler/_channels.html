@@ -21,7 +21,7 @@
         </td>
         <td>
           {{ channel.name | safe }}<br>
-          <a href="{{ url_for('main.channel', channel_id=channel.id) }}">查看房间</a><br>
+          <a href="{{ url_for('crawler.channel', channel_id=channel.id) }}">查看房间</a><br>
           <a href="{{ channel.url }}" target="_blank">访问官网地址</a>
         </td>
         <td>{{ moment(channel.last_crawl_date).format('YYYY-MM-DD HH:mm:ss') }}</td>
