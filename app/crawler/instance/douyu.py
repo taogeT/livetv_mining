@@ -41,6 +41,7 @@ class DouyuCrawler(LiveTVCrawler):
             current_app.logger.error('调用接口失败: 返回错误结果{}'.format(respjson))
             return False
         site.channels.update({'valid': False})
+        db.session.commit()
         for channel_json in respjson['data']:
             channel = site.channels.filter_by(officeid=channel_json['cate_id']).one_or_none()
             if not channel:
@@ -56,6 +57,7 @@ class DouyuCrawler(LiveTVCrawler):
             channel.icon_url = channel_json['game_icon']
             channel.valid = True
             db.session.add(channel)
+        db.session.commit()
         site.last_crawl_date = datetime.utcnow()
         db.session.add(site)
         db.session.commit()
@@ -64,6 +66,7 @@ class DouyuCrawler(LiveTVCrawler):
     def _rooms(self, channel):
         current_app.logger.info('开始扫描频道房间 {}: {}'.format(channel.name, channel.url))
         channel.rooms.update({'last_active': False})
+        db.session.commit()
         crawl_offset, crawl_limit = 0, 100
         crawl_room_count = 0
         while True:
@@ -97,20 +100,25 @@ class DouyuCrawler(LiveTVCrawler):
                 room.last_active = True
                 room.last_crawl_date = datetime.utcnow()
                 room_data = LiveTVRoomData(room=room, popularity=room.popularity)
-                db.session.add(room, room_data)
+                db.session.add(room)
+                db.session.add(room_data)
             crawl_room_count += len(respjson['data'])
             if len(respjson['data']) < crawl_limit:
                 if len(respjson['data']) + 1 == crawl_limit:
                     crawl_offset += crawl_limit - 1
+                    db.session.commit()
                 else:
                     break
             else:
                 crawl_offset += crawl_limit
+                db.session.commit()
+        db.session.commit()
         channel.range = crawl_room_count - channel.roomcount
         channel.roomcount = crawl_room_count
         channel.last_crawl_date = datetime.utcnow()
         channel_data = LiveTVChannelData(channel=channel, roomcount=channel.roomcount)
-        db.session.add(channel, channel_data)
+        db.session.add(channel)
+        db.session.add(channel_data)
         db.session.commit()
         return True
 
@@ -142,6 +150,7 @@ class DouyuCrawler(LiveTVCrawler):
         room.last_active = True
         room.last_crawl_date = datetime.utcnow()
         room_data = LiveTVRoomData(room=room, popularity=room.popularity, follower=room.follower, reward=room.reward)
-        db.session.add(room, room_data)
+        db.session.add(room)
+        db.session.add(room_data)
         db.session.commit()
         return True

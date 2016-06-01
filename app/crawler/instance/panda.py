@@ -34,6 +34,7 @@ class PandaCrawler(LiveTVCrawler):
             current_app.logger.error('调用接口{}失败: 状态{}'.format(CHANNEL_API, resp.status_code))
             return False
         site.channels.update({'valid': False})
+        db.session.commit()
         htmlroot = etree.HTML(resp.content)
         dirul = htmlroot.xpath('//ul[contains(@class,\'video-list\')]')[0]
         for channel_a_element in dirul.xpath('./li/a'):
@@ -56,6 +57,7 @@ class PandaCrawler(LiveTVCrawler):
             channel.image_url = channel_img_url
             channel.icon_url = channel_img_url
             channel.valid = True
+        db.session.commit()
         site.last_crawl_date = datetime.utcnow()
         db.session.add(site)
         db.session.commit()
@@ -64,6 +66,7 @@ class PandaCrawler(LiveTVCrawler):
     def _rooms(self, channel):
         current_app.logger.info('开始扫描频道 {}: {}'.format(channel.name, channel.url))
         channel.rooms.update({'last_active': False})
+        db.session.commit()
         crawl_pageno, crawl_pagenum = 1, 120
         crawl_room_count = 0
         while True:
@@ -98,17 +101,21 @@ class PandaCrawler(LiveTVCrawler):
                 room.last_active = True
                 room.last_crawl_date = datetime.utcnow()
                 room_data = LiveTVRoomData(room=room, popularity=room.popularity)
-                db.session.add(room, room_data)
+                db.session.add(room)
+                db.session.add(room_data)
             crawl_room_count += len(crawl_room_results)
             if len(crawl_room_results) < crawl_pagenum:
                 break
             else:
                 crawl_pageno += 1
+                db.session.commit()
+        db.session.commit()
         channel.range = crawl_room_count - channel.roomcount
         channel.roomcount = crawl_room_count
         channel.last_crawl_date = datetime.utcnow()
         channel_data = LiveTVChannelData(channel=channel, roomcount=channel.roomcount)
-        db.session.add(channel, channel_data)
+        db.session.add(channel)
+        db.session.add(channel_data)
         db.session.commit()
         return True
 
@@ -135,6 +142,7 @@ class PandaCrawler(LiveTVCrawler):
         room.last_active = True
         room.last_crawl_date = datetime.utcnow()
         room_data = LiveTVRoomData(room=room, popularity=room.popularity, follower=room.follower, reward=room.reward)
-        db.session.add(room, room_data)
+        db.session.add(room)
+        db.session.add(room_data)
         db.session.commit()
         return True
