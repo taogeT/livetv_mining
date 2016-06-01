@@ -24,15 +24,12 @@ class LiveTVSite(db.Model):
 
     def channeltop(self, topnum=TOP_NUM):
         """ 全站频道排序，目前以房间数目排序 """
-        return self.channels.filter_by(valid=True) \
-                            .order_by(LiveTVChannel.roomcount.desc()).limit(topnum)
+        return self.channels.filter_by(valid=True).order_by(LiveTVChannel.roomcount.desc()).limit(topnum)
 
     def roomtop(self, topnum=TOP_NUM):
         """ 全站房间排序，目前以人气排序 """
-        return LiveTVRoom.query.join(LiveTVChannel).join(LiveTVSite) \
-                         .filter(LiveTVSite.id == self.id) \
-                         .filter(LiveTVChannel.valid == True) \
-                         .filter(LiveTVRoom.last_active == True) \
+        return LiveTVRoom.query.join(LiveTVChannel).join(LiveTVSite).filter(LiveTVSite.id == self.id) \
+                         .filter(LiveTVChannel.valid == True).filter(LiveTVRoom.last_active == True) \
                          .order_by(LiveTVRoom.popularity.desc()).limit(topnum)
 
 
@@ -87,8 +84,7 @@ class LiveTVChannel(db.Model):
 
     def roomtop(self, topnum=TOP_NUM):
         """ 全站房间排序，目前以人气排序 """
-        return self.rooms.filter_by(last_active=True) \
-                         .order_by(LiveTVRoom.popularity.desc()).limit(topnum)
+        return self.rooms.filter_by(last_active=True).order_by(LiveTVRoom.popularity.desc()).limit(topnum)
 
 
 class LiveTVRoom(db.Model):
@@ -121,7 +117,7 @@ class LiveTVRoom(db.Model):
     def dataset_yesterday(self):
         """ 昨日人气数据 """
         datasetlist = []
-        for roomdata in self._dataset_filter(days=1):
+        for roomdata in self._dataset_filter(days=1).all():
             if isinstance(roomdata.popularity, int):
                 datasetlist.append((roomdata.since_date, roomdata.popularity))
         return datasetlist
@@ -130,7 +126,7 @@ class LiveTVRoom(db.Model):
     def dataset_popularity(self):
         """ 一周内人气数据 """
         datasetlist = []
-        for roomdata in self._dataset_filter(weeks=1):
+        for roomdata in self._dataset_filter(weeks=1).all():
             if isinstance(roomdata.popularity, int):
                 datasetlist.append((roomdata.since_date, roomdata.popularity))
         return datasetlist
@@ -139,7 +135,7 @@ class LiveTVRoom(db.Model):
     def dataset_follower(self):
         """ 一周内关注数据 """
         datasetlist = []
-        for roomdata in self._dataset_filter(weeks=1):
+        for roomdata in self._dataset_filter(weeks=1).all():
             if isinstance(roomdata.follower, int):
                 datasetlist.append((roomdata.since_date, roomdata.follower))
         return datasetlist

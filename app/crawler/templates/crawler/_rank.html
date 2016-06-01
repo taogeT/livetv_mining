@@ -14,7 +14,7 @@
         </tr>
       </thead>
       <tbody>
-      {% for room in roomtop %}
+      {% for room in roomtop.all() %}
         <tr>
           <td>{{ loop.index }}</td>
           <td><a href="{{ url_for('crawler.room', room_id=room.id) }}">{{ room.name }}</a></td>
@@ -40,7 +40,7 @@
         </tr>
       </thead>
       <tbody>
-        {% for channel in channeltop %}
+        {% for channel in channeltop.all() %}
         <tr>
           <td align="center">{{ loop.index }}</td>
           <td><a href="{{ url_for('crawler.channel', channel_id=channel.id) }}">{{ channel.name }}</a></td>

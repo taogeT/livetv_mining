@@ -3,8 +3,6 @@
 from . import celery
 from .crawler import config
 
-import gc
-
 
 @celery.task(bind=True, default_retry_delay=10)
 def crawl_task(self, site_name):
@@ -17,5 +15,3 @@ def crawl_task(self, site_name):
             crawlerinstance.rooms()
     except Exception as e:
         raise self.retry(exc=e)
-    finally:
-        gc.collect()
