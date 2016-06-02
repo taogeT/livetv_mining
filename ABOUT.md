@@ -22,6 +22,18 @@
 
 ####历程
 
+* 2016-06-03 站点添加SSL证书，开启https，http失效。
+
+* 2016-06-01 Flask-Celery插件开发改造，完成0.2版本。解决了需要手动启动应用上下文来初始化数据库、celery实例的问题。
+
+* 2016-05-31 机器性能较差导致访问出现504 gateway time out错误，做了一定量分析和效率提升。
+
+* 2016-05-29 发现站点有爬虫访问，封禁IP并使用nginx做简单反爬虫策略(UA)。
+
+* 2016-05-27 改造站点为项目展示平台。
+
+* 2016-05-16 修正房间切换频道导致数据重复错误。
+
 * 2016-05-08 supervisord+celery配置错误，未设定优先级(priority)，导致beat无法分发任务到worker。supervisord config 添加priority设置优先级。
 
 * 2016-04-30 完成爬虫重构，部署主机测试。
@@ -63,6 +75,7 @@
 
 * [Flask](http://flask.pocoo.org/) 
 * [Bootstrap](http://www.bootstrap.com/)
+* [Requests](http://www.python-requests.org/)
 * [Selenium](http://www.seleniumhq.org/)
 * [Celery](http://www.celeryproject.org/)
 
