@@ -22,7 +22,6 @@ def create_app(config_name):
     bootstrap.init_app(app)
     moment.init_app(app)
     db.init_app(app)
-    celery.init_app(app)
 
     from .crawler import crawler as crawler_blueprint
     app.register_blueprint(crawler_blueprint, url_prefix='/crawler')
@@ -32,5 +31,7 @@ def create_app(config_name):
 
     from .main import main as main_blueprint
     app.register_blueprint(main_blueprint)
+
+    celery.init_app(app)
 
     return app

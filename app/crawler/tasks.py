@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
-from . import celery
-from .crawler import config
+from .. import celery
+from . import config
 
 
 @celery.task(bind=True, default_retry_delay=10)
