@@ -38,11 +38,13 @@ class PandaCrawler(LiveTVCrawler):
         htmlroot = etree.HTML(resp.content)
         dirul = htmlroot.xpath('//ul[contains(@class,\'video-list\')]')[0]
         for channel_a_element in dirul.xpath('./li/a'):
+            channel_url = channel_a_element.get('href')
+            if 'http://' in channel_url or 'https://' in channel_url:
+                continue
             img_element = channel_a_element.xpath('./div[@class=\'img-container\']/img')[0]
             channel_img_url = img_element.get('src')
             div_element = channel_a_element.xpath('./div[@class=\'cate-title\']')[0]
-            channel_name = div_element.text
-            channel_url = channel_a_element.get('href')
+            channel_name = div_element.text.strip()
             channel_short_name = channel_url.split('/')[-1]
             channel_url = '{}/{}'.format(site.url, channel_url)
             channel = site.channels.filter_by(short_name=channel_short_name).one_or_none()

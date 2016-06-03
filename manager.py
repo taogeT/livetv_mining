@@ -5,7 +5,7 @@ from flask_migrate import Migrate, MigrateCommand
 
 from app import create_app, db
 from app.crawler import config
-from app.tasks import crawl_task
+from app.crawler.tasks import crawl_task
 
 import os
 import sys
