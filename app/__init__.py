@@ -29,9 +29,10 @@ def create_app(config_name):
     from .weixin import weixin as weixin_blueprint
     app.register_blueprint(weixin_blueprint, url_prefix='/weixin')
 
-    from .main import main as main_blueprint
-    app.register_blueprint(main_blueprint)
-
     celery.init_app(app)
+
+    from .views import index, about
+    app.add_url_rule('/', endpoint='index', view_func=index)
+    app.add_url_rule('/about', endpoint='about', view_func=about)
 
     return app

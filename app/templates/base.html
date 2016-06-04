@@ -27,14 +27,14 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="{{ url_for('main.index') }}">taogeT</a>
+      <a class="navbar-brand" href="{{ url_for('index') }}">taogeT</a>
     </div>
     <div class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li><a href="{{ url_for('crawler.index') }}">直播爬虫</a></li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        <li {% block navbar_li_aboutme %}{% endblock %}><a href="{{ url_for('main.about') }}">关于</a></li>
+        <li {% block navbar_li_aboutme %}{% endblock %}><a href="{{ url_for('about') }}">关于</a></li>
       </ul>
     </div>
     {% endblock %}
@@ -49,7 +49,7 @@
 <footer class="footer">
   <div class="container">
     {% block page_footer %}{% endblock %}
-    <p>作者 <a href="{{url_for('main.about')}}">taogeT</a> 独立开发完成，源代码受 <a rel="license" href="https://github.com/taogeT/livetv_mining/blob/master/LICENSE" target="_blank">GPL</a> 开源协议保护，地址 <a href="https://github.com/taogeT/livetv_mining">GitHub 仓库</a>。</p>
+    <p>作者 <a href="{{url_for('about')}}">taogeT</a> 独立开发完成，源代码受 <a rel="license" href="https://github.com/taogeT/livetv_mining/blob/master/LICENSE" target="_blank">GPL</a> 开源协议保护，地址 <a href="https://github.com/taogeT/livetv_mining">GitHub 仓库</a>。</p>
   </div>
 </footer>
 {% endblock %}
