@@ -1,5 +1,4 @@
 # -*- coding: UTF-8 -*-
-from datetime import timedelta
 
 
 class Config(object):
@@ -21,24 +20,6 @@ class Config(object):
     CELERY_SEND_TASK_ERROR_EMAILS = True
     CELERY_ADMINS = [('taogeT', 'zwtzjd@gmail.com')]
     CELERY_SUPERVISOR_ROWCOUNT = 80
-    CELERY_SUPERVISOR_INTERVAL = 30
-    CELERYBEAT_SCHEDULE = {
-        'crawl-douyu': {
-            'task': 'app.crawler.tasks.crawl_task',
-            'schedule': timedelta(minutes=CELERY_SUPERVISOR_INTERVAL),
-            'kwargs': {'site_name': 'douyu'}
-        },
-        'crawl-panda': {
-            'task': 'app.crawler.tasks.crawl_task',
-            'schedule': timedelta(minutes=CELERY_SUPERVISOR_INTERVAL),
-            'kwargs': {'site_name': 'panda'}
-        },
-        'crawl-zhanqi': {
-            'task': 'app.crawler.tasks.crawl_task',
-            'schedule': timedelta(minutes=CELERY_SUPERVISOR_INTERVAL),
-            'kwargs': {'site_name': 'zhanqi'}
-        }
-    }
 
     @staticmethod
     def init_app(app):
