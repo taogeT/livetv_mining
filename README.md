@@ -1,4 +1,13 @@
-###LiveTV Mining
+###关于作者
+***
+
+**人生苦短，我用Python**
+
+半路出家程序员(猿)，现居于鹭岛，爱好：美食、游戏、乃木坂46。
+
+曾经被JAVA伤害很深，现已投入Python怀抱。
+
+###关于项目 LiveTV Mining
 ***
 
 ####介绍
@@ -9,6 +18,7 @@
 
 * 邮件: zwtzjd@gmail.com
 * QQ: 3084582097
+* Github: [taogeT](https://github.com/taogeT)
 
 ####历程
 

@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 from datetime import datetime, timedelta
-
+from markdown import markdown
 from flask import render_template, request, current_app, json, jsonify
 from pytz import timezone, utc as pytz_utc
 
@@ -9,6 +9,7 @@ from . import crawler
 from .models import LiveTVSite, LiveTVChannel, LiveTVRoom
 
 import codecs
+import os
 
 
 @crawler.route('/')
@@ -114,16 +115,9 @@ def search():
                            title_dict=LiveTVRoom.title(), over_query_count=False)
 
 
-def _log():
-    rowcount = current_app.config['CELERY_SUPERVISOR_ROWCOUNT']
-    crawllog = ''
-    with codecs.open(current_app.config['CELERY_SUPERVISOR_LOGFILE'], 'r', encoding='utf-8') as crawllogfile:
-        crawllines = crawllogfile.readlines()
-        for crawllogrow in crawllines[0 - rowcount:]:
-            crawllog += crawllogrow
-    return crawllog
-
-
-@crawler.route('/api/log', methods=['GET'])
-def api_log():
-    return jsonify({'log': _log()})
+@crawler.route('/about')
+def about():
+    """ 关于 """
+    with codecs.open(os.path.join(os.path.dirname(__file__), 'README.md'), 'r', encoding='utf-8') as mdf:
+        mdhtml = markdown(mdf.read())
+    return render_template('crawler/about.html', mdhtml=mdhtml)
