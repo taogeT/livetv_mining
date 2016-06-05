@@ -1,16 +1,12 @@
 # -*- coding: UTF-8 -*-
+from celery.exceptions import TimeoutError
+from requests.exceptions import ProxyError
+
 from ... import db
 from ..models import LiveTVSite, LiveTVChannel, LiveTVRoom, LiveTVChannelData, LiveTVRoomData
+from .. import request_headers
 
-request_headers = {
-    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-    'Accept-Encoding': 'gzip, deflate, sdch',
-    'Accept-Language': 'zh-CN,zh;q=0.8,en-US;q=0.6,en;q=0.4,ja;q=0.2',
-    'Cache-Control': 'max-age=0',
-    'Connection': 'keep-alive',
-    'Upgrade-Insecure-Requests': 1,
-    'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.87 Safari/537.36',
-}
+import requests
 
 
 class LiveTVCrawler(object):
@@ -28,6 +24,26 @@ class LiveTVCrawler(object):
 
     def _get_site(self):
         """ 获得站点信息，返回数据对象 Override by subclass """
+
+    def _get_proxy(self):
+        """ 获得代理IP """
+        return None
+        #from ..tasks import get_proxy_http_task
+        #try:
+        #    asyncres = get_proxy_http_task.delay()
+        #    return asyncres.get(timeout=10)
+        #except TimeoutError:
+        #    return None
+
+    def _get_response(self, url, headers=request_headers):
+        proxies = {}
+        proxy_http_ip = self._get_proxy()
+        if proxy_http_ip:
+            proxies['http'] = proxy_http_ip
+        try:
+            return requests.get(url, headers=headers, proxies=proxies)
+        except ProxyError:
+            return requests.get(url, headers=headers)
 
     def _channels(self, site):
         """ 频道爬虫 Override by subclass """

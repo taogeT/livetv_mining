@@ -2,18 +2,17 @@
 from flask import current_app
 from datetime import datetime
 
-from . import *
+from . import db, request_headers, LiveTVCrawler
+from . import LiveTVSite, LiveTVChannel, LiveTVRoom, LiveTVChannelData, LiveTVRoomData
 
 import json
 import re
 import requests
-import copy
 
 CHANNEL_API = 'http://www.zhanqi.tv/api/static/game.lists/{}-{}.json'
 ROOM_LIST_API = 'http://www.zhanqi.tv/api/static/game.lives/{}/{}-{}.json'
 ROOM_API = 'http://www.zhanqi.tv/api/static/live.roomid/{}.json'
-zhanqi_headers = copy.deepcopy(request_headers)
-zhanqi_headers['Host'] = 'www.zhanqi.tv'
+zhanqi_headers = dict(request_headers, Host='www.zhanqi.tv', Referer='http://www.zhanqi.tv')
 
 
 class ZhanqiCrawler(LiveTVCrawler):
@@ -37,7 +36,7 @@ class ZhanqiCrawler(LiveTVCrawler):
         while True:
             requrl = CHANNEL_API.format(crawl_pagenum, crawl_pageno)
             current_app.logger.info('调用频道接口:{}'.format(requrl))
-            resp = requests.get(requrl, headers=zhanqi_headers)
+            resp = self._get_response(requrl, headers=zhanqi_headers)
             if resp.status_code != requests.codes.ok:
                 current_app.logger.error('调用接口{}失败: 状态{}'.format(requrl, resp.status_code))
                 return False
@@ -86,7 +85,7 @@ class ZhanqiCrawler(LiveTVCrawler):
         crawl_room_count = 0
         while True:
             requrl = ROOM_LIST_API.format(channel.officeid, crawl_pagenum, crawl_pageno)
-            resp = requests.get(requrl, headers=zhanqi_headers)
+            resp = self._get_response(requrl, headers=zhanqi_headers)
             if resp.status_code != requests.codes.ok:
                 current_app.logger.error('调用接口{}失败: 状态{}'.format(requrl, resp.status_code))
                 return False
@@ -143,7 +142,7 @@ class ZhanqiCrawler(LiveTVCrawler):
 
     def _single_room(self, room):
         room_requrl = ROOM_API.format(room.officeid)
-        room_resp = requests.get(room_requrl, headers=zhanqi_headers)
+        room_resp = self._get_response(room_requrl, headers=zhanqi_headers)
         if room_resp.status_code != requests.codes.ok:
             current_app.logger.error('调用接口{}失败: 状态{}'.format(room_requrl, room_resp.status_code))
             return False

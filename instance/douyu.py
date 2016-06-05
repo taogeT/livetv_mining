@@ -2,16 +2,15 @@
 from flask import current_app
 from datetime import datetime
 
-from . import *
+from . import db, request_headers, LiveTVCrawler
+from . import LiveTVSite, LiveTVChannel, LiveTVRoom, LiveTVChannelData, LiveTVRoomData
 
 import requests
-import copy
 
 CHANNEL_API = 'http://www.douyu.com/api/RoomApi/game'
 ROOM_LIST_API = 'http://www.douyu.com/api/RoomApi/live/{}?offset={}&limit={}'
 ROOM_API = 'http://www.douyu.com/api/RoomApi/room/{}'
-douyu_headers = copy.deepcopy(request_headers)
-douyu_headers['Host'] = 'open.douyucdn.cn'
+douyu_headers = dict(request_headers, Host='www.douyu.com', Referer='http://www.douyu.com')
 
 
 class DouyuCrawler(LiveTVCrawler):
@@ -28,7 +27,7 @@ class DouyuCrawler(LiveTVCrawler):
 
     def _channels(self, site):
         current_app.logger.info('调用频道接口:{}'.format(CHANNEL_API))
-        resp = requests.get(CHANNEL_API, headers=douyu_headers)
+        resp = self._get_response(CHANNEL_API, headers=douyu_headers)
         if resp.status_code != requests.codes.ok:
             current_app.logger.error('调用接口{}失败: 状态{}'.format(CHANNEL_API, resp.status_code))
             return False
@@ -71,7 +70,7 @@ class DouyuCrawler(LiveTVCrawler):
         crawl_room_count = 0
         while True:
             requrl = ROOM_LIST_API.format(channel.officeid, crawl_offset, crawl_limit)
-            resp = requests.get(requrl, headers=douyu_headers)
+            resp = self._get_response(requrl, headers=douyu_headers)
             if resp.status_code != requests.codes.ok:
                 current_app.logger.error('调用接口{}失败: 状态{}'.format(requrl, resp.status_code))
                 return False
@@ -124,7 +123,7 @@ class DouyuCrawler(LiveTVCrawler):
 
     def _single_room(self, room):
         room_requrl = ROOM_API.format(room.officeid)
-        room_resp = requests.get(room_requrl, headers=douyu_headers)
+        room_resp = self._get_response(room_requrl, headers=douyu_headers)
         if room_resp.status_code != requests.codes.ok:
             current_app.logger.error('调用接口{}失败: 状态{}'.format(room_requrl, room_resp.status_code))
             return False
