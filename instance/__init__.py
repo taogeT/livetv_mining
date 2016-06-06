@@ -1,12 +1,14 @@
 # -*- coding: UTF-8 -*-
+from gevent.pool import Pool as GeventPool
+from flask import copy_current_request_context
 from celery.exceptions import TimeoutError
 from requests.exceptions import ProxyError
 
-from ... import db
-from ..models import LiveTVSite, LiveTVChannel, LiveTVRoom, LiveTVChannelData, LiveTVRoomData
 from .. import request_headers
+from ..models import LiveTVChannel, LiveTVRoom
 
 import requests
+import gevent
 
 
 class LiveTVCrawler(object):
@@ -61,10 +63,10 @@ class LiveTVCrawler(object):
         else:
             site = self._get_site()
             channels.extend(site.channels.filter_by(valid=True).all())
-        while len(channels) > 0:
-            channel = channels.pop(0)
-            if not self._rooms(channel):
-                channels.append(channel)
+        gpool = GeventPool(size=4)
+        for channel in channels:
+            gpool.spawn(copy_current_request_context(self._rooms), channel.id)
+        gpool.join()
 
     def _rooms(self, channel):
         """ 房间爬虫 Override by subclass """

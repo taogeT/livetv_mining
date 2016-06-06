@@ -2,8 +2,10 @@
 from flask import current_app
 from datetime import datetime
 
-from . import db, request_headers, LiveTVCrawler
-from . import LiveTVSite, LiveTVChannel, LiveTVRoom, LiveTVChannelData, LiveTVRoomData
+from ... import db
+from ..models import LiveTVSite, LiveTVChannel, LiveTVRoom, LiveTVChannelData, LiveTVRoomData
+from .. import request_headers
+from . import LiveTVCrawler
 
 import requests
 
@@ -62,10 +64,12 @@ class DouyuCrawler(LiveTVCrawler):
         db.session.commit()
         return True
 
-    def _rooms(self, channel):
+    def _rooms(self, channel_id):
+        scoped_session = db.create_scoped_session()
+        channel = scoped_session.query(LiveTVChannel).get(channel_id)
         current_app.logger.info('开始扫描频道房间 {}: {}'.format(channel.name, channel.url))
         channel.rooms.update({'last_active': False})
-        db.session.commit()
+        scoped_session.commit()
         crawl_offset, crawl_limit = 0, 100
         crawl_room_count = 0
         while True:
@@ -83,7 +87,7 @@ class DouyuCrawler(LiveTVCrawler):
                 current_app.logger.error('调用接口{}失败: 返回错误结果{}'.format(requrl, respjson))
                 return False
             for room_json in respjson['data']:
-                room = LiveTVRoom.query.join(LiveTVChannel) \
+                room = scoped_session.query(LiveTVRoom).join(LiveTVChannel) \
                                  .filter(LiveTVChannel.site_id == channel.site.id) \
                                  .filter(LiveTVRoom.officeid == room_json['room_id']).one_or_none()
                 if not room:
@@ -99,26 +103,27 @@ class DouyuCrawler(LiveTVCrawler):
                 room.last_active = True
                 room.last_crawl_date = datetime.utcnow()
                 room_data = LiveTVRoomData(room=room, popularity=room.popularity)
-                db.session.add(room)
-                db.session.add(room_data)
+                scoped_session.add(room)
+                scoped_session.add(room_data)
             crawl_room_count += len(respjson['data'])
             if len(respjson['data']) < crawl_limit:
                 if len(respjson['data']) + 1 == crawl_limit:
                     crawl_offset += crawl_limit - 1
-                    db.session.commit()
+                    scoped_session.commit()
                 else:
                     break
             else:
                 crawl_offset += crawl_limit
-                db.session.commit()
-        db.session.commit()
+                scoped_session.commit()
+        scoped_session.commit()
         channel.range = crawl_room_count - channel.roomcount
         channel.roomcount = crawl_room_count
         channel.last_crawl_date = datetime.utcnow()
         channel_data = LiveTVChannelData(channel=channel, roomcount=channel.roomcount)
-        db.session.add(channel)
-        db.session.add(channel_data)
-        db.session.commit()
+        scoped_session.add(channel)
+        scoped_session.add(channel_data)
+        scoped_session.commit()
+        scoped_session.close()
         return True
 
     def _single_room(self, room):

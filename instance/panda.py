@@ -3,8 +3,10 @@ from flask import current_app
 from datetime import datetime
 from lxml import etree
 
-from . import db, request_headers, LiveTVCrawler
-from . import LiveTVSite, LiveTVChannel, LiveTVRoom, LiveTVChannelData, LiveTVRoomData
+from ... import db
+from ..models import LiveTVSite, LiveTVChannel, LiveTVRoom, LiveTVChannelData, LiveTVRoomData
+from .. import request_headers
+from . import LiveTVCrawler
 
 import requests
 
@@ -64,10 +66,12 @@ class PandaCrawler(LiveTVCrawler):
         db.session.commit()
         return True
 
-    def _rooms(self, channel):
+    def _rooms(self, channel_id):
+        scoped_session = db.create_scoped_session()
+        channel = scoped_session.query(LiveTVChannel).get(channel_id)
         current_app.logger.info('开始扫描频道 {}: {}'.format(channel.name, channel.url))
         channel.rooms.update({'last_active': False})
-        db.session.commit()
+        scoped_session.commit()
         crawl_pageno, crawl_pagenum = 1, 120
         crawl_room_count = 0
         while True:
@@ -86,7 +90,7 @@ class PandaCrawler(LiveTVCrawler):
                 return False
             crawl_room_results = respjson['data']['items']
             for room_json in crawl_room_results:
-                room = LiveTVRoom.query.join(LiveTVChannel) \
+                room = scoped_session.query(LiveTVRoom).join(LiveTVChannel) \
                                  .filter(LiveTVChannel.site_id == channel.site.id) \
                                  .filter(LiveTVRoom.officeid == room_json['id']).one_or_none()
                 if not room:
@@ -102,22 +106,23 @@ class PandaCrawler(LiveTVCrawler):
                 room.last_active = True
                 room.last_crawl_date = datetime.utcnow()
                 room_data = LiveTVRoomData(room=room, popularity=room.popularity)
-                db.session.add(room)
-                db.session.add(room_data)
+                scoped_session.add(room)
+                scoped_session.add(room_data)
             crawl_room_count += len(crawl_room_results)
             if len(crawl_room_results) < crawl_pagenum:
                 break
             else:
                 crawl_pageno += 1
-                db.session.commit()
-        db.session.commit()
+                scoped_session.commit()
+        scoped_session.commit()
         channel.range = crawl_room_count - channel.roomcount
         channel.roomcount = crawl_room_count
         channel.last_crawl_date = datetime.utcnow()
         channel_data = LiveTVChannelData(channel=channel, roomcount=channel.roomcount)
-        db.session.add(channel)
-        db.session.add(channel_data)
-        db.session.commit()
+        scoped_session.add(channel)
+        scoped_session.add(channel_data)
+        scoped_session.commit()
+        scoped_session.close()
         return True
 
     def _single_room(self, room):
