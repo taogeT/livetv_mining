@@ -1,12 +1,12 @@
 # -*- coding: UTF-8 -*-
 from flask import current_app, copy_current_request_context
 from datetime import datetime
-from urllib.parse import urljoin
 from gevent.pool import Pool as GeventPool
 from gevent.queue import Queue as GeventQueue, Empty as GeventEmpty
 
 from ... import db
-from ..models.douyu import DouyuChannel, DouyuRoom, DouyuChannelData, DouyuRoomData
+from ..models.douyu import DouyuChannel, DouyuRoom, DouyuHost, \
+                           DouyuChannelData, DouyuRoomData, DouyuHostData
 from .. import base_headers
 
 import requests
@@ -15,7 +15,7 @@ __all__ = ['settings', 'crawl_task', 'request_headers',
            'crawl_channel_list', 'crawl_room_list', 'search_room_list', 'crawl_room_all', 'crawl_room']
 
 CHANNEL_LIST_API = 'http://www.douyu.com/api/RoomApi/game'
-ROOM_LIST_API = 'http://www.douyu.com/api/v1/live/{}?offset={}&limit={}'
+ROOM_LIST_API = 'http://www.douyu.com/api/RoomApi/live/{}'
 ROOM_API = 'http://www.douyu.com/api/RoomApi/room/{}'
 request_headers = dict(base_headers, Host='www.douyu.com', Referer='http://www.douyu.com')
 settings = {
@@ -30,19 +30,21 @@ settings = {
 
 def crawl_task(self):
     self.crawl_channel_list()
-    self.crawl_room_list([channel for channel in list(DouyuChannel.query.filter_by(site=self.site))])
+    self.crawl_room_list([channel for channel in list(DouyuChannel.query.filter_by(site=self.site, valid=True))])
 
 
 def crawl_channel_list(self):
     current_app.logger.info('调用频道接口:{}'.format(CHANNEL_LIST_API))
     resp = self._get_response(CHANNEL_LIST_API)
-    if resp.status_code != requests.codes.ok:
-        current_app.logger.error('调用接口{}失败: 状态{}'.format(CHANNEL_LIST_API, resp.status_code))
-        raise ValueError('调用接口{}失败: 状态{}'.format(CHANNEL_LIST_API, resp.status_code))
+    if not resp or resp.status_code != requests.codes.ok:
+        error_msg = '调用接口{}失败: 状态{}'.format(CHANNEL_LIST_API, resp.status_code if resp else '')
+        current_app.logger.error(error_msg)
+        raise ValueError(error_msg)
     respjson = resp.json()
     if respjson['error'] != 0:
-        current_app.logger.error('调用接口失败: 返回错误结果{}'.format(respjson))
-        raise ValueError('返回错误结果{}'.format(respjson))
+        error_msg = '调用接口失败: 返回错误结果{}'.format(respjson)
+        current_app.logger.error(error_msg)
+        raise ValueError(error_msg)
     self.site.channels.update({'valid': False})
     for channel_json in respjson['data']:
         channel = DouyuChannel.query.filter_by(site=self.site, officeid=channel_json['cate_id']).one_or_none()
@@ -83,25 +85,28 @@ def crawl_room_list(self, channel_list):
                     room = DouyuRoom(officeid=room_json['room_id'])
                     current_app.logger.info('新增房间 {}:{}'.format(room_json['room_id'], room_json['room_name']))
                 else:
-                    pass
-                    #current_app.logger.debug('更新房间 {}:{}'.format(room_json['room_id'], room_json['room_name']))
+                    current_app.logger.debug('更新房间 {}:{}'.format(room_json['room_id'], room_json['room_name']))
                 room.channel = channel_res
                 room.name = room_json['room_name']
                 room.image_url = room_json['room_src']
-                room.owner_name = room_json['nickname']
-                room.owner_uid = room_json['owner_uid']
-                room.owner_avatar = room_json['avatar']
                 room.spectators = room_json['online']
                 room.crawl_date = datetime.now()
                 room.openstatus = True
-                if 'fans' in room_json:
-                    room.followers = int(room_json['fans']) if room_json['fans'].isdecimal() else 0
-                    room.url = urljoin(self.site.url, room_json['url'])
-                else:
-                    room.url = room_json['url']
+                room.url = room_json['url']
                 db.session.add(room)
-                room_data = DouyuRoomData(room=room, spectators=room.spectators, followers=room.followers)
+                room_data = DouyuRoomData(room=room, spectators=room.spectators)
                 db.session.add(room_data)
+                host = DouyuHost.query.filter_by(officeid=room_json['owner_uid']).one_or_none()
+                if not host:
+                    host = DouyuHost(officeid=room_json['owner_uid'], site=self.site)
+                    current_app.logger.info('新增主持 {}:{}'.format(room_json['owner_uid'], room_json['nickname']))
+                else:
+                    current_app.logger.debug('更新主持 {}:{}'.format(room_json['owner_uid'], room_json['nickname']))
+                host.username = room_json['nickname']
+                host.nickname = room_json['nickname']
+                host.image_url = room_json['avatar']
+                host.crawl_date = datetime.now()
+                db.session.add(host)
         elif restype == 'channel':
             db.session.add(channel_res)
             db.session.add(resjson)
@@ -115,8 +120,9 @@ def search_room_list(self, channel, gqueue):
     while True:
         roomjsonlen = 0
         for i in range(3):
-            requrl = ROOM_LIST_API.format(channel.officeid, crawl_offset, crawl_limit)
-            resp = self._get_response(requrl)
+            requrl = ROOM_LIST_API.format(channel.officeid)
+            params = {'offset': crawl_offset, 'limit': crawl_limit}
+            resp = self._get_response(requrl, params=params)
             if not resp or resp.status_code != requests.codes.ok:
                 current_app.logger.error('调用接口 {} 失败: 状态{}'.format(requrl, resp.status_code if resp else ''))
                 continue
@@ -159,13 +165,19 @@ def crawl_room_all(self):
         gpool.spawn(copy_current_request_context(self.crawl_room), room, gqueue)
     while not gqueue.empty() or gpool.free_count() < gpool.size:
         try:
-            restype, room, resjson = gqueue.get(timeout=1)
+            restype, resjson = gqueue.get(timeout=1)
         except GeventEmpty:
             continue
         if restype == 'room':
+            room, room_data = resjson
             current_app.logger.info('更新房间详细信息 {}:{}'.format(room.officeid, room.name))
             db.session.add(room)
-            db.session.add(resjson)
+            db.session.add(room_data)
+        elif restype == 'host':
+            host, host_data = resjson
+            current_app.logger.info('更新主持详细信息 {}:{}'.format(room.officeid, room.name))
+            db.session.add(host)
+            db.session.add(host_data)
         db.session.commit()
 
 
@@ -187,11 +199,8 @@ def crawl_room(self, room, gqueue):
     room_respjson = room_respjson['data']
     room.name = room_respjson['room_name']
     room.image_url = room_respjson['room_thumb']
-    room.owner_name = room_respjson['owner_name']
-    room.owner_avatar = room_respjson['avatar']
     room.spectators = room_respjson['online']
     room.openstatus = room_respjson['room_status'] == '1'
-    room.followers = int(room_respjson['fans_num']) if room_respjson['fans_num'].isdecimal() else 0
     room.weight = room_respjson['owner_weight']
     if room.weight.endswith('t'):
         room.weight_int = int(float(room.weight[:-1]) * 1000 * 1000)
@@ -201,6 +210,11 @@ def crawl_room(self, room, gqueue):
         room.weight_int = int(room.weight[:-1])
     room.crawl_date = datetime.now()
     room.start_time = datetime.strptime(room_respjson['start_time'], '%Y-%m-%d %H:%M')
-    room_data = DouyuRoomData(room=room, spectators=room.spectators, followers=room.followers,
-                              weight=room.weight, weight_int=room.weight_int)
-    gqueue.put(('room', room, room_data))
+    room_data = DouyuRoomData(room=room, spectators=room.spectators, weight=room.weight, weight_int=room.weight_int)
+    gqueue.put(('room', (room, room_data)))
+    room.host.username = room_respjson['owner_name']
+    room.host.nickname = room_respjson['owner_name']
+    room.host.image_url = room_respjson['avatar']
+    room.host.followers = int(room_respjson['fans_num']) if room_respjson['fans_num'].isdecimal() else 0
+    host_data = DouyuHostData(host=room.host, followers=room.host.followers)
+    gqueue.put(('host', (room.host, host_data)))

@@ -38,7 +38,8 @@ class LiveTVCrawler(object):
             db.session.commit()
         return site if site and site.valid else None
 
-    def _get_response(self, url, params=None, use_proxy=False):
+    def _get_response(self, url, params=None, headers=None, use_proxy=False):
+        real_headers = headers if headers else self.request_headers
         proxies = {}
         if use_proxy:
             proxy_http_ip = get_proxy_http()
@@ -46,9 +47,9 @@ class LiveTVCrawler(object):
                 proxies['http'] = proxy_http_ip
         gevent.sleep(self._interval_seconds())
         try:
-            return requests.get(url, params=params, headers=self.request_headers, proxies=proxies)
+            return requests.get(url, params=params, headers=real_headers, proxies=proxies)
         except ProxyError:
-            return requests.get(url, params=params, headers=self.request_headers)
+            return requests.get(url, params=params, headers=real_headers)
         except ConnectionError:
             return None
 
