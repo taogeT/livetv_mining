@@ -9,7 +9,42 @@
 {{ wtf.quick_form(form, form_type='horizontal', horizontal_columns=('lg', 2, 5)) }}
 {% if rooms %}
 <div class="channel-tabs">
-  {% include "crawler/_rooms.html" %}
+  <div class="row">
+    <div class="col-lg-12">
+    <h3>房间列表</h3>
+    <table class="table table-condensed">
+      <thead>
+        <tr>
+          <th>名称</th>
+          <th>站点</th>
+          <th>频道</th>
+          <th>最近扫描时间</th>
+          <th>主播</th>
+          <th>观众数/人气值</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for room in rooms %}
+        <tr>
+          <td>
+            <a href="{{ url_for('crawler.room', room_id=room.id) }}">{{ room.name | safe }}</a><br>
+            <a href="{{ room.url }}" target="_blank">官网地址</a>
+          </td>
+          <td>
+            <a href="{{ url_for('crawler.site', site_id=room.site.id) }}">{{ room.site.name | safe }}</a>
+          </td>
+          <td>
+            <a href="{{ url_for('crawler.channel', channel_id=room.channel.id) }}">{{ room.channel.name | safe }}</a>
+          </td>
+          <td>{{ room.crawl_date.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+          <td>{{ room.host.nickname }}</td>
+          <td>{{ room.spectators }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    </div>
+  </div>
 </div>
 {% endif %}
 {% if over_query_count %}

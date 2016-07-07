@@ -4,11 +4,11 @@
   <table class="table table-condensed">
     <thead>
       <tr>
-        <th>{{ title_dict['image_url'] }}</th>
-        <th>{{ title_dict['name'] }}</th>
-        <th>{{ title_dict['last_crawl_date'] }}</th>
-        <th>{{ title_dict['roomcount'] }}</th>
-        <th>{{ title_dict['range'] }}</th>
+        <th>图片</th>
+        <th>名称</th>
+        <th>最近扫描时间</th>
+        <th>房间数</th>
+        <th>幅度</th>
       </tr>
     </thead>
     <tbody>
@@ -16,7 +16,7 @@
       <tr>
         <td width="20%">
           <a href="{{ channel.url }}" title="{{ channel.name | safe }}">
-            <img class="img-rounded" height="40%" width="40%" src="{{ channel.icon_url }}">
+            <img class="img-rounded" height="40%" width="40%" src="{{ channel.image_url }}">
           </a>
         </td>
         <td>
@@ -24,13 +24,13 @@
           <a href="{{ url_for('crawler.channel', channel_id=channel.id) }}">查看房间</a><br>
           <a href="{{ channel.url }}" target="_blank">访问官网地址</a>
         </td>
-        <td>{{ moment(channel.last_crawl_date).format('YYYY-MM-DD HH:mm:ss') }}</td>
-        <td>{{ channel.roomcount }}</td>
+        <td>{{ channel.crawl_date.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+        <td>{{ channel.room_total }}</td>
         <td>
-        {% if channel.range > 0 %}
-          <span class="glyphicon glyphicon-arrow-up" aria-hidden="true">{{ channel.range }}</span>
+        {% if channel.room_range > 0 %}
+          <span class="glyphicon glyphicon-arrow-up" aria-hidden="true">{{ channel.room_range }}</span>
         {% else %}
-          <span class="glyphicon glyphicon-arrow-down" aria-hidden="true">{{ channel.range }}</span>
+          <span class="glyphicon glyphicon-arrow-down" aria-hidden="true">{{ channel.room_range }}</span>
         {% endif %}
         </td>
       </tr>

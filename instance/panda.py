@@ -6,8 +6,7 @@ from gevent.pool import Pool as GeventPool
 from gevent.queue import Queue as GeventQueue, Empty as GeventEmpty
 
 from ... import db
-from ..models.panda import PandaChannel, PandaRoom, PandaHost,\
-                           PandaChannelData, PandaRoomData, PandaHostData
+from ..models.panda import *
 from .. import base_headers
 
 import requests
@@ -15,7 +14,7 @@ import requests
 __all__ = ['settings', 'crawl_task', 'request_headers',
            'crawl_channel_list', 'crawl_room_list', 'search_room_list', 'crawl_room_all', 'crawl_room']
 
-CHANNEL_API = 'http://api.m.panda.tv/ajax_get_all_subcate'
+CHANNEL_LIST_API = 'http://api.m.panda.tv/ajax_get_all_subcate'
 ROOM_LIST_API = 'http://www.panda.tv/ajax_sort'
 ROOM_API = 'http://www.panda.tv/api_room'
 request_headers = dict(base_headers, Host='www.panda.tv', Referer='http://www.panda.tv')
@@ -35,11 +34,11 @@ def crawl_task(self):
 
 
 def crawl_channel_list(self):
-    current_app.logger.info('调用频道接口:{}'.format(CHANNEL_API))
+    current_app.logger.info('调用频道接口:{}'.format(CHANNEL_LIST_API))
     mobile_headers = dict(self.request_headers, Host='api.m.panda.tv', Referer='http://api.m.panda.tv', xiaozhangdepandatv=1)
-    resp = self._get_response(CHANNEL_API, headers=mobile_headers)
+    resp = self._get_response(CHANNEL_LIST_API, headers=mobile_headers)
     if not resp or resp.status_code != requests.codes.ok:
-        error_msg = '调用接口{}失败: 状态{}'.format(CHANNEL_API, resp.status_code if resp else '')
+        error_msg = '调用接口{}失败: 状态{}'.format(CHANNEL_LIST_API, resp.status_code if resp else '')
         current_app.logger.error(error_msg)
         raise ValueError(error_msg)
     respjson = resp.json()
@@ -82,25 +81,6 @@ def crawl_room_list(self, channel_list):
             continue
         if restype == 'room_list':
             for room_json in resjson:
-                room = PandaRoom.query.filter_by(officeid=room_json['id']).one_or_none()
-                if not room:
-                    room = PandaRoom(officeid=room_json['id'])
-                    current_app.logger.info('新增房间 {}:{}'.format(room_json['id'], room_json['name']))
-                else:
-                    current_app.logger.debug('更新房间 {}:{}'.format(room_json['id'], room_json['name']))
-                room.channel = channel
-                room.name = room_json['name']
-                room.url = urljoin(channel.site.url, room_json['id'])
-                room.image_url = room_json['pictures']['img']
-                room.spectators = int(room_json['person_num'])
-                room.crawl_date = datetime.now()
-                room.start_time = datetime.fromtimestamp(float(room_json['start_time']))
-                room.end_time = datetime.fromtimestamp(float(room_json['end_time']))
-                room.openstatus = room.start_time > room.end_time
-                room.duration = int(room_json['duration']) if room_json['duration'].isdecimal() else 0
-                db.session.add(room)
-                room_data = PandaRoomData(room=room, spectators=room.spectators)
-                db.session.add(room_data)
                 host_json = room_json['userinfo']
                 host = PandaHost.query.filter_by(officeid=str(host_json['rid'])).one_or_none()
                 if not host:
@@ -113,6 +93,28 @@ def crawl_room_list(self, channel_list):
                 host.image_url = host_json['avatar']
                 host.crawl_date = datetime.now()
                 db.session.add(host)
+                db.session.commit()
+
+                room = PandaRoom.query.filter_by(officeid=room_json['id']).one_or_none()
+                if not room:
+                    room = PandaRoom(officeid=room_json['id'], site=self.site)
+                    current_app.logger.info('新增房间 {}:{}'.format(room_json['id'], room_json['name']))
+                else:
+                    current_app.logger.debug('更新房间 {}:{}'.format(room_json['id'], room_json['name']))
+                room.channel = channel
+                room.host = host
+                room.name = room_json['name']
+                room.url = urljoin(channel.site.url, room_json['id'])
+                room.image_url = room_json['pictures']['img']
+                room.spectators = int(room_json['person_num'])
+                room.crawl_date = datetime.now()
+                room.start_time = datetime.fromtimestamp(float(room_json['start_time']))
+                room.end_time = datetime.fromtimestamp(float(room_json['end_time']))
+                room.openstatus = True
+                room.duration = int(room_json['duration']) if room_json['duration'].isdecimal() else 0
+                db.session.add(room)
+                room_data = PandaRoomData(room=room, spectators=room.spectators)
+                db.session.add(room_data)
         elif restype == 'channel':
             db.session.add(channel)
             channel_data = PandaChannelData(channel=channel, room_total=channel.room_total)
@@ -194,14 +196,14 @@ def crawl_room(self, room, gqueue):
         current_app.logger.error(error_msg)
         gqueue.put(('error', error_msg))
         raise ValueError(error_msg)
-    room_respjson = room_resp.json()
-    if room_respjson['errno'] != 0:
-        error_msg = '调用房间接口 {} {} 失败: 返回错误结果{}'.format(ROOM_API, room.officeid, room_respjson['errmsg'])
+    respjson = room_resp.json()
+    if respjson['errno'] != 0:
+        error_msg = '调用房间接口 {} {} 失败: 返回错误结果{}'.format(ROOM_API, room.officeid, respjson)
         current_app.logger.error(error_msg)
         gqueue.put(('error', error_msg))
         raise ValueError(error_msg)
-    room_respjson = room_respjson['data']['roominfo']
-    host_respjson = room_respjson['data']['hostinfo']
+    room_respjson = respjson['data']['roominfo']
+    host_respjson = respjson['data']['hostinfo']
     room.name = room_respjson['name']
     room.image_url = room_respjson['pictures']['img']
     room.qrcode_url = room_respjson['pictures']['qrcode']
@@ -220,5 +222,6 @@ def crawl_room(self, room, gqueue):
     room.host.nickname = host_respjson['name']
     room.host.image_url = host_respjson['avatar']
     room.host.followers = int(room_respjson['fans']) if room_respjson['fans'].isdecimal() else 0
+    room.host.crawl_date = datetime.now()
     host_data = PandaHostData(host=room.host, followers=room.host.followers)
     gqueue.put(('host', (room.host, host_data)))

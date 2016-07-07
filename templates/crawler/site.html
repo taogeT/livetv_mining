@@ -9,16 +9,15 @@
       <tr>
         <td width="20%"><img src="{{ site.image_url }}" /></td>
         <td align="left">
-          <h1>{{ site.displayname }}</h1>
-          <p><h4>当前频道数：{{ site.channels.count() }}</h4></p>
+          <h1>{{ site.name }}</h1>
+          <p><h4>频道数：{{ site.channels.filter_by(valid=True).count() }}</h4></p>
+          <p><h4>正在直播房间数：{{ site.rooms.filter_by(openstatus=True).count() }}</h4></p>
           <a href="{{ site.url }}" target="_blank">访问官网地址</a>
         </td>
       </tr>
     </tbody>
   </table>
 </div>
-{% import "crawler/_rank.html" as macros_rank %}
-{{ macros_rank.rank_area(roomtop=site.roomtop(), channeltop=site.channeltop()) }}
 {% include "crawler/_channels.html" %}
 {% if pagination %}
 <div style="text-align: center">

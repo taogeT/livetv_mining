@@ -4,10 +4,10 @@
   <table class="table table-condensed">
     <thead>
       <tr>
-        <th>{{ title_dict['name'] }}</th>
-        <th>{{ title_dict['last_crawl_date'] }}</th>
-        <th>{{ title_dict['boardcaster'] }}</th>
-        <th>{{ title_dict['popularity'] }}</th>
+        <th>名称</th>
+        <th>最近扫描时间</th>
+        <th>主播</th>
+        <th>观众数/人气值</th>
       </tr>
     </thead>
     <tbody>
@@ -17,9 +17,9 @@
           <a href="{{ url_for('crawler.room', room_id=room.id) }}">{{ room.name | safe }}</a><br>
           <a href="{{ room.url }}" target="_blank">访问官网地址</a>
         </td>
-        <td>{{ moment(room.last_crawl_date).format('YYYY-MM-DD HH:mm:ss') }}</td>
-        <td>{{ room.boardcaster }}</td>
-        <td>{{ room.popularity }}</td>
+        <td>{{ room.crawl_date.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+        <td>{{ room.host.nickname }}</td>
+        <td>{{ room.spectators }}</td>
       </tr>
     {% endfor %}
     </tbody>

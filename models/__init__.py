@@ -9,6 +9,7 @@ class LiveTVSite(db.Model):
     __tablename__ = 'livetv_site'
     id = db.Column(db.Integer, primary_key=True)
     channels = db.relationship('LiveTVChannel', backref='site', lazy='dynamic')
+    rooms = db.relationship('LiveTVRoom', backref='site', lazy='dynamic')
     users = db.relationship('LiveTVHost', backref='site', lazy='dynamic')
 
     code = db.Column(db.String(64), unique=True, index=True, doc='代码')
@@ -42,7 +43,6 @@ class LiveTVChannel(db.Model):
     __mapper_args__ = {
         'polymorphic_identity': 'livetv',
         'polymorphic_on': symbol,
-        'with_polymorphic': '*'
     }
 
 
@@ -52,6 +52,7 @@ class LiveTVRoom(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     channel_id = db.Column(db.Integer, db.ForeignKey('livetv_channel.id'))
     host_id = db.Column(db.Integer, db.ForeignKey('livetv_host.id'))
+    site_id = db.Column(db.Integer, db.ForeignKey('livetv_site.id'))
     dataset = db.relationship('LiveTVRoomData', backref='room', lazy='dynamic')
     symbol = db.Column(db.String(32), doc='站点标记')
 
@@ -66,7 +67,6 @@ class LiveTVRoom(db.Model):
     __mapper_args__ = {
         'polymorphic_identity': 'livetv',
         'polymorphic_on': symbol,
-        'with_polymorphic': '*'
     }
 
 
@@ -89,7 +89,6 @@ class LiveTVHost(db.Model):
     __mapper_args__ = {
         'polymorphic_identity': 'livetv',
         'polymorphic_on': symbol,
-        'with_polymorphic': '*'
     }
 
 
@@ -106,7 +105,6 @@ class LiveTVChannelData(db.Model):
     __mapper_args__ = {
         'polymorphic_identity': 'livetv',
         'polymorphic_on': symbol,
-        'with_polymorphic': '*'
     }
 
 
@@ -123,7 +121,6 @@ class LiveTVRoomData(db.Model):
     __mapper_args__ = {
         'polymorphic_identity': 'livetv',
         'polymorphic_on': symbol,
-        'with_polymorphic': '*'
     }
 
 
@@ -140,9 +137,9 @@ class LiveTVHostData(db.Model):
     __mapper_args__ = {
         'polymorphic_identity': 'livetv',
         'polymorphic_on': symbol,
-        'with_polymorphic': '*'
     }
 
 
 from .douyu import *
 from .panda import *
+from .zhanqi import *
