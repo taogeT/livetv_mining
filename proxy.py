@@ -3,7 +3,7 @@
 from lxml import etree
 
 from .. import redis
-from . import request_headers
+from . import base_headers as request_headers
 
 import requests
 
