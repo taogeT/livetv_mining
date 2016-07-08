@@ -36,7 +36,7 @@
           <td>
             <a href="{{ url_for('crawler.channel', channel_id=room.channel.id) }}">{{ room.channel.name | safe }}</a>
           </td>
-          <td>{{ room.crawl_date.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+          <td>{{ moment(room.crawl_date).format('YYYY-MM-DD HH:mm:ss') }}</td>
           <td>{{ room.host.nickname }}</td>
           <td>{{ room.spectators }}</td>
         </tr>

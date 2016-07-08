@@ -41,3 +41,9 @@
 {% block page_footer %}
 <p>Tao蜘蛛 爬虫收集直播网站频道、房间等数据，并进行图表制作和数据分析。</p>
 {% endblock %}
+
+{% block scripts %}
+{{ super() }}
+{{ moment.include_moment(local_js="//cdn.bootcss.com/moment.js/2.11.2/moment-with-locales.min.js") }}
+{{ moment.lang('zh-cn') }}
+{% endblock %}

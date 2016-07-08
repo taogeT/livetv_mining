@@ -24,7 +24,7 @@
           <a href="{{ url_for('crawler.channel', channel_id=channel.id) }}">查看房间</a><br>
           <a href="{{ channel.url }}" target="_blank">访问官网地址</a>
         </td>
-        <td>{{ channel.crawl_date.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+        <td>{{ moment(channel.crawl_date).format('YYYY-MM-DD HH:mm:ss') }}</td>
         <td>{{ channel.room_total }}</td>
         <td>
         {% if channel.room_range > 0 %}

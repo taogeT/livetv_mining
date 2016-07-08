@@ -17,7 +17,7 @@
           <a href="{{ url_for('crawler.room', room_id=room.id) }}">{{ room.name | safe }}</a><br>
           <a href="{{ room.url }}" target="_blank">访问官网地址</a>
         </td>
-        <td>{{ room.crawl_date.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+        <td>{{ moment(room.crawl_date).format('YYYY-MM-DD HH:mm:ss') }}</td>
         <td>{{ room.host.nickname }}</td>
         <td>{{ room.spectators }}</td>
       </tr>

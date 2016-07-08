@@ -58,7 +58,7 @@ def crawl_channel_list(self):
         channel.image_url = channel_json['game_src']
         channel.valid = True
         db.session.add(channel)
-    self.site.crawl_date = datetime.now()
+    self.site.crawl_date = datetime.utcnow()
     db.session.add(self.site)
     db.session.commit()
 
@@ -86,7 +86,7 @@ def crawl_room_list(self, channel_list):
                     current_app.logger.debug('更新主持 {}:{}'.format(room_json['owner_uid'], room_json['nickname']))
                 host.nickname = room_json['nickname']
                 host.image_url = room_json['avatar']
-                host.crawl_date = datetime.now()
+                host.crawl_date = datetime.utcnow()
                 db.session.add(host)
 
                 room = DouyuRoom.query.filter_by(officeid=room_json['room_id']).one_or_none()
@@ -100,7 +100,7 @@ def crawl_room_list(self, channel_list):
                 room.name = room_json['room_name']
                 room.image_url = room_json['room_src']
                 room.spectators = room_json['online']
-                room.crawl_date = datetime.now()
+                room.crawl_date = datetime.utcnow()
                 room.openstatus = True
                 room.url = room_json['url']
                 db.session.add(room)
@@ -151,7 +151,7 @@ def search_room_list(self, channel, gqueue):
             crawl_offset += crawl_limit
     channel.room_range = crawl_room_count - channel.room_total
     channel.room_total = crawl_room_count
-    channel.crawl_date = datetime.now()
+    channel.crawl_date = datetime.utcnow()
     channel_data = DouyuChannelData(channel=channel, room_total=channel.room_total)
     gqueue.put(('channel', channel, channel_data))
     current_app.logger.info('结束扫描频道房间 {}: {}'.format(channel.name, channel.url))
@@ -207,13 +207,13 @@ def crawl_room(self, room, gqueue):
         room.weight_int = int(float(room.weight[:-2]) * 1000)
     elif room.weight.endswith('g'):
         room.weight_int = int(room.weight[:-1])
-    room.crawl_date = datetime.now()
+    room.crawl_date = datetime.utcnow()
     room.start_time = datetime.strptime(room_respjson['start_time'], '%Y-%m-%d %H:%M')
     room_data = DouyuRoomData(room=room, spectators=room.spectators, weight=room.weight, weight_int=room.weight_int)
     gqueue.put(('room', (room, room_data)))
     room.host.nickname = room_respjson['owner_name']
     room.host.image_url = room_respjson['avatar']
     room.host.followers = int(room_respjson['fans_num']) if room_respjson['fans_num'].isdecimal() else 0
-    room.host.crawl_date = datetime.now()
+    room.host.crawl_date = datetime.utcnow()
     host_data = DouyuHostData(host=room.host, followers=room.host.followers)
     gqueue.put(('host', (room.host, host_data)))

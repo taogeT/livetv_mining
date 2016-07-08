@@ -61,7 +61,7 @@ def crawl_channel_list(self):
         channel.weight = int(channel_json['weight']) if channel_json['weight'] and channel_json['weight'].isdecimal() else 0
         channel.valid = True
         db.session.add(channel)
-    self.site.crawl_date = datetime.now()
+    self.site.crawl_date = datetime.utcnow()
     db.session.add(self.site)
     db.session.commit()
 
@@ -89,7 +89,7 @@ def crawl_room_list(self, channel_list):
                     current_app.logger.debug('更新主持 {}:{}'.format(room_json['uid'], room_json['nickname']))
                 host.nickname = room_json['nickname']
                 host.image_url = room_json['avatar']
-                host.crawl_date = datetime.now()
+                host.crawl_date = datetime.utcnow()
                 db.session.add(host)
 
                 room = ZhanqiRoom.query.filter_by(officeid=room_json['id']).one_or_none()
@@ -104,7 +104,7 @@ def crawl_room_list(self, channel_list):
                 room.url = urljoin(channel.site.url, room_json['url'])
                 room.image_url = room_json['bpic']
                 room.spectators = int(room_json['online']) if room_json['online'].isdecimal() else 0
-                room.crawl_date = datetime.now()
+                room.crawl_date = datetime.utcnow()
                 room.openstatus = True
                 room.code = room_json['code']
                 room.liveTime = datetime.fromtimestamp(float(room_json['liveTime']))
@@ -149,7 +149,7 @@ def search_room_list(self, channel, gqueue):
         crawl_pageno += 1
     channel.room_range = crawl_room_count - channel.room_total
     channel.room_total = crawl_room_count
-    channel.crawl_date = datetime.now()
+    channel.crawl_date = datetime.utcnow()
     gqueue.put(('channel', channel, None))
     current_app.logger.info('结束扫描频道房间 {}: {}'.format(channel.name, channel.url))
 
@@ -195,7 +195,7 @@ def crawl_room(self, room, gqueue):
     room.name = room_respjson['title']
     room.image_url = room_respjson['bpic']
     room.spectators = int(room_respjson['online']) if room_respjson['online'].isdecimal() else 0
-    room.crawl_date = datetime.now()
+    room.crawl_date = datetime.utcnow()
     room.code = room_respjson['code']
     room.liveTime = datetime.fromtimestamp(float(room_respjson['liveTime']))
     room.fans = room_respjson['fans']
@@ -208,6 +208,6 @@ def crawl_room(self, room, gqueue):
     room.host.image_url = room_respjson['avatar']
     room.host.followers = room_respjson['follows']
     room.host.followers = int(room_respjson['anchorAttr']['hots']['fight']) if room_respjson['anchorAttr']['hots']['fight'].isdecimal() else 0
-    room.host.crawl_date = datetime.now()
+    room.host.crawl_date = datetime.utcnow()
     host_data = ZhanqiHostData(host=room.host, followers=room.host.followers, fight=room.host.fight)
     gqueue.put(('host', (room.host, host_data)))
