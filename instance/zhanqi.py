@@ -57,7 +57,7 @@ def crawl_channel_list(self):
         channel.url = channel_json['url']
         channel.name = channel_json['name']
         channel.code = channel_json['gameKey']
-        channel.image_url = channel_json['bpic']
+        channel.image_url = channel_json['spic']
         channel.weight = int(channel_json['weight']) if channel_json['weight'] and channel_json['weight'].isdecimal() else 0
         channel.valid = True
         db.session.add(channel)
@@ -67,7 +67,7 @@ def crawl_channel_list(self):
 
 
 def crawl_room_list(self, channel_list):
-    gpool = GeventPool(5)
+    gpool = GeventPool(current_app.config['GEVENT_POOL_SIZE'])
     gqueue = GeventQueue()
     for channel in channel_list:
         channel.rooms.update({'openstatus': False})
@@ -155,12 +155,13 @@ def search_room_list(self, channel, gqueue):
 
 
 def crawl_room_all(self):
-    gpool = GeventPool(5)
+    gpool = GeventPool(current_app.config['GEVENT_POOL_SIZE'])
     gqueue = GeventQueue()
     for room in list(ZhanqiRoom.query.filter_by(openstatus=True)):
         gpool.spawn(copy_current_request_context(self.crawl_room), room, gqueue)
     while not gqueue.empty() or gpool.free_count() < gpool.size:
         try:
+            current_app.logger.info('等待队列结果...')
             restype, resjson = gqueue.get(timeout=1)
         except GeventEmpty:
             continue
@@ -171,7 +172,7 @@ def crawl_room_all(self):
             db.session.add(room_data)
         elif restype == 'host':
             host, host_data = resjson
-            current_app.logger.info('更新主持详细信息 {}:{}'.format(room.officeid, room.name))
+            current_app.logger.info('更新主持详细信息 {}:{}'.format(host.officeid, host.nickname))
             db.session.add(host)
             db.session.add(host_data)
         db.session.commit()
@@ -179,6 +180,7 @@ def crawl_room_all(self):
 
 def crawl_room(self, room, gqueue):
     room_requrl = ROOM_API.format(room.officeid)
+    current_app.logger.info('开始扫描房间详细信息: {}'.format(room_requrl))
     room_resp = self._get_response(room_requrl)
     if not room_resp or room_resp.status_code != requests.codes.ok:
         error_msg = '调用接口 {} 失败: 状态{}'.format(room_requrl, room_resp.status_code if room_resp else '')
@@ -211,3 +213,4 @@ def crawl_room(self, room, gqueue):
     room.host.crawl_date = datetime.utcnow()
     host_data = ZhanqiHostData(host=room.host, followers=room.host.followers, fight=room.host.fight)
     gqueue.put(('host', (room.host, host_data)))
+    current_app.logger.info('结束扫描房间详细信息: {}'.format(room_requrl))

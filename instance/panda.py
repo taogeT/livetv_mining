@@ -67,7 +67,7 @@ def crawl_channel_list(self):
 
 
 def crawl_room_list(self, channel_list):
-    gpool = GeventPool(5)
+    gpool = GeventPool(current_app.config['GEVENT_POOL_SIZE'])
     gqueue = GeventQueue()
     for channel in channel_list:
         channel.rooms.update({'openstatus': False})
@@ -166,7 +166,7 @@ def search_room_list(self, channel, gqueue):
 
 
 def crawl_room_all(self):
-    gpool = GeventPool(5)
+    gpool = GeventPool(current_app.config['GEVENT_POOL_SIZE'])
     gqueue = GeventQueue()
     for room in list(PandaRoom.query.filter_by(openstatus=True)):
         gpool.spawn(copy_current_request_context(self.crawl_room), room, gqueue)
@@ -182,7 +182,7 @@ def crawl_room_all(self):
             db.session.add(room_data)
         elif restype == 'host':
             host, host_data = resjson
-            current_app.logger.info('更新主持详细信息 {}:{}'.format(room.officeid, room.name))
+            current_app.logger.info('更新主持详细信息 {}:{}'.format(host.officeid, host.nickname))
             db.session.add(host)
             db.session.add(host_data)
         db.session.commit()
@@ -225,3 +225,4 @@ def crawl_room(self, room, gqueue):
     room.host.crawl_date = datetime.utcnow()
     host_data = PandaHostData(host=room.host, followers=room.host.followers)
     gqueue.put(('host', (room.host, host_data)))
+    current_app.logger.info('结束扫描房间详细信息: {}'.format(room.officeid))

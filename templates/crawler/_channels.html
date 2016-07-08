@@ -1,41 +1,21 @@
-<div class="row">
-  <div class="col-lg-12">
-  <h3>频道列表</h3>
-  <table class="table table-condensed">
-    <thead>
-      <tr>
-        <th>图片</th>
-        <th>名称</th>
-        <th>最近扫描时间</th>
-        <th>房间数</th>
-        <th>幅度</th>
-      </tr>
-    </thead>
-    <tbody>
-    {% for channel in channels %}
-      <tr>
-        <td width="20%">
-          <a href="{{ channel.url }}" title="{{ channel.name | safe }}">
-            <img class="img-rounded" height="40%" width="40%" src="{{ channel.image_url }}">
-          </a>
-        </td>
-        <td>
-          {{ channel.name | safe }}<br>
-          <a href="{{ url_for('crawler.channel', channel_id=channel.id) }}">查看房间</a><br>
-          <a href="{{ channel.url }}" target="_blank">访问官网地址</a>
-        </td>
-        <td>{{ moment(channel.crawl_date).format('YYYY-MM-DD HH:mm:ss') }}</td>
-        <td>{{ channel.room_total }}</td>
-        <td>
-        {% if channel.room_range > 0 %}
-          <span class="glyphicon glyphicon-arrow-up" aria-hidden="true">{{ channel.room_range }}</span>
-        {% else %}
-          <span class="glyphicon glyphicon-arrow-down" aria-hidden="true">{{ channel.room_range }}</span>
-        {% endif %}
-        </td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+<h3>频道列表</h3>
+{% for channel in channels %}
+  {% if (loop.index - 1) % 6 == 0 %}
+    <div class="row">
+  {% endif %}
+  <div class="col-lg-2" style="text-align: center;">
+    <a href="{{ url_for('crawler.channel', channel_id=channel.id) }}" title="{{ channel.name | safe }}">
+      <img class="img-rounded" width="110%" src="{{ channel.image_url }}">
+    </a>
+    <a href="{{ url_for('crawler.channel', channel_id=channel.id) }}">{{ channel.name | safe }}</a>
+    <p>
+      房间数 {{ channel.room_total }}
+      <span class="glyphicon glyphicon-arrow-{{ 'up' if channel.room_range >= 0 else 'down' }}" aria-hidden="true">{{ channel.room_range }}</span>
+      <a href="{{ channel.url }}" target="_blank">官网</a><br>
+      {{ moment(channel.crawl_date).format('YYYY-MM-DD HH:mm') }} 更新
+    </p>
   </div>
-</div>
+  {% if loop.index % 6 == 0 or loop.last %}
+    </div>
+  {% endif %}
+{% endfor %}

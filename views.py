@@ -16,7 +16,7 @@ def index():
     sites = []
     for site in LiveTVSite.query.filter_by(valid=True).order_by(LiveTVSite.order_int.asc()):
         site.roomtop = site.rooms.filter_by(openstatus=True).order_by(LiveTVRoom.spectators.desc())
-        site.channeltop = site.channels.filter_by(valid=True).order_by(LiveTVChannel.room_total.desc())
+        site.channeltop = site.channels.filter_by(valid=True).order_by(LiveTVChannel.room_total.desc(), LiveTVChannel.room_range.desc())
         sites.append(site)
     return render_template('crawler/index.html', sites=sites)
 
@@ -25,12 +25,8 @@ def index():
 def site(site_id):
     """ 网站详细&频道列表 """
     site = LiveTVSite.query.get_or_404(site_id)
-    page = request.args.get('page', 1, type=int)
-    pagination = site.channels.filter_by(valid=True).order_by(LiveTVChannel.room_total.desc()).paginate(
-            page=page, error_out=False,
-            per_page=current_app.config['FLASK_CHANNELS_PER_PAGE'])
-    channels = pagination.items
-    return render_template('crawler/site.html', channels=channels, pagination=pagination, site=site)
+    channels = site.channels.filter_by(valid=True).order_by(LiveTVChannel.room_total.desc(), LiveTVChannel.room_range.desc())
+    return render_template('crawler/site.html', channels=channels, site=site)
 
 
 @crawler.route('/channel/<int:channel_id>')
