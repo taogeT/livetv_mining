@@ -72,12 +72,13 @@ def crawl_room_list(self, channel_list):
     for channel in channel_list:
         channel.rooms.update({'openstatus': False})
         db.session.commit()
+        gpool.wait_available()
         gpool.spawn(copy_current_request_context(self.search_room_list), channel, gqueue)
     while not gqueue.empty() or gpool.free_count() < gpool.size:
         try:
+            current_app.logger.info('等待队列结果...')
             restype, channel, resjson = gqueue.get(timeout=1)
         except GeventEmpty:
-            current_app.logger.info('等待队列结果...')
             continue
         if restype == 'room_list':
             for room_json in resjson:
@@ -158,6 +159,7 @@ def crawl_room_all(self):
     gpool = GeventPool(current_app.config['GEVENT_POOL_SIZE'])
     gqueue = GeventQueue()
     for room in list(ZhanqiRoom.query.filter_by(openstatus=True)):
+        gpool.wait_available()
         gpool.spawn(copy_current_request_context(self.crawl_room), room, gqueue)
     while not gqueue.empty() or gpool.free_count() < gpool.size:
         try:
