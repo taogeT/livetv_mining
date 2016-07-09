@@ -3,7 +3,7 @@
   {% if (loop.index - 1) % 6 == 0 %}
     <div class="row">
   {% endif %}
-  <div class="col-lg-2" style="text-align: center;">
+  <div class="col-lg-2 col-md-4" style="text-align: center;">
     <a href="{{ url_for('crawler.channel', channel_id=channel.id) }}" title="{{ channel.name | safe }}">
       <img class="img-rounded" width="110%" src="{{ channel.image_url }}">
     </a>

@@ -3,13 +3,13 @@
   {% if (loop.index - 1) % 4 == 0 %}
     <div class="row">
   {% endif %}
-  <div class="col-lg-3" style="text-align: center;">
+  <div class="col-lg-3 col-md-6" style="text-align: center;">
     <a href="{{ url_for('crawler.room', room_id=room.id) }}">
       <img class="img-rounded" width="108%" src="{{ room.image_url }}" title="{{ room.name | safe }}">
     </a>
     <a href="{{ url_for('crawler.room', room_id=room.id) }}">{{ room.name | safe }}</a>
     <p>
-      主播 {{ room.host.nickname }} 人气 {{ room.spectators }}<br>
+      主播 {{ room.host.nickname }}&nbsp;&nbsp;&nbsp;&nbsp;人气 {{ room.spectators }}<br>
       <a href="{{ room.channel.url }}" target="_blank">官网</a>
       {{ moment(room.crawl_date).format('YYYY-MM-DD HH:mm') }} 更新
     </p>
