@@ -24,7 +24,7 @@ class PandaRoom(LiveTVRoom):
     __tablename__ = 'panda_room'
     id = db.Column(db.Integer, db.ForeignKey('livetv_room.id'), primary_key=True)
 
-    bamboos = db.Column(db.Integer, index=True, doc='竹子数值')
+    bamboos = db.Column(db.Integer, index=True, doc='竹子')
     bulletin = db.Column(db.String(256), doc='公告')
     details = db.Column(db.Text, doc='详细内容')
     qrcode_url = db.Column(db.String(1024), unique=True, doc='二维码URL')

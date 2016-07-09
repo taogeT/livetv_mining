@@ -1,28 +1,21 @@
-<div class="row">
-  <div class="col-lg-12">
-  <h3>房间列表</h3>
-  <table class="table table-condensed">
-    <thead>
-      <tr>
-        <th>名称</th>
-        <th>最近扫描时间</th>
-        <th>主播</th>
-        <th>观众数/人气值</th>
-      </tr>
-    </thead>
-    <tbody>
-    {% for room in rooms %}
-      <tr>
-        <td>
-          <a href="{{ url_for('crawler.room', room_id=room.id) }}">{{ room.name | safe }}</a><br>
-          <a href="{{ room.url }}" target="_blank">访问官网地址</a>
-        </td>
-        <td>{{ moment(room.crawl_date).format('YYYY-MM-DD HH:mm:ss') }}</td>
-        <td>{{ room.host.nickname }}</td>
-        <td>{{ room.spectators }}</td>
-      </tr>
-    {% endfor %}
-    </tbody>
-  </table>
+{% macro rooms_display(rooms, moment) %}
+{% for room in rooms %}
+  {% if (loop.index - 1) % 4 == 0 %}
+    <div class="row">
+  {% endif %}
+  <div class="col-lg-3" style="text-align: center;">
+    <a href="{{ url_for('crawler.room', room_id=room.id) }}">
+      <img class="img-rounded" width="108%" src="{{ room.image_url }}" title="{{ room.name | safe }}">
+    </a>
+    <a href="{{ url_for('crawler.room', room_id=room.id) }}">{{ room.name | safe }}</a>
+    <p>
+      主播 {{ room.host.nickname }} 人气 {{ room.spectators }}<br>
+      <a href="{{ room.channel.url }}" target="_blank">官网</a>
+      {{ moment(room.crawl_date).format('YYYY-MM-DD HH:mm') }} 更新
+    </p>
   </div>
-</div>
+  {% if loop.index % 4 == 0 or loop.last %}
+    </div>
+  {% endif %}
+{% endfor %}
+{% endmacro %}

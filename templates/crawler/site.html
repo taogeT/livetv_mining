@@ -1,5 +1,7 @@
 {% extends "crawler/base.html" %}
 
+{% block title %}{{ site.name }}-站点信息{% endblock %}
+
 {% block navbar_li_home %}class="active"{% endblock %}
 
 {% block page_content %}
@@ -7,12 +9,11 @@
   <table class="table">
     <tbody>
       <tr>
-        <td width="20%"><img src="{{ site.image_url }}" /></td>
+        <td width="20%"><img src="{{ site.image_url }}"></td>
         <td align="left">
-          <h1>{{ site.name }}&nbsp;&nbsp;<small><a href="{{ site.url }}" target="_blank">官网</a></small></h1>
+          <h1>{{ site.name }}&nbsp;<small><a href="{{ site.url }}" target="_blank">官网</a></small></h1>
           <p><h4>频道数：{{ channels.count() }}</h4></p>
           <p><h4>正在直播房间数：{{ site.rooms.filter_by(openstatus=True).count() }}</h4></p>
-
         </td>
       </tr>
     </tbody>

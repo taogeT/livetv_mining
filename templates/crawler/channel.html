@@ -1,22 +1,26 @@
 {% extends "crawler/base.html" %}
 
+{% block title %}{{ channel.name }}-{{ channel.site.name }}-频道信息{% endblock %}
+
 {% block navbar_li_home %}class="active"{% endblock %}
 
 {% block page_content %}
-<table class="table">
-  <tbody>
-    <tr>
-      <td width="40%"><img height="60%" width="60%" src="{{ channel.image_url }}" /></td>
-      <td align="left">
-        <h1>{{ channel.name }}&nbsp;&nbsp;<small>{{ channel.site.name }}</small></h1>
-        <p><h4>当前直播房间数：{{ channel.room_total }}</h4></p>
-        <p><h4>更新时间：{{ moment(channel.crawl_date).format('YYYY-MM-DD HH:mm:ss') }}</h4></p>
-        <a href="{{ channel.url }}" target="_blank">访问官网地址</a>
-      </td>
-    </tr>
-  </tbody>
-</table>
-{% include "crawler/_rooms.html" %}
+<div class="row">
+  <div class="col-lg-4">
+    <img class="img-rounded" width="70%" src="{{ channel.image_url }}" />
+  </div>
+  <div class="col-lg-8" style="text-align: left;">
+    <h1>
+      {{ channel.name }}<small>{{ channel.site.name }}</small>&nbsp;
+      <small><a href="{{ channel.url }}" target="_blank">官网</a></small>
+    </h1>
+    <p><h4>当前直播房间数：{{ channel.room_total }}</h4></p>
+    <p><h4>更新时间：{{ moment(channel.crawl_date).format('YYYY-MM-DD HH:mm') }}</h4></p>
+  </div>
+</div>
+<h3>房间列表</h3>
+{% import "crawler/_rooms.html" as macros_rooms %}
+{{ macros_rooms.rooms_display(rooms=rooms, moment=moment) }}
 {% if pagination %}
 <div style="text-align: center">
 {% import "bootstrap/pagination.html" as macros %}

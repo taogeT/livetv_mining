@@ -1,6 +1,7 @@
 # -*- coding: UTF-8 -*-
 from markdown import markdown
 from flask import render_template, request, current_app
+from sqlalchemy import and_
 
 from .forms import SearchRoomForm
 from . import crawler
@@ -34,10 +35,9 @@ def channel(channel_id):
     """ 频道详细&房间列表 """
     channel = LiveTVChannel.query.get_or_404(channel_id)
     page = request.args.get('page', 1, type=int)
-    pagination = channel.rooms.filter_by(openstatus=True) \
-                        .order_by(LiveTVRoom.spectators.desc()).paginate(
-                    page=page, error_out=False,
-                    per_page=current_app.config['FLASK_ROOMS_PER_PAGE'])
+    pagination = channel.rooms.filter_by(openstatus=True).order_by(LiveTVRoom.spectators.desc()) \
+                        .paginate(page=page, error_out=False,
+                                  per_page=current_app.config['FLASK_ROOMS_PER_PAGE'])
     rooms = pagination.items
     return render_template('crawler/channel.html', channel=channel, rooms=rooms, pagination=pagination)
 
@@ -53,24 +53,26 @@ def room(room_id):
 def search():
     """ 导航栏搜索 """
     form = SearchRoomForm()
-    form.site_code.choices = [(site.code, site.name) for site in LiveTVSite.query.filter_by(valid=True).order_by(LiveTVSite.order_int.asc())]
     if form.validate_on_submit():
-        pagination = LiveTVRoom.query.order_by(LiveTVRoom.spectators.desc())
+        form_condition = and_()
         if form.room_name.data:
-            pagination = pagination.filter(LiveTVRoom.name.like('%{}%'.format(form.room_name.data)))
-        if form.only_opened.data:
-            pagination = pagination.filter_by(openstatus=form.only_opened.data)
-        if form.site_code.data:
-            site_id_list = [site.id for site in list(LiveTVSite.query.filter_by(code=form.site_code.data))]
-            pagination = pagination.filter(LiveTVRoom.site_id.in_(site_id_list))
+            form_condition.append(LiveTVRoom.name.like('%{}%'.format(form.room_name.data)))
         if form.host_nickname.data:
             host_id_list = [host.id for host in list(LiveTVHost.query.filter(LiveTVHost.nickname.like('%{}%'.format(form.host_nickname.data))))]
-            pagination = pagination.filter(LiveTVRoom.host_id.in_(host_id_list))
-        pagination = pagination.paginate(page=1, error_out=False,
-                                         per_page=current_app.config['FLASK_SEARCH_PER_PAGE'] + 1)
-        rooms = pagination.items
-        return render_template('crawler/search.html', rooms=rooms, form=form,
-                               over_query_count=len(rooms) > current_app.config['FLASK_SEARCH_PER_PAGE'])
+            form_condition.append(LiveTVRoom.host_id.in_(host_id_list))
+        rooms = []
+        for codefield in form.site_code.form:
+            if codefield.data:
+                subname = codefield.name[codefield.name.find(form.site_code.separator) + 1:]
+                pagination = LiveTVRoom.query.join(LiveTVSite) \
+                                       .filter(LiveTVSite.code == subname) \
+                                       .filter(LiveTVRoom.openstatus == True) \
+                                       .filter(form_condition) \
+                                       .order_by(LiveTVRoom.spectators.desc()) \
+                                       .paginate(page=1, error_out=False,
+                                                 per_page=current_app.config['FLASK_SEARCH_PER_PAGE'])
+                rooms.append((codefield.label.text, pagination.items))
+        return render_template('crawler/search.html', rooms=rooms, form=form)
     return render_template('crawler/search.html', form=form, rooms=[], over_query_count=False)
 
 

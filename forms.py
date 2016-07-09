@@ -1,12 +1,17 @@
 # -*- coding: UTF-8 -*-
 from flask_wtf import Form
-from wtforms import StringField, SubmitField, BooleanField, SelectField
+from wtforms import StringField, SubmitField, BooleanField, FormField
 from wtforms.validators import Length
 
 
+class SearchSiteForm(Form):
+    douyu = BooleanField(label='斗鱼', default=True)
+    panda = BooleanField(label='熊猫', default=True)
+    zhanqi = BooleanField(label='战旗', default=True)
+
+
 class SearchRoomForm(Form):
-    site_code = SelectField('站点', validators=[Length(0, 64)])
-    host_nickname = StringField('主播名', validators=[Length(0, 64)])
-    room_name = StringField('房间名', validators=[Length(0, 128)])
-    only_opened = BooleanField('正在直播', default=True)
-    submit = SubmitField('搜索')
+    site_code = FormField(SearchSiteForm, label='站点')
+    host_nickname = StringField(label='主播名', default='', validators=[Length(0, 64)])
+    room_name = StringField(label='房间名', default='', validators=[Length(0, 128)])
+    submit = SubmitField(label='搜索')
