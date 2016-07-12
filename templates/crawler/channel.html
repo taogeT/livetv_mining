@@ -19,7 +19,6 @@
     <p><h4>当前直播房间数：{{ channel.room_total }}</h4></p>
     <p><h4>更新时间：{{ moment(channel.crawl_date).format('YYYY-MM-DD HH:mm') }}</h4></p>
     <div class="row">
-      <h4>昨日房间数变化</h4>
       <canvas id="yesterdayChart" width="700" height="300"></canvas>
     </div>
   </div>
@@ -37,21 +36,37 @@
 
 {% block scripts %}
 {{ super() }}
-<script src="//cdn.bootcss.com/Chart.js/1.0.2/Chart.js"></script>
+<script src="//cdn.bootcss.com/Chart.js/2.1.6/Chart.min.js"></script>
 <script>
 var yesdata = {
-    labels: {{ chart_axis[0] | safe }},
-    datasets: [
-        {
-            fillColor : "rgba(151,187,205,0.5)",
-            strokeColor : "rgba(220,220,220,1)",
-            pointColor : "rgba(220,220,220,1)",
-            pointStrokeColor : "#fff",
-            data : {{ chart_axis[1] | safe }}
+    type: 'line',
+    data: {
+        labels: {{ chart_axis[0] | safe }},
+        datasets: [
+            {
+                label: "昨日房间数",
+                fillColor : "rgba(151,187,205,0.5)",
+                strokeColor : "rgba(220,220,220,1)",
+                pointColor : "rgba(220,220,220,1)",
+                pointStrokeColor : "#fff",
+                data : {{ chart_axis[1] | safe }}
+            }
+        ]
+    },
+    options: {
+        title: {
+            fontSize: 14,
+        },
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero:true
+                }
+            }]
         }
-    ]
+    }
 }
 var yesctx = document.getElementById("yesterdayChart").getContext("2d")
-var yesChart = new Chart(yesctx).Line(yesdata)
+var yesChart = new Chart(yesctx, yesdata)
 </script>
 {% endblock %}

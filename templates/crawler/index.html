@@ -63,7 +63,7 @@
           </tr>
         </thead>
         <tbody>
-        {% for room in site.roomtop.limit(config['FLASK_RANK_NUM']) %}
+        {% for room in site.roomtop.limit(config['FLASK_RANK_NUM']).all() %}
           <tr>
             <td align="center">{{ loop.index }}</td>
             <td><a href="{{ url_for('crawler.room', room_id=room.id) }}">{{ room.name }}</a></td>

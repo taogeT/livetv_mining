@@ -18,9 +18,8 @@ import pytz
 def index():
     """ 直播网站列表 """
     sites = []
-    for site in LiveTVSite.query.filter_by(valid=True).order_by(LiveTVSite.order_int.asc()):
+    for site in LiveTVSite.query.filter_by(valid=True).order_by(LiveTVSite.order_int.asc()).all():
         site.roomtop = site.rooms.filter_by(openstatus=True).order_by(LiveTVRoom.online.desc())
-        site.channeltop = site.channels.filter_by(valid=True).order_by(LiveTVChannel.room_total.desc(), LiveTVChannel.room_range.desc())
         sites.append(site)
     return render_template('crawler/index.html', sites=sites)
 
