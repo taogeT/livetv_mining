@@ -15,8 +15,9 @@ import importlib
 import types
 import random
 import logging
+import gevent
 
-logging.getLogger('requests').setLevel(logging.WARNING)
+logging.getLogger('requests').setLevel(logging.ERROR)
 
 
 class LiveTVCrawler(object):
@@ -62,14 +63,12 @@ class LiveTVCrawler(object):
                     current_app.logger.error(error_msg)
                     raise ValueError(error_msg)
                 return resp.json() if to_json else resp.text
-            except (ConnectionError, ProxyError) as e:
+            except (ConnectionError, ProxyError, ValueError) as e:
                 if i == try_entries:
                     current_app.logger.error(repr(e))
                     raise e
+                gevent.sleep(self._interval_seconds())
                 continue
-            except ValueError as e:
-                current_app.logger.error(repr(e))
-                raise e
 
     def _interval_seconds(self):
         return random.randint(1, 3)

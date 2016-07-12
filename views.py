@@ -48,7 +48,7 @@ def channel(channel_id):
                                   per_page=current_app.config['FLASK_ROOMS_PER_PAGE'])
     rooms = pagination.items
     current_time = datetime.utcnow()
-    current_date = datetime(current_time.year, current_time.month, current_time.day) + timedelta(days=1)
+    current_date = datetime(current_time.year, current_time.month, current_time.day)
     compare_date = current_date - timedelta(days=1)
     channel_dataset = channel.dataset.filter(LiveTVChannelData.create_date > compare_date) \
                              .filter(LiveTVChannelData.create_date <= current_date) \
@@ -59,7 +59,7 @@ def channel(channel_id):
     while compare_date < current_date:
         compare_next_date = compare_date + split_delta
         mark_date = compare_date.replace(tzinfo=pytz.utc).astimezone(pytz.timezone('Asia/Shanghai'))
-        chart_x_axis.append(mark_date.strftime('%H:%M'))
+        chart_x_axis.append(mark_date.strftime('%d %H:%M'))
         chart_y_axis.append(0)
         chart_y_count = 0
         while len(channel_dataset) > 0:
