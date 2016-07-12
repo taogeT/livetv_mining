@@ -11,11 +11,15 @@
   </div>
   <div class="col-lg-8 col-md-8" style="text-align: left;">
     <h1>
-      {{ channel.name }}<small>{{ channel.site.name }}</small>&nbsp;
+      {{ channel.name }}<small><a href="{{ url_for('crawler.site', site_id=channel.site.id) }}">{{ channel.site.name }}</a></small>&nbsp;
       <small><a href="{{ channel.url }}" target="_blank">官网</a></small>
     </h1>
     <p><h4>当前直播房间数：{{ channel.room_total }}</h4></p>
     <p><h4>更新时间：{{ moment(channel.crawl_date).format('YYYY-MM-DD HH:mm') }}</h4></p>
+      <div class="row" style="text-align: center;">
+        <h4>昨日房间数变化</h4>
+        <canvas id="yesterdayChart" width="700" height="300"></canvas>
+    </div>
   </div>
 </div>
 <h3>房间列表</h3>
@@ -27,4 +31,25 @@
 {{ macros.render_pagination(pagination, endpoint='crawler.channel', args={'channel_id': channel.id}) }}
 </div>
 {% endif %}
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="//cdn.bootcss.com/Chart.js/1.0.2/Chart.js"></script>
+<script>
+var yesdata = {
+    labels: [],
+    datasets: [
+        {
+            fillColor : "rgba(151,187,205,0.5)",
+            strokeColor : "rgba(220,220,220,1)",
+            pointColor : "rgba(220,220,220,1)",
+            pointStrokeColor : "#fff",
+            data : []
+        }
+    ]
+}
+var yesctx = document.getElementById("yesterdayChart").getContext("2d")
+var yesChart = new Chart(yesctx).Line(yesdata)
+</script>
 {% endblock %}

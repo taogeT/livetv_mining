@@ -1,14 +1,14 @@
 # -*- coding: UTF-8 -*-
-from flask import current_app, copy_current_request_context
+from flask import current_app
 from datetime import datetime
-from gevent.pool import Pool as GeventPool
-from gevent.queue import Queue as GeventQueue, Empty as GeventEmpty
+from requests.exceptions import ProxyError, ConnectionError
+from gevent.queue import Empty as GeventEmpty
 
 from ... import db
 from ..models.douyu import *
 from .. import base_headers
 
-import requests
+import gevent
 
 __all__ = ['settings', 'crawl_task', 'request_headers',
            'crawl_channel_list', 'crawl_room_list', 'search_room_list', 'crawl_room_all', 'crawl_room']
@@ -29,17 +29,12 @@ settings = {
 
 def crawl_task(self):
     self.crawl_channel_list()
-    self.crawl_room_list([channel for channel in list(DouyuChannel.query.filter_by(site=self.site, valid=True))])
+    self.crawl_room_list(DouyuChannel.query.filter_by(valid=True).all())
 
 
 def crawl_channel_list(self):
     current_app.logger.info('调用频道接口:{}'.format(CHANNEL_LIST_API))
-    resp = self._get_response(CHANNEL_LIST_API)
-    if not resp or resp.status_code != requests.codes.ok:
-        error_msg = '调用接口{}失败: 状态{}'.format(CHANNEL_LIST_API, resp.status_code if resp else '')
-        current_app.logger.error(error_msg)
-        raise ValueError(error_msg)
-    respjson = resp.json()
+    respjson = self._get_response(CHANNEL_LIST_API)
     if respjson['error'] != 0:
         error_msg = '调用接口失败: 返回错误结果{}'.format(respjson)
         current_app.logger.error(error_msg)
@@ -64,17 +59,13 @@ def crawl_channel_list(self):
 
 
 def crawl_room_list(self, channel_list):
-    gpool = GeventPool(current_app.config['GEVENT_POOL_SIZE'])
-    gqueue = GeventQueue()
     for channel in channel_list:
         channel.rooms.update({'openstatus': False})
         db.session.commit()
-        gpool.wait_available()
-        gpool.spawn(copy_current_request_context(self.search_room_list), channel, gqueue)
+    gpool, gqueue = self._gevent_pool_search(channel_list, self.search_room_list)
     while not gqueue.empty() or gpool.free_count() < gpool.size:
         try:
-            current_app.logger.info('等待队列结果...')
-            restype, channel_res, resjson = gqueue.get(timeout=1)
+            restype, channel_res, resjson = gqueue.get(timeout=0.1)
         except GeventEmpty:
             continue
         if restype == 'room_list':
@@ -100,12 +91,12 @@ def crawl_room_list(self, channel_list):
                 room.host = host
                 room.name = room_json['room_name']
                 room.image_url = room_json['room_src']
-                room.spectators = room_json['online']
+                room.online = room_json['online']
                 room.crawl_date = datetime.utcnow()
                 room.openstatus = True
                 room.url = room_json['url']
                 db.session.add(room)
-                room_data = DouyuRoomData(room=room, spectators=room.spectators)
+                room_data = DouyuRoomData(room=room, online=room.online)
                 db.session.add(room_data)
         elif restype == 'channel':
             db.session.add(channel_res)
@@ -122,14 +113,9 @@ def search_room_list(self, channel, gqueue):
         for i in range(3):
             requrl = ROOM_LIST_API.format(channel.officeid)
             params = {'offset': crawl_offset, 'limit': crawl_limit}
-            resp = self._get_response(requrl, params=params)
-            if not resp or resp.status_code != requests.codes.ok:
-                current_app.logger.error('调用接口 {} 失败: 状态{}'.format(requrl, resp.status_code if resp else ''))
-                continue
             try:
-                respjson = resp.json()
-            except ValueError:
-                current_app.logger.error('调用接口{}失败: 内容解析json失败'.format(requrl))
+                respjson = self._get_response(requrl, params=params)
+            except (ConnectionError, ProxyError, ValueError):
                 continue
             if respjson['error'] != 0:
                 current_app.logger.error('调用接口{}失败: 返回错误结果{}'.format(requrl, respjson))
@@ -150,6 +136,7 @@ def search_room_list(self, channel, gqueue):
                 break
         else:
             crawl_offset += crawl_limit
+        gevent.sleep(self._interval_seconds())
     channel.room_range = crawl_room_count - channel.room_total
     channel.room_total = crawl_room_count
     channel.crawl_date = datetime.utcnow()
@@ -159,15 +146,13 @@ def search_room_list(self, channel, gqueue):
 
 
 def crawl_room_all(self):
-    gpool = GeventPool(current_app.config['GEVENT_POOL_SIZE'])
-    gqueue = GeventQueue()
-    for room in list(DouyuRoom.query.filter_by(openstatus=True)):
-        gpool.wait_available()
-        gpool.spawn(copy_current_request_context(self.crawl_room), room, gqueue)
+    room_list = self.site.rooms.filter_by(openstatus=True).all()
+    gpool, gqueue = self._gevent_pool_search(room_list, self.crawl_room)
     while not gqueue.empty() or gpool.free_count() < gpool.size:
         try:
-            restype, resjson = gqueue.get(timeout=1)
+            restype, resjson = gqueue.get(timeout=0.1)
         except GeventEmpty:
+            gevent.sleep(2)
             continue
         if restype == 'room':
             room, room_data = resjson
@@ -179,28 +164,26 @@ def crawl_room_all(self):
             current_app.logger.info('更新主持详细信息 {}:{}'.format(host.officeid, host.nickname))
             db.session.add(host)
             db.session.add(host_data)
+        elif restype == 'error':
+            room, errormsg = resjson
+            room.openstatus = False
+            db.session.add(room)
         db.session.commit()
 
 
 def crawl_room(self, room, gqueue):
     room_requrl = ROOM_API.format(room.officeid)
     current_app.logger.info('开始扫描房间详细信息: {}'.format(room_requrl))
-    room_resp = self._get_response(room_requrl)
-    if not room_resp or room_resp.status_code != requests.codes.ok:
-        error_msg = '调用接口 {} 失败: 状态{}'.format(room_requrl, room_resp.status_code if room_resp else '')
-        current_app.logger.error(error_msg)
-        gqueue.put(('error', error_msg))
-        raise ValueError(error_msg)
-    respjson = room_resp.json()
+    respjson = self._get_response(room_requrl)
     if respjson['error'] != 0:
         error_msg = '调用房间接口{}失败: 返回错误结果{}'.format(room_requrl, respjson)
         current_app.logger.error(error_msg)
-        gqueue.put(('error', error_msg))
+        gqueue.put(('error', (room, error_msg)))
         raise ValueError(error_msg)
     room_respjson = respjson['data']
     room.name = room_respjson['room_name']
     room.image_url = room_respjson['room_thumb']
-    room.spectators = room_respjson['online']
+    room.online = room_respjson['online']
     room.openstatus = room_respjson['room_status'] == '1'
     room.weight = room_respjson['owner_weight']
     if room.weight.endswith('t'):
@@ -211,7 +194,7 @@ def crawl_room(self, room, gqueue):
         room.weight_int = int(room.weight[:-1])
     room.crawl_date = datetime.utcnow()
     room.start_time = datetime.strptime(room_respjson['start_time'], '%Y-%m-%d %H:%M')
-    room_data = DouyuRoomData(room=room, spectators=room.spectators, weight=room.weight, weight_int=room.weight_int)
+    room_data = DouyuRoomData(room=room, online=room.online, weight=room.weight, weight_int=room.weight_int)
     gqueue.put(('room', (room, room_data)))
     room.host.nickname = room_respjson['owner_name']
     room.host.image_url = room_respjson['avatar']
@@ -220,3 +203,4 @@ def crawl_room(self, room, gqueue):
     host_data = DouyuHostData(host=room.host, followers=room.host.followers)
     gqueue.put(('host', (room.host, host_data)))
     current_app.logger.info('结束扫描房间详细信息: {}'.format(room_requrl))
+    gevent.sleep(self._interval_seconds())

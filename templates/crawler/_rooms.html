@@ -9,7 +9,7 @@
     </a>
     <a href="{{ url_for('crawler.room', room_id=room.id) }}">{{ room.name | safe }}</a>
     <p>
-      主播 {{ room.host.nickname }}&nbsp;&nbsp;&nbsp;&nbsp;人气 {{ room.spectators }}<br>
+      主播 {{ room.host.nickname }}&nbsp;&nbsp;&nbsp;&nbsp;人气 {{ room.online }}<br>
       <a href="{{ room.channel.url }}" target="_blank">官网</a>
       {{ moment(room.crawl_date).format('YYYY-MM-DD HH:mm') }} 更新
     </p>

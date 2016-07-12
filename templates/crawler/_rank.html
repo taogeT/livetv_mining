@@ -20,7 +20,7 @@
           <td><a href="{{ url_for('crawler.room', room_id=room.id) }}">{{ room.name }}</a></td>
           <td>{{ room.host.nickname }}</td>
           <td><a href="{{ url_for('crawler.channel', channel_id=room.channel.id) }}">{{ room.channel.name }}</a></td>
-          <td>{{ room.spectators }}</td>
+          <td>{{ room.online }}</td>
         </tr>
       {% endfor %}
       </tbody>

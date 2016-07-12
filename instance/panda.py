@@ -1,15 +1,15 @@
 # -*- coding: UTF-8 -*-
-from flask import current_app, copy_current_request_context
+from flask import current_app
 from datetime import datetime
 from urllib.parse import urljoin
-from gevent.pool import Pool as GeventPool
-from gevent.queue import Queue as GeventQueue, Empty as GeventEmpty
+from gevent.queue import Empty as GeventEmpty
+from requests.exceptions import ConnectionError, ProxyError
 
 from ... import db
 from ..models.panda import *
 from .. import base_headers
 
-import requests
+import gevent
 
 __all__ = ['settings', 'crawl_task', 'request_headers',
            'crawl_channel_list', 'crawl_room_list', 'search_room_list', 'crawl_room_all', 'crawl_room']
@@ -30,18 +30,13 @@ settings = {
 
 def crawl_task(self):
     self.crawl_channel_list()
-    self.crawl_room_list([channel for channel in list(PandaChannel.query.filter_by(valid=True))])
+    self.crawl_room_list(PandaChannel.query.filter_by(valid=True).all())
 
 
 def crawl_channel_list(self):
     current_app.logger.info('调用频道接口:{}'.format(CHANNEL_LIST_API))
     mobile_headers = dict(self.request_headers, Host='api.m.panda.tv', Referer='http://api.m.panda.tv', xiaozhangdepandatv=1)
-    resp = self._get_response(CHANNEL_LIST_API, headers=mobile_headers)
-    if not resp or resp.status_code != requests.codes.ok:
-        error_msg = '调用接口{}失败: 状态{}'.format(CHANNEL_LIST_API, resp.status_code if resp else '')
-        current_app.logger.error(error_msg)
-        raise ValueError(error_msg)
-    respjson = resp.json()
+    respjson = self._get_response(CHANNEL_LIST_API, headers=mobile_headers)
     if respjson['errno'] != 0:
         error_msg = '调用接口失败: 返回错误结果{}'.format(respjson)
         current_app.logger.error(error_msg)
@@ -67,17 +62,13 @@ def crawl_channel_list(self):
 
 
 def crawl_room_list(self, channel_list):
-    gpool = GeventPool(current_app.config['GEVENT_POOL_SIZE'])
-    gqueue = GeventQueue()
     for channel in channel_list:
         channel.rooms.update({'openstatus': False})
         db.session.commit()
-        gpool.wait_available()
-        gpool.spawn(copy_current_request_context(self.search_room_list), channel, gqueue)
+    gpool, gqueue = self._gevent_pool_search(channel_list, self.search_room_list)
     while not gqueue.empty() or gpool.free_count() < gpool.size:
         try:
-            current_app.logger.info('等待队列结果...')
-            restype, channel, resjson = gqueue.get(timeout=1)
+            restype, channel, resjson = gqueue.get(timeout=0.1)
         except GeventEmpty:
             continue
         if restype == 'room_list':
@@ -107,14 +98,14 @@ def crawl_room_list(self, channel_list):
                 room.name = room_json['name']
                 room.url = urljoin(channel.site.url, room_json['id'])
                 room.image_url = room_json['pictures']['img']
-                room.spectators = int(room_json['person_num'])
+                room.online = int(room_json['person_num'])
                 room.crawl_date = datetime.utcnow()
                 room.start_time = datetime.fromtimestamp(float(room_json['start_time']))
                 room.end_time = datetime.fromtimestamp(float(room_json['end_time']))
                 room.openstatus = True
                 room.duration = int(room_json['duration']) if room_json['duration'].isdecimal() else 0
                 db.session.add(room)
-                room_data = PandaRoomData(room=room, spectators=room.spectators)
+                room_data = PandaRoomData(room=room, online=room.online)
                 db.session.add(room_data)
         elif restype == 'channel':
             db.session.add(channel)
@@ -131,14 +122,9 @@ def search_room_list(self, channel, gqueue):
         roomjsonlen = 0
         for i in range(3):
             params = {'classification': channel.code, 'pageno': crawl_pageno, 'pagenum': crawl_pagenum}
-            resp = self._get_response(ROOM_LIST_API, params=params)
-            if not resp or resp.status_code != requests.codes.ok:
-                current_app.logger.error('调用接口 {} {} 失败: 状态{}'.format(ROOM_LIST_API, channel.code, resp.status_code if resp else ''))
-                continue
             try:
-                respjson = resp.json()
-            except ValueError:
-                current_app.logger.error('调用接口 {} {} 失败: 内容解析json失败'.format(ROOM_LIST_API, channel.code))
+                respjson = self._get_response(ROOM_LIST_API, params=params)
+            except (ConnectionError, ProxyError, ValueError):
                 continue
             if respjson['errno'] != 0:
                 current_app.logger.error('调用接口{}失败: 返回错误结果{}'.format(ROOM_LIST_API, respjson))
@@ -159,6 +145,7 @@ def search_room_list(self, channel, gqueue):
                 break
         else:
             crawl_pageno += 1
+        gevent.sleep(self._interval_seconds())
     channel.room_range = crawl_room_count - channel.room_total
     channel.room_total = crawl_room_count
     channel.crawl_date = datetime.utcnow()
@@ -167,15 +154,13 @@ def search_room_list(self, channel, gqueue):
 
 
 def crawl_room_all(self):
-    gpool = GeventPool(current_app.config['GEVENT_POOL_SIZE'])
-    gqueue = GeventQueue()
-    for room in list(PandaRoom.query.filter_by(openstatus=True)):
-        gpool.wait_available()
-        gpool.spawn(copy_current_request_context(self.crawl_room), room, gqueue)
+    room_list = self.site.rooms.filter_by(openstatus=True).all()
+    gpool, gqueue = self._gevent_pool_search(room_list, self.crawl_room)
     while not gqueue.empty() or gpool.free_count() < gpool.size:
         try:
-            restype, resjson = gqueue.get(timeout=1)
+            restype, resjson = gqueue.get(timeout=0.1)
         except GeventEmpty:
+            gevent.sleep(2)
             continue
         if restype == 'room':
             room, room_data = resjson
@@ -187,29 +172,28 @@ def crawl_room_all(self):
             current_app.logger.info('更新主持详细信息 {}:{}'.format(host.officeid, host.nickname))
             db.session.add(host)
             db.session.add(host_data)
+        elif restype == 'error':
+            room, errormsg = resjson
+            room.openstatus = False
+            db.session.add(room)
         db.session.commit()
 
 
 def crawl_room(self, room, gqueue):
     params = {'roomid': room.officeid}
-    room_resp = self._get_response(ROOM_API, params=params)
-    if not room_resp or room_resp.status_code != requests.codes.ok:
-        error_msg = '调用接口 {} {} 失败: 状态{}'.format(ROOM_API, room.officeid, room_resp.status_code if room_resp else '')
-        current_app.logger.error(error_msg)
-        gqueue.put(('error', error_msg))
-        raise ValueError(error_msg)
-    respjson = room_resp.json()
+    current_app.logger.info('开始扫描房间详细信息: {} {}'.format(ROOM_API, room.officeid))
+    respjson = self._get_response(ROOM_API, params=params)
     if respjson['errno'] != 0:
         error_msg = '调用房间接口 {} {} 失败: 返回错误结果{}'.format(ROOM_API, room.officeid, respjson)
         current_app.logger.error(error_msg)
-        gqueue.put(('error', error_msg))
+        gqueue.put(('error', (room, error_msg)))
         raise ValueError(error_msg)
     room_respjson = respjson['data']['roominfo']
     host_respjson = respjson['data']['hostinfo']
     room.name = room_respjson['name']
     room.image_url = room_respjson['pictures']['img']
     room.qrcode_url = room_respjson['pictures']['qrcode']
-    room.spectators = int(room_respjson['person_num'])
+    room.online = int(room_respjson['person_num'])
     room.crawl_date = datetime.utcnow()
     room.start_time = datetime.fromtimestamp(float(room_respjson['start_time']))
     room.end_time = datetime.fromtimestamp(float(room_respjson['end_time']))
@@ -219,7 +203,7 @@ def crawl_room(self, room, gqueue):
     room.bamboos = int(host_respjson['bamboos'])
     room.bulletin = room_respjson['bulletin']
     room.details = room_respjson['details']
-    room_data = PandaRoomData(room=room, spectators=room.spectators, bamboos=room.bamboos)
+    room_data = PandaRoomData(room=room, online=room.online, bamboos=room.bamboos)
     gqueue.put(('room', (room, room_data)))
     room.host.nickname = host_respjson['name']
     room.host.image_url = host_respjson['avatar']
@@ -227,4 +211,5 @@ def crawl_room(self, room, gqueue):
     room.host.crawl_date = datetime.utcnow()
     host_data = PandaHostData(host=room.host, followers=room.host.followers)
     gqueue.put(('host', (room.host, host_data)))
-    current_app.logger.info('结束扫描房间详细信息: {}'.format(room.officeid))
+    current_app.logger.info('结束扫描房间详细信息: {} {}'.format(ROOM_API, room.officeid))
+    gevent.sleep(self._interval_seconds())

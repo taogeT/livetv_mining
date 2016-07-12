@@ -10,7 +10,7 @@ class LiveTVSite(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     channels = db.relationship('LiveTVChannel', backref='site', lazy='dynamic')
     rooms = db.relationship('LiveTVRoom', backref='site', lazy='dynamic')
-    users = db.relationship('LiveTVHost', backref='site', lazy='dynamic')
+    hosts = db.relationship('LiveTVHost', backref='site', lazy='dynamic')
 
     code = db.Column(db.String(64), unique=True, index=True, doc='代码')
     name = db.Column(db.String(128), doc='名称')
@@ -43,6 +43,7 @@ class LiveTVChannel(db.Model):
     __mapper_args__ = {
         'polymorphic_identity': 'livetv',
         'polymorphic_on': symbol,
+        'with_polymorphic': '*'
     }
 
 
@@ -60,13 +61,14 @@ class LiveTVRoom(db.Model):
     name = db.Column(db.String(1024), index=True, doc='名称')
     url = db.Column(db.String(1024), unique=True, doc='访问URL')
     image_url = db.Column(db.String(1024), doc='图片')
-    spectators = db.Column(db.Integer, default=0, index=True, doc='观众数')
+    online = db.Column(db.Integer, default=0, index=True, doc='观众数')
     openstatus = db.Column(db.Boolean, default=True, doc='是否正在直播')
     crawl_date = db.Column(db.DateTime, doc='最近一次扫描时间')
 
     __mapper_args__ = {
         'polymorphic_identity': 'livetv',
         'polymorphic_on': symbol,
+        'with_polymorphic': '*'
     }
 
 
@@ -82,6 +84,7 @@ class LiveTVHost(db.Model):
     officeid = db.Column(db.String(64), index=True, doc='官方ID')
     username = db.Column(db.String(64), index=True, doc='用户名')
     nickname = db.Column(db.String(256), index=True, doc='显示名称')
+    url = db.Column(db.String(1024), doc='空间访问')
     image_url = db.Column(db.String(1024), doc='图片')
     followers = db.Column(db.Integer, default=0, index=True, doc='关注数')
     crawl_date = db.Column(db.DateTime, doc='最近一次扫描时间')
@@ -89,6 +92,7 @@ class LiveTVHost(db.Model):
     __mapper_args__ = {
         'polymorphic_identity': 'livetv',
         'polymorphic_on': symbol,
+        'with_polymorphic': '*'
     }
 
 
@@ -105,6 +109,7 @@ class LiveTVChannelData(db.Model):
     __mapper_args__ = {
         'polymorphic_identity': 'livetv',
         'polymorphic_on': symbol,
+        'with_polymorphic': '*'
     }
 
 
@@ -116,11 +121,12 @@ class LiveTVRoomData(db.Model):
     symbol = db.Column(db.String(32), doc='站点标记')
 
     create_date = db.Column(db.DateTime, default=datetime.now, index=True, doc='创建时间')
-    spectators = db.Column(db.Integer, default=0, doc='观众数')
+    online = db.Column(db.Integer, default=0, doc='观众数')
 
     __mapper_args__ = {
         'polymorphic_identity': 'livetv',
         'polymorphic_on': symbol,
+        'with_polymorphic': '*'
     }
 
 
@@ -137,9 +143,11 @@ class LiveTVHostData(db.Model):
     __mapper_args__ = {
         'polymorphic_identity': 'livetv',
         'polymorphic_on': symbol,
+        'with_polymorphic': '*'
     }
 
 
 from .douyu import *
 from .panda import *
 from .zhanqi import *
+from .bilibili import *

@@ -3,91 +3,87 @@ from ... import db
 from . import LiveTVChannel, LiveTVRoom, LiveTVHost, \
               LiveTVChannelData, LiveTVRoomData, LiveTVHostData
 
-__all__ = ['ZhanqiChannel', 'ZhanqiRoom', 'ZhanqiHost',
-           'ZhanqiChannelData', 'ZhanqiRoomData', 'ZhanqiHostData']
+__all__ = ['BilibiliChannel', 'BilibiliRoom', 'BilibiliHost',
+           'BilibiliChannelData', 'BilibiliRoomData', 'BilibiliHostData']
 
 
-class ZhanqiChannel(LiveTVChannel):
+class BilibiliChannel(LiveTVChannel):
     """ 频道 """
-    __tablename__ = 'zhanqi_channel'
+    __tablename__ = 'bilibili_channel'
     id = db.Column(db.Integer, db.ForeignKey('livetv_channel.id'), primary_key=True)
 
-    weight = db.Column(db.Integer, doc='权重')
+    tags = db.Column(db.PickleType, doc='标签')
 
     __mapper_args__ = {
-        'polymorphic_identity': 'zhanqi',
+        'polymorphic_identity': 'bilibili',
     }
 
 
-class ZhanqiRoom(LiveTVRoom):
+class BilibiliRoom(LiveTVRoom):
     """ 房间 """
-    __tablename__ = 'zhanqi_room'
+    __tablename__ = 'bilibili_room'
     id = db.Column(db.Integer, db.ForeignKey('livetv_room.id'), primary_key=True)
 
-    code = db.Column(db.String(64), index=True, doc='代码')
-    liveTime = db.Column(db.DateTime, index=True, doc='开始时间')
-    fans = db.Column(db.Integer, index=True, doc='粉丝')
-    fansTitle = db.Column(db.String(32), doc='粉丝名称')
-    isstar_week = db.Column(db.Boolean, default=False, doc='周星')
-    isstar_month = db.Column(db.Boolean, default=False, doc='月星')
+    tags = db.Column(db.PickleType, doc='标签')
+    short_id = db.Column(db.String(32), doc='短ID')
+    live_time = db.Column(db.DateTime, index=True, doc='开播时间')
+    score = db.Column(db.Integer, index=True, doc='积分')
 
     __mapper_args__ = {
-        'polymorphic_identity': 'zhanqi',
+        'polymorphic_identity': 'bilibili',
     }
 
 
-class ZhanqiHost(LiveTVHost):
+class BilibiliHost(LiveTVHost):
     """ 房间 """
-    __tablename__ = 'zhanqi_host'
+    __tablename__ = 'bilibili_host'
     id = db.Column(db.Integer, db.ForeignKey('livetv_host.id'), primary_key=True)
 
-    fight = db.Column(db.Integer, default=0, index=True, doc='战斗力')
-    level = db.Column(db.Integer, default=0, index=True, doc='级别')
+    master_level = db.Column(db.Integer, default=0, index=True, doc='级别')
 
     __mapper_args__ = {
-        'polymorphic_identity': 'zhanqi',
+        'polymorphic_identity': 'bilibili',
     }
 
 
-class ZhanqiChannelData(LiveTVChannelData):
+class BilibiliChannelData(LiveTVChannelData):
     """ 扫描频道数据保存，作为曲线图基础数据 """
-    __tablename__ = 'zhanqi_channel_data'
+    __tablename__ = 'bilibili_channel_data'
     id = db.Column(db.Integer, db.ForeignKey('livetv_channel_data.id'), primary_key=True)
 
     __mapper_args__ = {
-        'polymorphic_identity': 'zhanqi',
+        'polymorphic_identity': 'bilibili',
     }
 
 
-class ZhanqiRoomData(LiveTVRoomData):
+class BilibiliRoomData(LiveTVRoomData):
     """ 扫描房间数据保存，作为曲线图基础数据 """
-    __tablename__ = 'zhanqi_room_data'
+    __tablename__ = 'bilibili_room_data'
     id = db.Column(db.Integer, db.ForeignKey('livetv_room_data.id'), primary_key=True)
 
-    fans = db.Column(db.Integer, index=True, doc='粉丝数')
+    score = db.Column(db.Integer, index=True, doc='积分')
 
     __mapper_args__ = {
-        'polymorphic_identity': 'zhanqi',
+        'polymorphic_identity': 'bilibili',
     }
 
 
-class ZhanqiHostData(LiveTVHostData):
+class BilibiliHostData(LiveTVHostData):
     """ 扫描主持数据保存，作为曲线图基础数据 """
-    __tablename__ = 'zhanqi_host_data'
+    __tablename__ = 'bilibili_host_data'
     id = db.Column(db.Integer, db.ForeignKey('livetv_host_data.id'), primary_key=True)
 
-    fight = db.Column(db.Integer, default=0, index=True, doc='战斗力')
-    level = db.Column(db.Integer, default=0, index=True, doc='级别')
+    master_level = db.Column(db.Integer, default=0, index=True, doc='级别')
 
     __mapper_args__ = {
-        'polymorphic_identity': 'zhanqi',
+        'polymorphic_identity': 'bilibili',
     }
 
 
 '''
-class ZhanqiGift(db.Model):
+class BilibiliGift(db.Model):
     """ 斗鱼所有礼物类型 """
-    __tablename__ = 'zhanqi_gift'
+    __tablename__ = 'bilibili_gift'
     id = db.Column(db.Integer, primary_key=True)
 
     code = db.Column(db.String(16), index=True, doc='礼物ID')

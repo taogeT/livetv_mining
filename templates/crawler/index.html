@@ -20,7 +20,7 @@
       <div class="container">
         <div class="carousel-caption">
           <a href="{{ url_for('crawler.site', site_id=site.id) }}" style="text-decoration:none;color:#222;">
-            <h1><img src="{{ site.image_url }}"></h1>
+            <h1><img height="100px" src="{{ site.image_url }}"></h1>
             <p>{{ site.description }}</p>
           </a>
         </div>
@@ -68,7 +68,7 @@
             <td align="center">{{ loop.index }}</td>
             <td><a href="{{ url_for('crawler.room', room_id=room.id) }}">{{ room.name }}</a></td>
             <td><a href="{{ url_for('crawler.channel', channel_id=room.channel.id) }}">{{ room.channel.name }}</a></td>
-            <td>{{ room.spectators }}</td>
+            <td>{{ room.online }}</td>
           </tr>
         {% endfor %}
         </tbody>

@@ -9,7 +9,7 @@
     <h4>
       频道：<a href="{{ url_for('crawler.channel', channel_id=room.channel.id) }}">{{ room.channel.name }}</a>&nbsp;&nbsp;
       更新时间：{{ moment(room.crawl_date).format('YYYY-MM-DD HH:mm:ss') }}&nbsp;&nbsp;
-      观众数/人气值：{{ room.spectators }}&nbsp;&nbsp;
+      观众数/人气值：{{ room.online }}&nbsp;&nbsp;
     </h4>
   </div>
 {% endblock %}

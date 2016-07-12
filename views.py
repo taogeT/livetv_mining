@@ -2,10 +2,12 @@
 from markdown import markdown
 from flask import render_template, request, current_app
 from sqlalchemy import and_
+from datetime import datetime, timedelta
 
 from .forms import SearchRoomForm
 from . import crawler
-from .models import LiveTVSite, LiveTVChannel, LiveTVRoom, LiveTVHost
+from .models import LiveTVSite, LiveTVChannel, LiveTVRoom, LiveTVHost, \
+                    LiveTVChannelData
 
 import codecs
 import os
@@ -16,7 +18,7 @@ def index():
     """ 直播网站列表 """
     sites = []
     for site in LiveTVSite.query.filter_by(valid=True).order_by(LiveTVSite.order_int.asc()):
-        site.roomtop = site.rooms.filter_by(openstatus=True).order_by(LiveTVRoom.spectators.desc())
+        site.roomtop = site.rooms.filter_by(openstatus=True).order_by(LiveTVRoom.online.desc())
         site.channeltop = site.channels.filter_by(valid=True).order_by(LiveTVChannel.room_total.desc(), LiveTVChannel.room_range.desc())
         sites.append(site)
     return render_template('crawler/index.html', sites=sites)
@@ -40,10 +42,16 @@ def channel(channel_id):
     """ 频道详细&房间列表 """
     channel = LiveTVChannel.query.get_or_404(channel_id)
     page = request.args.get('page', 1, type=int)
-    pagination = channel.rooms.filter_by(openstatus=True).order_by(LiveTVRoom.spectators.desc()) \
+    pagination = channel.rooms.filter_by(openstatus=True).order_by(LiveTVRoom.online.desc()) \
                         .paginate(page=page, error_out=False,
                                   per_page=current_app.config['FLASK_ROOMS_PER_PAGE'])
     rooms = pagination.items
+    current_time = datetime.utcnow()
+    datetime(current_time.year, current_time.month, current_time.day)
+    #channel.dataset.filter(LiveTVChannelData.create_date > )
+
+    #datetime.combine()
+
     return render_template('crawler/channel.html', channel=channel, rooms=rooms, pagination=pagination)
 
 
@@ -73,7 +81,7 @@ def search():
                                        .filter(LiveTVSite.code == subname) \
                                        .filter(LiveTVRoom.openstatus == True) \
                                        .filter(form_condition) \
-                                       .order_by(LiveTVRoom.spectators.desc()) \
+                                       .order_by(LiveTVRoom.online.desc()) \
                                        .paginate(page=1, error_out=False,
                                                  per_page=current_app.config['FLASK_SEARCH_PER_PAGE'])
                 rooms.append((codefield.label.text, pagination.items))
