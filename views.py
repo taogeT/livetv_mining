@@ -11,6 +11,7 @@ from .models import LiveTVSite, LiveTVChannel, LiveTVRoom, LiveTVHost, \
 
 import codecs
 import os
+import pytz
 
 
 @crawler.route('/')
@@ -47,12 +48,33 @@ def channel(channel_id):
                                   per_page=current_app.config['FLASK_ROOMS_PER_PAGE'])
     rooms = pagination.items
     current_time = datetime.utcnow()
-    datetime(current_time.year, current_time.month, current_time.day)
-    #channel.dataset.filter(LiveTVChannelData.create_date > )
-
-    #datetime.combine()
-
-    return render_template('crawler/channel.html', channel=channel, rooms=rooms, pagination=pagination)
+    current_date = datetime(current_time.year, current_time.month, current_time.day) + timedelta(days=1)
+    compare_date = current_date - timedelta(days=1)
+    channel_dataset = channel.dataset.filter(LiveTVChannelData.create_date > compare_date) \
+                             .filter(LiveTVChannelData.create_date <= current_date) \
+                             .order_by(LiveTVChannelData.create_date.desc()).all()
+    chart_x_axis = []
+    chart_y_axis = []
+    split_delta = timedelta(hours=2)
+    while compare_date < current_date:
+        compare_next_date = compare_date + split_delta
+        mark_date = compare_date.replace(tzinfo=pytz.utc).astimezone(pytz.timezone('Asia/Shanghai'))
+        chart_x_axis.append(mark_date.strftime('%H:%M'))
+        chart_y_axis.append(0)
+        chart_y_count = 0
+        while len(channel_dataset) > 0:
+            channel_data = channel_dataset.pop()
+            if compare_date < channel_data.create_date <= compare_next_date:
+                chart_y_axis[-1] += channel_data.room_total
+                chart_y_count += 1
+            elif channel_data.create_date > compare_next_date:
+                channel_dataset.append(channel_data)
+                break
+        if chart_y_count > 0:
+            chart_y_axis[-1] /= chart_y_count
+        compare_date += split_delta
+    return render_template('crawler/channel.html', channel=channel, rooms=rooms, pagination=pagination,
+                                                   chart_axis=(chart_x_axis, chart_y_axis))
 
 
 @crawler.route('/room/<int:room_id>')

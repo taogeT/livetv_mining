@@ -1,21 +1,25 @@
 {% macro rooms_display(rooms, moment) %}
-{% for room in rooms %}
-  {% if (loop.index - 1) % 4 == 0 %}
-    <div class="row">
-  {% endif %}
-  <div class="col-lg-3 col-md-6" style="text-align: center;">
-    <a href="{{ url_for('crawler.room', room_id=room.id) }}">
-      <img class="img-rounded" width="108%" src="{{ room.image_url }}" title="{{ room.name | safe }}">
-    </a>
-    <a href="{{ url_for('crawler.room', room_id=room.id) }}">{{ room.name | safe }}</a>
-    <p>
-      主播 {{ room.host.nickname }}&nbsp;&nbsp;&nbsp;&nbsp;人气 {{ room.online }}<br>
-      <a href="{{ room.channel.url }}" target="_blank">官网</a>
-      {{ moment(room.crawl_date).format('YYYY-MM-DD HH:mm') }} 更新
-    </p>
-  </div>
-  {% if loop.index % 4 == 0 or loop.last %}
+  {% for room in rooms %}
+    {% if (loop.index - 1) % 4 == 0 %}
+      <div class="row">
+    {% endif %}
+    <div class="col-lg-3 col-md-6" style="text-align: center;">
+      {% if room.image_url %}
+      <a href="{{ url_for('crawler.room', room_id=room.id) }}">
+        <img class="img-rounded" width="108%" src="{{ room.image_url }}" title="{{ room.name | safe }}">
+      </a>
+      {% endif %}
+      <a href="{{ url_for('crawler.room', room_id=room.id) }}">{{ room.name | safe }}</a>
+      <p>
+        主播 {% if room.host.url %}<a href="{{ room.host.url }}" target="_blank">{{ room.host.nickname }}</a>{% else %}{{ room.host.nickname }}{% endif %}
+        &nbsp;&nbsp;&nbsp;&nbsp;人气 {{ room.online }}<br>
+        <a href="{{ room.channel.url }}" target="_blank">官网</a>
+        {{ moment(room.crawl_date).format('YYYY-MM-DD HH:mm') }} 更新
+      </p>
     </div>
-  {% endif %}
-{% endfor %}
+
+    {% if loop.index % 4 == 0 or loop.last %}
+      </div>
+    {% endif %}
+  {% endfor %}
 {% endmacro %}

@@ -7,7 +7,9 @@
 {% block page_content %}
 <div class="row">
   <div class="col-lg-4 col-md-4">
-    <img class="img-rounded" width="70%" src="{{ channel.image_url }}" />
+    {% if channel.image_url %}
+    <img class="img-rounded" width="90%" src="{{ channel.image_url }}" />
+    {% endif %}
   </div>
   <div class="col-lg-8 col-md-8" style="text-align: left;">
     <h1>
@@ -16,9 +18,9 @@
     </h1>
     <p><h4>当前直播房间数：{{ channel.room_total }}</h4></p>
     <p><h4>更新时间：{{ moment(channel.crawl_date).format('YYYY-MM-DD HH:mm') }}</h4></p>
-      <div class="row" style="text-align: center;">
-        <h4>昨日房间数变化</h4>
-        <canvas id="yesterdayChart" width="700" height="300"></canvas>
+    <div class="row">
+      <h4>昨日房间数变化</h4>
+      <canvas id="yesterdayChart" width="700" height="300"></canvas>
     </div>
   </div>
 </div>
@@ -38,14 +40,14 @@
 <script src="//cdn.bootcss.com/Chart.js/1.0.2/Chart.js"></script>
 <script>
 var yesdata = {
-    labels: [],
+    labels: {{ chart_axis[0] | safe }},
     datasets: [
         {
             fillColor : "rgba(151,187,205,0.5)",
             strokeColor : "rgba(220,220,220,1)",
             pointColor : "rgba(220,220,220,1)",
             pointStrokeColor : "#fff",
-            data : []
+            data : {{ chart_axis[1] | safe }}
         }
     ]
 }
