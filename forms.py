@@ -8,6 +8,7 @@ class SearchSiteForm(Form):
     douyu = BooleanField(label='斗鱼', default=True)
     panda = BooleanField(label='熊猫', default=True)
     zhanqi = BooleanField(label='战旗', default=True)
+    bilibili = BooleanField(label='哔哩哔哩', default=True)
 
 
 class SearchRoomForm(Form):

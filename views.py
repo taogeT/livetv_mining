@@ -59,7 +59,7 @@ def channel(channel_id):
     while compare_date < current_date:
         compare_next_date = compare_date + split_delta
         mark_date = compare_date.replace(tzinfo=pytz.utc).astimezone(pytz.timezone('Asia/Shanghai'))
-        chart_x_axis.append(mark_date.strftime('%d %H:%M'))
+        chart_x_axis.append(mark_date.strftime('%d-%H'))
         chart_y_axis.append(0)
         chart_y_count = 0
         while len(channel_dataset) > 0:
