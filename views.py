@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 from .forms import SearchRoomForm
 from . import crawler
 from .models import LiveTVSite, LiveTVChannel, LiveTVRoom, LiveTVHost, \
-                    LiveTVChannelData
+                    LiveTVChannelData, LiveTVRoomData
 
 import codecs
 import os
@@ -58,7 +58,7 @@ def channel(channel_id):
     while compare_date < current_date:
         compare_next_date = compare_date + split_delta
         mark_date = compare_date.replace(tzinfo=pytz.utc).astimezone(pytz.timezone('Asia/Shanghai'))
-        chart_x_axis.append(mark_date.strftime('%d-%H'))
+        chart_x_axis.append(mark_date.strftime('%H:%M'))
         chart_y_axis.append(0)
         chart_y_count = 0
         while len(channel_dataset) > 0:
@@ -80,7 +80,33 @@ def channel(channel_id):
 def room(room_id):
     """ 房间详细 """
     room = LiveTVRoom.query.get_or_404(room_id)
-    return render_template('crawler/room.html', room=room)
+    current_time = datetime.utcnow()
+    current_date = datetime(current_time.year, current_time.month, current_time.day)
+    compare_date = current_date - timedelta(days=1)
+    room_dataset = room.dataset.filter(LiveTVRoomData.create_date > compare_date) \
+        .filter(LiveTVRoomData.create_date <= current_date) \
+        .order_by(LiveTVRoomData.create_date.desc()).all()
+    chart_x_axis = []
+    chart_y_axis = []
+    split_delta = timedelta(hours=1, minutes=30)
+    while compare_date < current_date:
+        compare_next_date = compare_date + split_delta
+        mark_date = compare_date.replace(tzinfo=pytz.utc).astimezone(pytz.timezone('Asia/Shanghai'))
+        chart_x_axis.append(mark_date.strftime('%H:%M'))
+        chart_y_axis.append(0)
+        chart_y_count = 0
+        while len(room_dataset) > 0:
+            channel_data = room_dataset.pop()
+            if compare_date < channel_data.create_date <= compare_next_date:
+                chart_y_axis[-1] += channel_data.online
+                chart_y_count += 1
+            elif channel_data.create_date > compare_next_date:
+                room_dataset.append(channel_data)
+                break
+        if chart_y_count > 0:
+            chart_y_axis[-1] /= chart_y_count
+        compare_date += split_delta
+    return render_template('crawler/room.html', room=room, chart_axis=(chart_x_axis, chart_y_axis))
 
 
 @crawler.route('/search', methods=['GET', 'POST'])

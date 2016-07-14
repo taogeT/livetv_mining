@@ -6,21 +6,25 @@
 
 {% block page_content %}
 <div class="row">
+  {% if channel.image_url %}
   <div class="col-lg-4 col-md-4">
-    {% if channel.image_url %}
     <img class="img-rounded" width="90%" src="{{ channel.image_url }}" />
-    {% endif %}
   </div>
   <div class="col-lg-8 col-md-8" style="text-align: left;">
-    <h1>
-      {{ channel.name }}<small><a href="{{ url_for('crawler.site', site_id=channel.site.id) }}">{{ channel.site.name }}</a></small>&nbsp;
-      <small><a href="{{ channel.url }}" target="_blank">官网</a></small>
-    </h1>
-    <p><h4>当前直播房间数：{{ channel.room_total }}</h4></p>
-    <p><h4>更新时间：{{ moment(channel.crawl_date).format('YYYY-MM-DD HH:mm') }}</h4></p>
-    <div class="row">
-      <canvas id="yesterdayChart" width="700" height="300"></canvas>
-    </div>
+  {% else %}
+  <div class="col-lg-12 col-md-12" style="text-align: left;">
+  {% endif %}
+    <h1>{{ channel.name }}</h1>
+    <p>
+      <h4>官网：<a href="{{ channel.url }}" target="_blank">{{ channel.url }}</a></h4>
+      <h4>
+        站点：<a href="{{ url_for('crawler.site', site_id=channel.site.id) }}">{{ channel.site.name }}</a>
+        &nbsp;当前直播房间数：{{ channel.room_total }}
+      </h4>
+      <h4>更新时间：{{ moment(channel.crawl_date).format('YYYY-MM-DD HH:mm') }}</h4>
+    </p>
+    <canvas id="yesterdayChart" width="700px" height="280px"></canvas>
+
   </div>
 </div>
 <h3>房间列表</h3>

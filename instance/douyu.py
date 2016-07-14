@@ -29,7 +29,7 @@ settings = {
 
 def crawl_task(self):
     self.crawl_channel_list()
-    self.crawl_room_list(DouyuChannel.query.filter_by(valid=True).all())
+    self.crawl_room_list(self.site.channels.filter_by(valid=True).all())
 
 
 def crawl_channel_list(self):
