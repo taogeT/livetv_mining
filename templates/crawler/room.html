@@ -2,8 +2,6 @@
 
 {% block title %}{{ room.name }}-{{ room.site.name }}-房间信息{% endblock %}
 
-{% block navbar_li_home %}class="active"{% endblock %}
-
 {% block page_content %}
 <div class="row">
   {% if room.image_url %}
@@ -30,7 +28,10 @@
         站点：<a href="{{ url_for('crawler.site', site_id=room.site.id) }}">{{ room.site.name }}</a>
       </h4>
       <h4>更新时间：{{ moment(room.crawl_date).format('YYYY-MM-DD HH:mm:ss') }}</h4>
-      <h4>人气：{{ room.online }}</h4>
+      <h4>人气：{{ room.online }}&nbsp;&nbsp;订阅：{{ room.host.followers }}</h4>
+      {% if room.symbol == 'douyu' %}
+      <h4>体重：{{ room.weight }}</h4>
+      {% endif %}
     </p>
   </div>
 </div>

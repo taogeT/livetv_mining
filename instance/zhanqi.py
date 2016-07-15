@@ -128,7 +128,7 @@ def search_room_list(self, channel, gqueue):
                     lambda x: '"title":"{}",'.format(x.group(0)[9:-1].replace('"', '')), resptext)
                 respjson = json.loads(respjson)
             except ValueError:
-                current_app.logger.error('调用接口 {} 失败: 内容解析json失败'.format(requrl))
+                current_app.logger.error('调用接口 {} 失败: 内容解析json失败 {}'.format(requrl, resptext))
                 continue
             if respjson['code'] != 0:
                 current_app.logger.error('调用接口{}失败: 返回错误结果{}'.format(requrl, respjson))
@@ -143,7 +143,7 @@ def search_room_list(self, channel, gqueue):
             raise ValueError(error_msg)
         crawl_room_count += roomjsonlen
         crawl_pageno += 1
-        gevent.sleep(self._interval_seconds())
+        gevent.sleep(self._interval_seconds() + 1)
     channel.room_range = crawl_room_count - channel.room_total
     channel.room_total = crawl_room_count
     channel.crawl_date = datetime.utcnow()

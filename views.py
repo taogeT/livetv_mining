@@ -15,13 +15,24 @@ import pytz
 
 
 @crawler.route('/')
-def index():
+@crawler.route('/sites')
+def sites_index():
     """ 直播网站列表 """
     sites = []
     for site in LiveTVSite.query.filter_by(valid=True).order_by(LiveTVSite.order_int.asc()).all():
         site.roomtop = site.rooms.filter_by(openstatus=True).order_by(LiveTVRoom.online.desc())
         sites.append(site)
-    return render_template('crawler/index.html', sites=sites)
+    return render_template('crawler/sites_index.html', sites=sites)
+
+
+@crawler.route('/channels')
+def channels_index():
+    """ 直播频道列表 """
+    sites = []
+    for site in LiveTVSite.query.filter_by(valid=True).order_by(LiveTVSite.order_int.asc()).all():
+        site.channeltop = site.channels.filter_by(valid=True).order_by(LiveTVChannel.room_total.desc())
+        sites.append(site)
+    return render_template('crawler/channels_index.html', sites=sites)
 
 
 @crawler.route('/site/<int:site_id>')

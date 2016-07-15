@@ -2,7 +2,7 @@
 
 {% block title %}{{ channel.name }}-{{ channel.site.name }}-频道信息{% endblock %}
 
-{% block navbar_li_home %}class="active"{% endblock %}
+{% block navbar_li_channel %}class="active"{% endblock %}
 
 {% block page_content %}
 <div class="row">
@@ -28,8 +28,8 @@
   </div>
 </div>
 <h3>房间列表</h3>
-{% import "crawler/_rooms.html" as macros_rooms %}
-{{ macros_rooms.rooms_display(rooms=rooms, moment=moment) }}
+{% import "crawler/_rooms.html" as macros_rooms with context %}
+{{ macros_rooms.rooms_display(rooms=rooms) }}
 {% if pagination %}
 <div style="text-align: center">
 {% import "bootstrap/pagination.html" as macros %}

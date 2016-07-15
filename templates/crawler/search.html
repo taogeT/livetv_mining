@@ -41,11 +41,11 @@
   {% endfor %}
 </form>
 {% if rooms %}
-  {% import "crawler/_rooms.html" as macros_rooms %}
+  {% import "crawler/_rooms.html" as macros_rooms with context %}
   {% for site_name, room_list in rooms %}
     {% if room_list|length > 0 %}
       <h3>{{ site_name }}房间</h3>
-      {{ macros_rooms.rooms_display(rooms=room_list, moment=moment) }}
+      {{ macros_rooms.rooms_display(rooms=room_list) }}
       {% if room_list|length >= config['FLASK_SEARCH_PER_PAGE'] %}
         <div class="alert alert-warning" role="alert">搜索结果较多，请输入更精确查询条件！</div>
       {% endif %}

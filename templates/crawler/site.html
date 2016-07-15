@@ -2,7 +2,7 @@
 
 {% block title %}{{ site.name }}-站点信息{% endblock %}
 
-{% block navbar_li_home %}class="active"{% endblock %}
+{% block navbar_li_site %}class="active"{% endblock %}
 
 {% block page_content %}
 <div class="page-header">
@@ -19,7 +19,7 @@
     </tbody>
   </table>
 </div>
-{% include "crawler/_channels.html" %}
+{% include "crawler/_channels.html" ignore missing %}
 {% if pagination %}
 <div style="text-align: center">
 {% import "bootstrap/pagination.html" as macros %}

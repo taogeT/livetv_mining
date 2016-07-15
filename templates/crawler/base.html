@@ -20,11 +20,14 @@
     <span class="icon-bar"></span>
     <span class="icon-bar"></span>
   </button>
-  <a class="navbar-brand" href="{{ url_for('crawler.index') }}">Tao蜘蛛</a>
+  <a class="navbar-brand" href="{{ url_for('crawler.sites_index') }}">Tao蜘蛛</a>
 </div>
 <div class="navbar-collapse collapse">
   <ul class="nav navbar-nav">
-    <li {% block navbar_li_home %}{% endblock %}><a href="{{ url_for('crawler.index') }}">首页</a></li>
+    <li {% block navbar_li_site %}{% endblock %}><a href="{{ url_for('crawler.sites_index') }}">站点</a></li>
+  </ul>
+  <ul class="nav navbar-nav">
+    <li {% block navbar_li_channel %}{% endblock %}><a href="{{ url_for('crawler.channels_index') }}">频道</a></li>
   </ul>
   <ul class="nav navbar-nav">
     <li {% block navbar_li_search %}{% endblock %}><a href="{{ url_for('crawler.search') }}">搜索</a></li>
