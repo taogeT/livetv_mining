@@ -17,7 +17,7 @@
       <h4>官网：<a href="{{ room.url }}" target="_blank">{{ room.url }}</a></h4>
       <h4>主播：
       {% if room.host.url %}
-        <a href="{{ room.url }}" target="_blank">{{ room.host.nickname }}</a>
+        <a href="{{ room.host.url }}" target="_blank">{{ room.host.nickname }}</a>
       {% else %}
         {{ room.host.nickname }}
       {% endif %}

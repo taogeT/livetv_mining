@@ -191,7 +191,7 @@ def crawl_room(self, room, gqueue):
     gqueue.put(('room', (room, room_data)))
     room.host.nickname = room_respjson['ANCHOR_NICK_NAME']
     room.host.followers = room_respjson['FANS_COUNT']
-    room.host.url = urljoin(self.site.url, room.host.officeid)
+    room.host.url = urljoin(SPACE_API, room.host.officeid)
     room.host.crawl_date = datetime.utcnow()
     host_data = BilibiliHostData(host=room.host, followers=room.host.followers)
     gqueue.put(('host', (room.host, host_data)))

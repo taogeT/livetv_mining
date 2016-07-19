@@ -123,6 +123,10 @@ def search_room_list(self, channel, gqueue):
                 resptext = self._get_response(requrl, to_json=False)
             except (ConnectionError, ProxyError, ValueError):
                 continue
+            if '.system-wrong-page' in resptext:
+                current_app.logger.error('调用接口 {} 失败: 访问频繁导致，休息10秒'.format(requrl))
+                gevent.sleep(10)
+                continue
             try:
                 respjson = re.sub('\"title\":\"[^\"]*\"[^\",]*[\"]+,',
                     lambda x: '"title":"{}",'.format(x.group(0)[9:-1].replace('"', '')), resptext)
