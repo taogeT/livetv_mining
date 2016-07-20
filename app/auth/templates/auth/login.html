@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block navbar_li_login %}class="active"{% endblock %}
+
+{% block title %}Tao蜘蛛-登录{% endblock %}
+
+{% block page_content %}
+<div class="row" style="text-align: center;">
+  <h3>通过第三方社交账户登录</h3>
+</div>
+<div class="row" style="text-align: center;">
+  <div class="col-lg-4 col-md-3"></div>
+  <div class="col-lg-4 col-md-6">
+    <a href="{{ url_for('auth.login_authorize', authtype='github') }}" class="btn btn-default btn-lg btn-block">
+      <img src="https://assets-cdn.github.com/favicon.ico">&nbsp;&nbsp;Github登录
+    </a>
+<!--
+    <a href="{{ url_for('auth.login_authorize', authtype='wechat') }}" class="btn btn-default btn-lg btn-block">
+      <img width="30px" src="https://weixin.qq.com/zh_CN/htmledition/images/favicon1fbcbe.ico">&nbsp;&nbsp;微信登录
+    </a>
+    <a href="{{ url_for('auth.login_authorize', authtype='qq') }}" class="btn btn-default btn-lg btn-block">
+      <img width="30px" src="http://sqimg.qq.com/qq_product_operations/im/qqlogo/logo.png">&nbsp;&nbsp;QQ登录
+    </a>
+    <a href="{{ url_for('auth.login_authorize', authtype='weibo') }}" class="btn btn-default btn-lg btn-block">
+      <img src="https://weibo.com/favicon.ico">&nbsp;&nbsp;微博登录
+    </a>
+ -->
+  </div>
+  <div class="col-lg-4 col-md-3"></div>
+</div>
+{% endblock %}

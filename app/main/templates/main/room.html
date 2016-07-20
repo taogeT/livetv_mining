@@ -1,4 +1,4 @@
-{% extends "webpage/base.html" %}
+{% extends "main/base.html" %}
 
 {% block title %}{{ room.name }}-{{ room.site.name }}-房间信息{% endblock %}
 
@@ -23,9 +23,9 @@
       {% endif %}
       </h4>
       <h4>
-        频道：<a href="{{ url_for('webpage.channel', channel_id=room.channel.id) }}">{{ room.channel.name }}</a>
+        频道：<a href="{{ url_for('main.channel', channel_id=room.channel.id) }}">{{ room.channel.name }}</a>
         &nbsp;&nbsp;
-        站点：<a href="{{ url_for('webpage.site', site_id=room.site.id) }}">{{ room.site.name }}</a>
+        站点：<a href="{{ url_for('main.site', site_id=room.site.id) }}">{{ room.site.name }}</a>
       </h4>
       <h4>更新时间：{{ moment(room.crawl_date).format('YYYY-MM-DD HH:mm:ss') }}</h4>
       <h4>人气：{{ room.online }}&nbsp;&nbsp;订阅：{{ room.host.followers }}</h4>

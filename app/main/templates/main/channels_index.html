@@ -1,4 +1,4 @@
-{% extends "webpage/base.html" %}
+{% extends "main/base.html" %}
 
 {% block navbar_li_channel %}class="active"{% endblock %}
 
@@ -14,12 +14,12 @@
   <div class="row">
   {% endif %}
     <div class="col-lg-6">
-      <a href="{{ url_for('webpage.site', site_id=site.id) }}">
+      <a href="{{ url_for('main.site', site_id=site.id) }}">
         <img height="100px" src="{{ site.image_url }}">
       </a>
       <h4><p>
         {{ site.name }}
-        <a href="{{ url_for('webpage.site', site_id=site.id) }}">更多内容</a>
+        <a href="{{ url_for('main.site', site_id=site.id) }}">更多内容</a>
       </p></h4>
       <span  style="text-align: left;">
       <h3>频道房间 TOP{{ config['FLASK_RANK_NUM'] }}</h3>
@@ -36,7 +36,7 @@
         {% for channel in site.channeltop.limit(config['FLASK_RANK_NUM']).all() %}
           <tr>
             <td align="center">{{ loop.index }}</td>
-            <td><a href="{{ url_for('webpage.channel', channel_id=channel.id) }}">{{ channel.name }}</a></td>
+            <td><a href="{{ url_for('main.channel', channel_id=channel.id) }}">{{ channel.name }}</a></td>
             <td>{{ channel.room_total }}</td>
             <td><span class="glyphicon glyphicon-arrow-{{ 'up' if channel.room_range >= 0 else 'down' }}" aria-hidden="true">{{ channel.room_range }}</span></td>
           </tr>

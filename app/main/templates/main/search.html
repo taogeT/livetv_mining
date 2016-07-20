@@ -1,4 +1,4 @@
-{% extends "webpage/base.html" %}
+{% extends "main/base.html" %}
 
 {% import "bootstrap/wtf.html" as wtf%}
 
@@ -41,7 +41,7 @@
   {% endfor %}
 </form>
 {% if rooms %}
-  {% import "webpage/_rooms.html" as macros_rooms with context %}
+  {% import "main/_rooms.html" as macros_rooms with context %}
   {% for site_name, room_list in rooms %}
     {% if room_list|length > 0 %}
       <h3>{{ site_name }}房间</h3>

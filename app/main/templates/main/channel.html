@@ -1,4 +1,4 @@
-{% extends "webpage/base.html" %}
+{% extends "main/base.html" %}
 
 {% block title %}{{ channel.name }}-{{ channel.site.name }}-频道信息{% endblock %}
 
@@ -18,7 +18,7 @@
     <p>
       <h4>官网：<a href="{{ channel.url }}" target="_blank">{{ channel.url }}</a></h4>
       <h4>
-        站点：<a href="{{ url_for('webpage.site', site_id=channel.site.id) }}">{{ channel.site.name }}</a>
+        站点：<a href="{{ url_for('main.site', site_id=channel.site.id) }}">{{ channel.site.name }}</a>
         &nbsp;当前直播房间数：{{ channel.room_total }}
       </h4>
       <h4>更新时间：{{ moment(channel.crawl_date).format('YYYY-MM-DD HH:mm') }}</h4>
@@ -28,12 +28,12 @@
   </div>
 </div>
 <h3>房间列表</h3>
-{% import "webpage/_rooms.html" as macros_rooms with context %}
+{% import "main/_rooms.html" as macros_rooms with context %}
 {{ macros_rooms.rooms_display(rooms=rooms) }}
 {% if pagination %}
 <div style="text-align: center">
 {% import "bootstrap/pagination.html" as macros %}
-{{ macros.render_pagination(pagination, endpoint='webpage.channel', args={'channel_id': channel.id}) }}
+{{ macros.render_pagination(pagination, endpoint='main.channel', args={'channel_id': channel.id}) }}
 </div>
 {% endif %}
 {% endblock %}

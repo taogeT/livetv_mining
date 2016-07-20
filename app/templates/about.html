@@ -1,8 +1,8 @@
-{% extends "webpage/base.html" %}
+{% extends "main/base.html" %}
 
 {% block navbar_li_aboutme %}class="active"{% endblock %}
 
 {% block page_content %}
 {{ mdhtml | safe }}
-{% include "webpage/_donate.html" %}
+{% include "_donate.html" %}
 {% endblock %}

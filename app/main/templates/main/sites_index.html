@@ -1,4 +1,4 @@
-{% extends "webpage/base.html" %}
+{% extends "main/base.html" %}
 
 {% block navbar_li_site %}class="active"{% endblock %}
 
@@ -19,7 +19,7 @@
     <div class="item {% if loop.first %}active{% endif %}" style="background-color:rgb(220, 220, 220)">
       <div class="container">
         <div class="carousel-caption">
-          <a href="{{ url_for('webpage.site', site_id=site.id) }}" style="text-decoration:none;color:#222;">
+          <a href="{{ url_for('main.site', site_id=site.id) }}" style="text-decoration:none;color:#222;">
             <h1><img height="100px" src="{{ site.image_url }}"></h1>
             <p>{{ site.description }}</p>
           </a>
@@ -44,12 +44,12 @@
   <div class="row">
   {% endif %}
     <div class="col-lg-6">
-      <a href="{{ url_for('webpage.site', site_id=site.id) }}">
+      <a href="{{ url_for('main.site', site_id=site.id) }}">
         <img height="100px" src="{{ site.image_url }}">
       </a>
       <h4><p>
         {{ site.name }}
-        <a href="{{ url_for('webpage.site', site_id=site.id) }}">更多内容</a>
+        <a href="{{ url_for('main.site', site_id=site.id) }}">更多内容</a>
       </p></h4>
       <span  style="text-align: left;">
       <h3>房间人气 TOP{{ config['FLASK_RANK_NUM'] }}</h3>
@@ -66,8 +66,8 @@
         {% for room in site.roomtop.limit(config['FLASK_RANK_NUM']).all() %}
           <tr>
             <td align="center">{{ loop.index }}</td>
-            <td><a href="{{ url_for('webpage.room', room_id=room.id) }}">{{ room.name }}</a></td>
-            <td><a href="{{ url_for('webpage.channel', channel_id=room.channel.id) }}">{{ room.channel.name }}</a></td>
+            <td><a href="{{ url_for('main.room', room_id=room.id) }}">{{ room.name }}</a></td>
+            <td><a href="{{ url_for('main.channel', channel_id=room.channel.id) }}">{{ room.channel.name }}</a></td>
             <td>{{ room.online }}</td>
           </tr>
         {% endfor %}

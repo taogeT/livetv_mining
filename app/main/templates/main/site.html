@@ -1,4 +1,4 @@
-{% extends "webpage/base.html" %}
+{% extends "main/base.html" %}
 
 {% block title %}{{ site.name }}-站点信息{% endblock %}
 
@@ -19,11 +19,11 @@
     </tbody>
   </table>
 </div>
-{% include "webpage/_channels.html" ignore missing %}
+{% include "main/_channels.html" ignore missing %}
 {% if pagination %}
 <div style="text-align: center">
 {% import "bootstrap/pagination.html" as macros %}
-{{ macros.render_pagination(pagination, endpoint='webpage.site', args={'site_id': site.id}) }}
+{{ macros.render_pagination(pagination, endpoint='main.site', args={'site_id': site.id}) }}
 </div>
 {% endif %}
 {% endblock %}

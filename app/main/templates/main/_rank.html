@@ -17,9 +17,9 @@
       {% for room in roomtop.limit(config['FLASK_RANK_NUM']) %}
         <tr>
           <td>{{ loop.index }}</td>
-          <td><a href="{{ url_for('webpage.room', room_id=room.id) }}">{{ room.name }}</a></td>
+          <td><a href="{{ url_for('main.room', room_id=room.id) }}">{{ room.name }}</a></td>
           <td>{{ room.host.nickname }}</td>
-          <td><a href="{{ url_for('webpage.channel', channel_id=room.channel.id) }}">{{ room.channel.name }}</a></td>
+          <td><a href="{{ url_for('main.channel', channel_id=room.channel.id) }}">{{ room.channel.name }}</a></td>
           <td>{{ room.online }}</td>
         </tr>
       {% endfor %}
@@ -43,7 +43,7 @@
         {% for channel in channeltop.limit(config['FLASK_RANK_NUM']) %}
         <tr>
           <td align="center">{{ loop.index }}</td>
-          <td><a href="{{ url_for('webpage.channel', channel_id=channel.id) }}">{{ channel.name }}</a></td>
+          <td><a href="{{ url_for('main.channel', channel_id=channel.id) }}">{{ channel.name }}</a></td>
           <td>{{ channel.room_total }}</td>
           <td>
           {% if channel.room_range > 0 %}

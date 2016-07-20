@@ -5,11 +5,11 @@
     {% endif %}
     <div class="col-lg-3 col-md-6" style="text-align: center;">
       {% if room.image_url %}
-      <a href="{{ url_for('webpage.room', room_id=room.id) }}">
+      <a href="{{ url_for('main.room', room_id=room.id) }}">
         <img class="img-rounded" width="108%" src="{{ room.image_url }}" title="{{ room.name | safe }}">
       </a>
       {% endif %}
-      <a href="{{ url_for('webpage.room', room_id=room.id) }}">{{ room.name | safe }}</a>
+      <a href="{{ url_for('main.room', room_id=room.id) }}">{{ room.name | safe }}</a>
       <p>
         主播 {% if room.host.url %}<a href="{{ room.host.url }}" target="_blank">{{ room.host.nickname }}</a>{% else %}{{ room.host.nickname }}{% endif %}
         &nbsp;&nbsp;&nbsp;&nbsp;人气 {{ room.online }}<br>

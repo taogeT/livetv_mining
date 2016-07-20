@@ -5,7 +5,7 @@ from sqlalchemy import and_
 from datetime import datetime, timedelta
 
 from .forms import SearchRoomForm
-from . import webpage
+from . import main
 from ..models import LiveTVSite, LiveTVChannel, LiveTVRoom, LiveTVHost, \
                     LiveTVChannelData, LiveTVRoomData
 
@@ -14,28 +14,28 @@ import os
 import pytz
 
 
-@webpage.route('/')
-@webpage.route('/sites')
+@main.route('/')
+@main.route('/sites')
 def sites_index():
     """ 直播网站列表 """
     sites = []
     for site in LiveTVSite.query.filter_by(valid=True).order_by(LiveTVSite.order_int.asc()).all():
         site.roomtop = site.rooms.filter_by(openstatus=True).order_by(LiveTVRoom.online.desc())
         sites.append(site)
-    return render_template('webpage/sites_index.html', sites=sites)
+    return render_template('main/sites_index.html', sites=sites)
 
 
-@webpage.route('/channels')
+@main.route('/channels')
 def channels_index():
     """ 直播频道列表 """
     sites = []
     for site in LiveTVSite.query.filter_by(valid=True).order_by(LiveTVSite.order_int.asc()).all():
         site.channeltop = site.channels.filter_by(valid=True).order_by(LiveTVChannel.room_total.desc())
         sites.append(site)
-    return render_template('webpage/channels_index.html', sites=sites)
+    return render_template('main/channels_index.html', sites=sites)
 
 
-@webpage.route('/site/<int:site_id>')
+@main.route('/site/<int:site_id>')
 def site(site_id):
     """ 网站详细&频道列表 """
     site = LiveTVSite.query.get_or_404(site_id)
@@ -45,10 +45,10 @@ def site(site_id):
             page = page, error_out = False,
             per_page = current_app.config['FLASK_CHANNELS_PER_PAGE'])
     channels = pagination.items
-    return render_template('webpage/site.html', channels=channels, pagination=pagination, site=site)
+    return render_template('main/site.html', channels=channels, pagination=pagination, site=site)
 
 
-@webpage.route('/channel/<int:channel_id>')
+@main.route('/channel/<int:channel_id>')
 def channel(channel_id):
     """ 频道详细&房间列表 """
     channel = LiveTVChannel.query.get_or_404(channel_id)
@@ -83,11 +83,11 @@ def channel(channel_id):
         if chart_y_count > 0:
             chart_y_axis[-1] /= chart_y_count
         compare_date += split_delta
-    return render_template('webpage/channel.html', channel=channel, rooms=rooms, pagination=pagination,
+    return render_template('main/channel.html', channel=channel, rooms=rooms, pagination=pagination,
                                                    chart_axis=(chart_x_axis, chart_y_axis))
 
 
-@webpage.route('/room/<int:room_id>')
+@main.route('/room/<int:room_id>')
 def room(room_id):
     """ 房间详细 """
     room = LiveTVRoom.query.get_or_404(room_id)
@@ -117,10 +117,10 @@ def room(room_id):
         if chart_y_count > 0:
             chart_y_axis[-1] /= chart_y_count
         compare_date += split_delta
-    return render_template('webpage/room.html', room=room, chart_axis=(chart_x_axis, chart_y_axis))
+    return render_template('main/room.html', room=room, chart_axis=(chart_x_axis, chart_y_axis))
 
 
-@webpage.route('/search', methods=['GET', 'POST'])
+@main.route('/search', methods=['GET', 'POST'])
 def search():
     """ 导航栏搜索 """
     form = SearchRoomForm()
@@ -143,13 +143,13 @@ def search():
                                        .paginate(page=1, error_out=False,
                                                  per_page=current_app.config['FLASK_SEARCH_PER_PAGE'])
                 rooms.append((codefield.label.text, pagination.items))
-        return render_template('webpage/search.html', rooms=rooms, form=form)
-    return render_template('webpage/search.html', form=form, rooms=[], over_query_count=False)
+        return render_template('main/search.html', rooms=rooms, form=form)
+    return render_template('main/search.html', form=form, rooms=[], over_query_count=False)
 
 
-@webpage.route('/about')
+@main.route('/about')
 def about():
     """ 关于 """
     with codecs.open(os.path.join(os.path.dirname(__file__), 'README.md'), 'r', encoding='utf-8') as mdf:
         mdhtml = markdown(mdf.read())
-    return render_template('webpage/about.html', mdhtml=mdhtml)
+    return render_template('main/about.html', mdhtml=mdhtml)

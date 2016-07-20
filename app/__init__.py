@@ -6,6 +6,7 @@ from flask_moment import Moment
 from flask_sqlalchemy import SQLAlchemy
 from flask_redis import FlaskRedis
 from flask_wtf import CsrfProtect
+from flask_oauthlib.client import OAuth
 from gevent import monkey
 from logging import FileHandler, Formatter
 
@@ -19,6 +20,7 @@ db = SQLAlchemy()
 celery = Celery()
 redis = FlaskRedis()
 csrf = CsrfProtect()
+oauth = OAuth()
 monkey.patch_all()
 
 
@@ -33,12 +35,16 @@ def create_app(config_name):
     db.init_app(app)
     redis.init_app(app, strict=True)
     csrf.init_app(app)
+    oauth.init_app(app)
 
     from .crawler import crawler as crawler_blueprint
     app.register_blueprint(crawler_blueprint)
 
-    from .webpage import webpage as webpage_blueprint
-    app.register_blueprint(webpage_blueprint)
+    from .main import main as main_blueprint
+    app.register_blueprint(main_blueprint)
+
+    from .auth import auth as auth_blueprint
+    app.register_blueprint(auth_blueprint, url_prefix='/auth')
 
     celery.init_app(app)
 
