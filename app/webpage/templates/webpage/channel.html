@@ -1,0 +1,76 @@
+{% extends "webpage/base.html" %}
+
+{% block title %}{{ channel.name }}-{{ channel.site.name }}-频道信息{% endblock %}
+
+{% block navbar_li_channel %}class="active"{% endblock %}
+
+{% block page_content %}
+<div class="row">
+  {% if channel.image_url %}
+  <div class="col-lg-4 col-md-4">
+    <img class="img-rounded" width="90%" src="{{ channel.image_url }}" />
+  </div>
+  <div class="col-lg-8 col-md-8" style="text-align: left;">
+  {% else %}
+  <div class="col-lg-12 col-md-12" style="text-align: left;">
+  {% endif %}
+    <h1>{{ channel.name }}</h1>
+    <p>
+      <h4>官网：<a href="{{ channel.url }}" target="_blank">{{ channel.url }}</a></h4>
+      <h4>
+        站点：<a href="{{ url_for('webpage.site', site_id=channel.site.id) }}">{{ channel.site.name }}</a>
+        &nbsp;当前直播房间数：{{ channel.room_total }}
+      </h4>
+      <h4>更新时间：{{ moment(channel.crawl_date).format('YYYY-MM-DD HH:mm') }}</h4>
+    </p>
+    <canvas id="yesterdayChart" width="700px" height="280px"></canvas>
+
+  </div>
+</div>
+<h3>房间列表</h3>
+{% import "webpage/_rooms.html" as macros_rooms with context %}
+{{ macros_rooms.rooms_display(rooms=rooms) }}
+{% if pagination %}
+<div style="text-align: center">
+{% import "bootstrap/pagination.html" as macros %}
+{{ macros.render_pagination(pagination, endpoint='webpage.channel', args={'channel_id': channel.id}) }}
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="//cdn.bootcss.com/Chart.js/2.1.6/Chart.min.js"></script>
+<script>
+var yesdata = {
+    type: 'line',
+    data: {
+        labels: {{ chart_axis[0] | safe }},
+        datasets: [
+            {
+                label: "昨日房间数",
+                fillColor : "rgba(151,187,205,0.5)",
+                strokeColor : "rgba(220,220,220,1)",
+                pointColor : "rgba(220,220,220,1)",
+                pointStrokeColor : "#fff",
+                data : {{ chart_axis[1] | safe }}
+            }
+        ]
+    },
+    options: {
+        title: {
+            fontSize: 14,
+        },
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero:true
+                }
+            }]
+        }
+    }
+}
+var yesctx = document.getElementById("yesterdayChart").getContext("2d")
+var yesChart = new Chart(yesctx, yesdata)
+</script>
+{% endblock %}

@@ -2,7 +2,7 @@
 <div class="row">
   {% if roomtop != None %}
   <div class="col-lg-{% if channeltop != None %}8{% else %}12{% endif %}">
-    <h3>房间人气 TOP{{ roomtop.count() }}</h3>
+    <h3>房间人气 TOP{{ config['FLASK_RANK_NUM'] }}</h3>
     <table class="table">
       <thead>
         <tr>
@@ -14,13 +14,13 @@
         </tr>
       </thead>
       <tbody>
-      {% for room in roomtop.all() %}
+      {% for room in roomtop.limit(config['FLASK_RANK_NUM']) %}
         <tr>
           <td>{{ loop.index }}</td>
-          <td><a href="{{ url_for('crawler.room', room_id=room.id) }}">{{ room.name }}</a></td>
-          <td>{{ room.boardcaster }}</td>
-          <td><a href="{{ url_for('crawler.channel', channel_id=room.channel.id) }}">{{ room.channel.name }}</a></td>
-          <td>{{ room.popularity }}</td>
+          <td><a href="{{ url_for('webpage.room', room_id=room.id) }}">{{ room.name }}</a></td>
+          <td>{{ room.host.nickname }}</td>
+          <td><a href="{{ url_for('webpage.channel', channel_id=room.channel.id) }}">{{ room.channel.name }}</a></td>
+          <td>{{ room.online }}</td>
         </tr>
       {% endfor %}
       </tbody>
@@ -29,7 +29,7 @@
   {% endif %}
   {% if channeltop != None %}
   <div class="col-lg-{% if roomtop != None %}4{% else %}12{% endif %}">
-    <h3>频道房间数 TOP{{ channeltop.count() }}</h3>
+    <h3>频道房间数 TOP{{ config['FLASK_RANK_NUM'] }}</h3>
     <table class="table">
       <thead>
         <tr>
@@ -40,16 +40,16 @@
         </tr>
       </thead>
       <tbody>
-        {% for channel in channeltop.all() %}
+        {% for channel in channeltop.limit(config['FLASK_RANK_NUM']) %}
         <tr>
           <td align="center">{{ loop.index }}</td>
-          <td><a href="{{ url_for('crawler.channel', channel_id=channel.id) }}">{{ channel.name }}</a></td>
-          <td>{{ channel.roomcount }}</td>
+          <td><a href="{{ url_for('webpage.channel', channel_id=channel.id) }}">{{ channel.name }}</a></td>
+          <td>{{ channel.room_total }}</td>
           <td>
-          {% if channel.range > 0 %}
-            <span class="glyphicon glyphicon-arrow-up" aria-hidden="true">{{ channel.range }}</span>
+          {% if channel.room_range > 0 %}
+            <span class="glyphicon glyphicon-arrow-up" aria-hidden="true">{{ channel.room_range }}</span>
           {% else %}
-            <span class="glyphicon glyphicon-arrow-down" aria-hidden="true">{{ channel.range }}</span>
+            <span class="glyphicon glyphicon-arrow-down" aria-hidden="true">{{ channel.room_range }}</span>
           {% endif %}
           </td>
         </tr>

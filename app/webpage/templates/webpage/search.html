@@ -1,0 +1,55 @@
+{% extends "webpage/base.html" %}
+
+{% import "bootstrap/wtf.html" as wtf%}
+
+{% block navbar_li_search %}class="active"{% endblock %}
+
+{% block page_content %}
+<h3>搜索正在直播站点房间</h3>
+<form action="" method="post" class="form form-horizontal" role="form">
+  {{ form.hidden_tag() }}
+  {{ wtf.form_errors(form, hiddens='only') }}
+  {% for field in form %}
+  {% if field.type != 'CSRFTokenField' %}
+  <div class="form-group">
+    {% if field.type == 'FormField' %}
+      {{ field.label(class='control-label  col-lg-2') | safe }}
+      <div class=" col-lg-5">
+        <div class="checkbox">
+          {% for sitefield in field.form %}
+            {% if sitefield.widget.input_type == 'checkbox' %}
+              <label>
+                {{ sitefield()|safe }} {{ sitefield.label.text|safe }}
+              </label>&nbsp;&nbsp;&nbsp;&nbsp;
+            {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+    {% elif field.type == 'SubmitField' %}
+      {{ field.label(text=' ', class='control-label  col-lg-2')|safe }}
+      <div class=" col-lg-5">
+        {{ field(class='btn btn-primary') }}
+      </div>
+    {% else %}
+      {{ field.label(class='control-label  col-lg-2')|safe }}
+      <div class=" col-lg-5">
+        {{ field(class='form-control')|safe }}
+      </div>
+    {% endif %}
+  </div>
+  {% endif %}
+  {% endfor %}
+</form>
+{% if rooms %}
+  {% import "webpage/_rooms.html" as macros_rooms with context %}
+  {% for site_name, room_list in rooms %}
+    {% if room_list|length > 0 %}
+      <h3>{{ site_name }}房间</h3>
+      {{ macros_rooms.rooms_display(rooms=room_list) }}
+      {% if room_list|length >= config['FLASK_SEARCH_PER_PAGE'] %}
+        <div class="alert alert-warning" role="alert">搜索结果较多，请输入更精确查询条件！</div>
+      {% endif %}
+    {% endif %}
+  {% endfor %}
+{% endif %}
+{% endblock %}

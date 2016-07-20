@@ -1,0 +1,80 @@
+{% extends "webpage/base.html" %}
+
+{% block title %}{{ room.name }}-{{ room.site.name }}-房间信息{% endblock %}
+
+{% block page_content %}
+<div class="row">
+  {% if room.image_url %}
+  <div class="col-lg-4 col-md-4">
+    <img class="img-rounded" width="90%" src="{{ room.image_url }}">
+  </div>
+  <div class="col-lg-8 col-md-8" style="text-align: left;">
+  {% else %}
+  <div class="col-lg-12 col-md-12" style="text-align: left;">
+  {% endif %}
+    <h2>{{ room.name }}</h2>
+    <p>
+      <h4>官网：<a href="{{ room.url }}" target="_blank">{{ room.url }}</a></h4>
+      <h4>主播：
+      {% if room.host.url %}
+        <a href="{{ room.host.url }}" target="_blank">{{ room.host.nickname }}</a>
+      {% else %}
+        {{ room.host.nickname }}
+      {% endif %}
+      </h4>
+      <h4>
+        频道：<a href="{{ url_for('webpage.channel', channel_id=room.channel.id) }}">{{ room.channel.name }}</a>
+        &nbsp;&nbsp;
+        站点：<a href="{{ url_for('webpage.site', site_id=room.site.id) }}">{{ room.site.name }}</a>
+      </h4>
+      <h4>更新时间：{{ moment(room.crawl_date).format('YYYY-MM-DD HH:mm:ss') }}</h4>
+      <h4>人气：{{ room.online }}&nbsp;&nbsp;订阅：{{ room.host.followers }}</h4>
+      {% if room.symbol == 'douyu' %}
+      <h4>体重：{{ room.weight }}</h4>
+      {% endif %}
+    </p>
+  </div>
+</div>
+<div class="row">
+  <div class="col-lg-12 col-md-12">
+    <canvas id="yesterdayChart" width="700px" height="280px"></canvas>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="//cdn.bootcss.com/Chart.js/2.1.6/Chart.min.js"></script>
+<script>
+var yesdata = {
+    type: 'line',
+    data: {
+        labels: {{ chart_axis[0] | safe }},
+        datasets: [
+            {
+                label: "昨日人气波动",
+                fillColor : "rgba(151,187,205,0.5)",
+                strokeColor : "rgba(220,220,220,1)",
+                pointColor : "rgba(220,220,220,1)",
+                pointStrokeColor : "#fff",
+                data : {{ chart_axis[1] | safe }}
+            }
+        ]
+    },
+    options: {
+        title: {
+            fontSize: 14,
+        },
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero:true
+                }
+            }]
+        }
+    }
+}
+var yesctx = document.getElementById("yesterdayChart").getContext("2d")
+var yesChart = new Chart(yesctx, yesdata)
+</script>
+{% endblock %}
