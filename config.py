@@ -17,6 +17,7 @@ class Config(object):
     CELERY_SEND_TASK_ERROR_EMAILS = True
     CELERY_ADMINS = [('taogeT', 'zwtzjd@gmail.com')]
     CELERY_SUPERVISOR_ROWCOUNT = 80
+    USER_VALID_MINS = 15
 
     @staticmethod
     def init_app(app):

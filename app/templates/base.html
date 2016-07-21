@@ -25,23 +25,29 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="{{ url_for('main.sites_index') }}">Tao蜘蛛</a>
+      <a class="navbar-brand" href="{{ url_for('index') }}">Tao蜘蛛</a>
     </div>
     <div class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li {% block navbar_li_site %}{% endblock %}><a href="{{ url_for('main.sites_index') }}">站点</a></li>
-      </ul>
-      <ul class="nav navbar-nav">
         <li {% block navbar_li_channel %}{% endblock %}><a href="{{ url_for('main.channels_index') }}">频道</a></li>
-      </ul>
-      <ul class="nav navbar-nav">
         <li {% block navbar_li_search %}{% endblock %}><a href="{{ url_for('main.search') }}">搜索</a></li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        <li {% block navbar_li_aboutme %}{% endblock %}><a href="{{ url_for('main.about') }}">关于站点</a></li>
-      </ul>
-      <ul class="nav navbar-nav navbar-right">
+      {% if g.user %}
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+            {{ g.user.nickname if g.user.nickname else g.user.username }} <span class="caret"></span>
+          </a>
+          <ul class="dropdown-menu">
+            <li role="separator" class="divider"></li>
+            <li><a href="{{ url_for('auth.logout') }}">退出</a></li>
+          </ul>
+        </li>
+      {% else %}
         <li {% block navbar_li_login %}{% endblock %}><a href="{{ url_for('auth.login') }}">登录</a></li>
+      {% endif %}
+        <li {% block navbar_li_aboutme %}{% endblock %}><a href="{{ url_for('about') }}">关于站点</a></li>
       </ul>
     </div>
     {% endblock %}
@@ -56,7 +62,7 @@
 <footer class="footer">
   <div class="container">
     {% block page_footer %}{% endblock %}
-    <p>作者 <a href="{{url_for('main.about')}}">taogeT</a> 独立开发完成，源代码受 <a rel="license" href="https://github.com/taogeT/display_shelf/blob/master/LICENSE" target="_blank">GPL</a> 开源协议保护，地址 <a href="https://github.com/taogeT" target="_blank">GitHub 仓库</a>。</p>
+    <p>作者 <a href="{{url_for('about')}}">taogeT</a> 独立开发完成，源代码受 <a rel="license" href="https://github.com/taogeT/display_shelf/blob/master/LICENSE" target="_blank">GPL</a> 开源协议保护，地址 <a href="https://github.com/taogeT" target="_blank">GitHub 仓库</a>。</p>
   </div>
 </footer>
 {% endblock %}

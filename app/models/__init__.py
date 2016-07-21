@@ -73,7 +73,7 @@ class LiveTVRoom(db.Model):
 
 
 class LiveTVHost(db.Model):
-    """ 房间 """
+    """ 主持人 """
     __tablename__ = 'livetv_host'
     id = db.Column(db.Integer, primary_key=True)
     site_id = db.Column(db.Integer, db.ForeignKey('livetv_site.id'))

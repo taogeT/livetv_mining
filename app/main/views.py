@@ -14,7 +14,6 @@ import os
 import pytz
 
 
-@main.route('/')
 @main.route('/sites')
 def sites_index():
     """ 直播网站列表 """
@@ -145,11 +144,3 @@ def search():
                 rooms.append((codefield.label.text, pagination.items))
         return render_template('main/search.html', rooms=rooms, form=form)
     return render_template('main/search.html', form=form, rooms=[], over_query_count=False)
-
-
-@main.route('/about')
-def about():
-    """ 关于 """
-    with codecs.open(os.path.join(os.path.dirname(__file__), 'README.md'), 'r', encoding='utf-8') as mdf:
-        mdhtml = markdown(mdf.read())
-    return render_template('main/about.html', mdhtml=mdhtml)

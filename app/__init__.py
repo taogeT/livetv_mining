@@ -48,6 +48,10 @@ def create_app(config_name):
 
     celery.init_app(app)
 
+    from .views import about
+    app.add_url_rule('/', endpoint='index', view_func=main.views.sites_index)
+    app.add_url_rule('/about', endpoint='about', view_func=about)
+
     fhandler = FileHandler(app.config.get('FLASK_ERROR_LOGFILE', 'error.log'))
     fhandler.setLevel(logging.ERROR)
     fhandler.setFormatter(Formatter('[%(asctime)s] %(levelname)s in %(module)s: %(message)s'))
