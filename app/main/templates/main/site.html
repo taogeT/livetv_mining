@@ -19,7 +19,11 @@
     </tbody>
   </table>
 </div>
-{% include "main/_channels.html" ignore missing %}
+{% if channels %}
+<h3>频道列表</h3>
+{% import "_channels.html" as macros_channels with context %}
+{{ macros_channels.channels_display(channels=channels) }}
+{% endif %}
 {% if pagination %}
 <div style="text-align: center">
 {% import "bootstrap/pagination.html" as macros %}

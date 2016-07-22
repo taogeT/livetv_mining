@@ -1,10 +1,10 @@
 # -*- coding: UTF-8 -*-
-from flask import session, redirect, request, url_for, g
-from datetime import datetime
+from flask import session, redirect, request, url_for
+from flask_login import login_user
 
 from .. import oauth, db
 from . import auth
-from .models import User
+from ..models import User
 
 github = oauth.remote_app(
     'github',
@@ -20,7 +20,7 @@ github = oauth.remote_app(
 
 @github.tokengetter
 def get_github_oauth_token():
-    return (session.get('github_token'), '')
+    return session.get('github_token')
 
 
 @auth.route('/authorized/github')
@@ -31,8 +31,7 @@ def github_authorized():
             request.args['error'],
             request.args['error_description']
         )
-    session['github_token'] = resp['access_token']
-    session['token_authtype'] = 'github'
+    session['github_token'] = (resp['access_token'], '')
     userjson = github.get('user').data
     user = User.query.filter_by(officeid=str(userjson['id']), symbol='github').one_or_none()
     if not user:
@@ -41,9 +40,7 @@ def github_authorized():
     user.email = userjson['email']
     user.image_url = userjson['avatar_url']
     user.description = userjson['bio']
-    user.last_seen = datetime.utcnow()
-    user.session_value = session['github_token']
     db.session.add(user)
     db.session.commit()
-    g.user = user
-    return redirect(url_for('index'))
+    login_user(user)
+    return redirect(request.args.get('next') or url_for('index'))

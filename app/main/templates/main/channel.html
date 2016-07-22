@@ -27,9 +27,11 @@
 
   </div>
 </div>
+{% if rooms %}
 <h3>房间列表</h3>
-{% import "main/_rooms.html" as macros_rooms with context %}
+{% import "_rooms.html" as macros_rooms with context %}
 {{ macros_rooms.rooms_display(rooms=rooms) }}
+{% endif %}
 {% if pagination %}
 <div style="text-align: center">
 {% import "bootstrap/pagination.html" as macros %}

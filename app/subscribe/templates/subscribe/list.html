@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}Tao蜘蛛-订阅情况{% endblock %}
+
+{% block page_content %}
+<h3>已订阅房间<small><a><span class="glyphicon glyphicon-arrow-plus" aria-hidden="true"></span></a></small></h3>
+{% if rooms %}
+  {% import "_rooms.html" as macros_rooms with context %}
+  {% for site_name, room_list in rooms %}
+    <h4>{{ site_name }}房间</h4>
+    {{ macros_rooms.rooms_display(rooms=room_list) }}
+  {% endfor %}
+{% endif %}
+{% endblock %}

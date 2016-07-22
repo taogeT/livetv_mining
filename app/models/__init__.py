@@ -1,4 +1,5 @@
 # -*- coding: UTF-8 -*-
+from flask_login import UserMixin
 from datetime import datetime
 
 from .. import db
@@ -145,6 +146,31 @@ class LiveTVHostData(db.Model):
         'polymorphic_on': symbol,
         'with_polymorphic': '*'
     }
+
+
+class User(UserMixin, db.Model):
+    """ 用户 """
+    __tablename__ = 'user'
+    id = db.Column(db.Integer, primary_key=True)
+    rooms = db.relationship('LiveTVRoom', secondary='user_room_link', backref='users')
+    symbol = db.Column(db.String(32), doc='站点标记')
+
+    officeid = db.Column(db.String(64), index=True, doc='官方ID')
+    username = db.Column(db.String(64), index=True, doc='用户名')
+    nickname = db.Column(db.String(128), index=True, doc='显示名称')
+    email = db.Column(db.String(256), index=True, doc='邮箱地址')
+    url = db.Column(db.Text, doc='空间访问')
+    image_url = db.Column(db.Text, doc='图片')
+    description = db.Column(db.Text, doc='描述')
+    member_since = db.Column(db.DateTime, default=datetime.utcnow)
+    last_seen = db.Column(db.DateTime, default=datetime.utcnow)
+
+
+class UserRoomLink(db.Model):
+    __tablename__ = 'user_room_link'
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
+    room_id = db.Column(db.Integer, db.ForeignKey('livetv_room.id'), primary_key=True)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
 
 
 from .douyu import *
