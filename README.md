@@ -94,5 +94,6 @@
 * [Flask](http://flask.pocoo.org/) 
 * [Bootstrap](http://www.bootstrap.com/)
 * [Requests](http://www.python-requests.org/)
-* [Selenium](http://www.seleniumhq.org/)
 * [Celery](http://www.celeryproject.org/)
+* [Gevent](http://www.gevent.org/)
+* [PostgreSQL](https://www.postgresql.org/)

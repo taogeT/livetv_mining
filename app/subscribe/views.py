@@ -10,7 +10,7 @@ from . import subscribe
 @login_required
 def slist():
     rooms = {}
-    for room in g.user.rooms.all():
+    for room in g.user.rooms:
         if room.site.name in rooms:
             rooms[room.site.name].append(room)
         else:

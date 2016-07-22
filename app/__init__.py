@@ -51,7 +51,7 @@ def create_app(config_name):
     app.register_blueprint(auth_blueprint, url_prefix='/auth')
 
     from .subscribe import subscribe as subscribe_blueprint
-    app.register_blueprint(auth_blueprint, url_prefix='/subscribe')
+    app.register_blueprint(subscribe_blueprint, url_prefix='/subscribe')
 
     celery.init_app(app)
     login_manager.login_view = 'auth.login'
