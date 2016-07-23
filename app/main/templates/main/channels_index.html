@@ -9,6 +9,7 @@
 {% block page_content %}
 <div class="container marketing">
 <!-- Three columns of text below the carousel -->
+{% import "bootstrap/utils.html" as utils %}
 {% for site in sites %}
   {% if (loop.index - 1) % 2 == 0 %}
   <div class="row">
@@ -38,7 +39,7 @@
             <td align="center">{{ loop.index }}</td>
             <td><a href="{{ url_for('main.channel', channel_id=channel.id) }}">{{ channel.name }}</a></td>
             <td>{{ channel.room_total }}</td>
-            <td><span class="glyphicon glyphicon-arrow-{{ 'up' if channel.room_range >= 0 else 'down' }}" aria-hidden="true">{{ channel.room_range }}</span></td>
+            <td>{{ utils.icon(type='arrow-up' if channel.room_range >= 0 else 'arrow-down') }}{{ channel.room_range }}</td>
           </tr>
         {% endfor %}
         </tbody>

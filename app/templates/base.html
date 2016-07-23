@@ -62,7 +62,9 @@
 
 {% block content %}
 <div class="container">
-{% block page_content %}{% endblock %}
+  {% import "bootstrap/utils.html" as utils %}
+  {{ utils.flashed_messages() }}
+  {% block page_content %}{% endblock %}
 </div>
 <footer class="footer">
   <div class="container">

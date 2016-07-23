@@ -1,4 +1,5 @@
 {% macro channels_display(channels) %}
+  {% import "bootstrap/utils.html" as utils %}
   {% for channel in channels %}
     {% if (loop.index - 1) % 6 == 0 %}
       <div class="row">
@@ -14,7 +15,7 @@
       {% endif %}
       <p>
         房间数 {{ channel.room_total }}
-        <span class="glyphicon glyphicon-arrow-{{ 'up' if channel.room_range >= 0 else 'down' }}" aria-hidden="true">{{ channel.room_range }}</span>
+        {{ utils.icon(type='arrow-up' if channel.room_range >= 0 else 'arrow-down') }}{{ channel.room_range }}
         <a href="{{ channel.url }}" target="_blank">官网</a><br>
         {{ moment(channel.crawl_date).format('YYYY-MM-DD HH:mm') }} 更新
       </p>

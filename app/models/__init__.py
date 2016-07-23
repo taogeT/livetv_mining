@@ -164,6 +164,7 @@ class User(UserMixin, db.Model):
     description = db.Column(db.Text, doc='描述')
     member_since = db.Column(db.DateTime, default=datetime.utcnow)
     last_seen = db.Column(db.DateTime, default=datetime.utcnow)
+    subscribe_max = db.Column(db.Integer, index=True, default=1, doc='最大订阅数')
 
 
 class UserRoomLink(db.Model):

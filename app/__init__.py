@@ -23,7 +23,6 @@ redis = FlaskRedis()
 csrf = CsrfProtect()
 oauth = OAuth()
 login_manager = LoginManager()
-login_manager.session_protection = 'strong'
 monkey.patch_all()
 
 
