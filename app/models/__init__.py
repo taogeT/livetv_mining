@@ -152,7 +152,7 @@ class User(UserMixin, db.Model):
     """ 用户 """
     __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
-    rooms = db.relationship('LiveTVRoom', secondary='user_room_link', backref='users')
+    rooms = db.relationship('LiveTVRoom', secondary='user_room_link', backref='users', lazy='dynamic')
     symbol = db.Column(db.String(32), doc='站点标记')
 
     officeid = db.Column(db.String(64), index=True, doc='官方ID')

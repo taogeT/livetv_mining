@@ -25,7 +25,7 @@ def slist():
         return redirect(url_for('subscribe.slist'))
     rooms = {}
     subscribe_count = 0
-    for room in current_user.rooms:
+    for room in current_user.rooms.all():
         if room.site.name in rooms:
             rooms[room.site.name].append(room)
         else:
