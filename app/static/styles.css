@@ -12,6 +12,12 @@ body {
     background-image: linear-gradient(to bottom,#fff 0,#f8f8f8 100%);
 }
 
+.page-header {
+  padding-bottom: 9px;
+  margin: 0px 0 0px;
+  border-bottom: 1px solid #eee;
+}
+
 .profile-thumbnail {
     position: absolute;
 }

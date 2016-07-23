@@ -3,7 +3,9 @@
 {% block title %}Tao蜘蛛-订阅情况{% endblock %}
 
 {% block page_content %}
-<p><h3>已订阅房间<small>（{{ subscribe_count }}/{{ g.user.subscribe_max }}）</small></h3></p>
+<div class="page-header">
+  <p><h3>已订阅房间<small>（{{ subscribe_count }}/{{ g.user.subscribe_max }}）</small></h3></p>
+</div>
 {% if subscribe_count < 1 %}
 {% import "bootstrap/wtf.html" as wtf %}
   <form action="" method="post" class="form form-inline" role="form">
