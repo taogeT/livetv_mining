@@ -6,12 +6,12 @@
     {% endif %}
     <div class="col-lg-2 col-md-4" style="text-align: center;">
       {% if channel.image_url %}
-      <a href="{{ url_for('main.channel', channel_id=channel.id) }}" title="{{ channel.name | safe }}">
+      <a href="{{ url_for('main.channel', channel_id=channel.id) }}" title="{{ channel.name|safe }}">
         <img class="img-rounded" width="110%" src="{{ channel.image_url }}">
       </a>
-      <a href="{{ url_for('main.channel', channel_id=channel.id) }}">{{ channel.name | safe }}</a>
+      <a href="{{ url_for('main.channel', channel_id=channel.id) }}">{{ channel.name|safe }}</a>
       {% else %}
-      <a href="{{ url_for('main.channel', channel_id=channel.id) }}"><h2>{{ channel.name | safe }}</h2></a>
+      <a href="{{ url_for('main.channel', channel_id=channel.id) }}"><h2>{{ channel.name|safe }}</h2></a>
       {% endif %}
       <p>
         房间数 {{ channel.room_total }}

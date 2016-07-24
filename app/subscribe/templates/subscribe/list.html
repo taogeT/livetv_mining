@@ -36,9 +36,9 @@
       </div>
       <div class="col-lg-8 col-md-7" style="text-align: left;">
         <h3>
-          {{ room.name }}
+          <a href="{{ url_for('main.room', room_id=room.id) }}">{{ room.name|safe }}</a>
           <small>
-          {% if openstatus %}
+          {% if room.openstatus %}
           <span class="label label-success">直播中</span>
           {% else %}
           <span class="label label-danger">未直播</span>
