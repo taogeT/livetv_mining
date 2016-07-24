@@ -28,7 +28,7 @@
         站点：<a href="{{ url_for('main.site', site_id=room.site.id) }}">{{ room.site.name }}</a>
       </h4>
       <h4>更新时间：{{ moment(room.crawl_date).format('YYYY-MM-DD HH:mm:ss') }}</h4>
-      <h4>人气：{{ room.online }}&nbsp;&nbsp;订阅：{{ room.host.followers }}</h4>
+      <h4>人气：{{ room.online }}&nbsp;&nbsp;关注数：{{ room.host.followers }}</h4>
     </p>
   </div>
 </div>

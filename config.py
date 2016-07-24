@@ -17,6 +17,8 @@ class Config(object):
     CELERY_SEND_TASK_ERROR_EMAILS = True
     CELERY_ADMINS = [('taogeT', 'zwtzjd@gmail.com')]
     CELERY_SUPERVISOR_ROWCOUNT = 80
+    CELERY_IGNORE_RESULT = True
+    CELERYD_MAX_TASKS_PER_CHILD = 50
     SESSION_PROTECTION = 'strong'
 
     @staticmethod

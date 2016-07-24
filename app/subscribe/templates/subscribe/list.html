@@ -2,39 +2,66 @@
 
 {% block title %}Tao蜘蛛-订阅情况{% endblock %}
 
+{% import "bootstrap/wtf.html" as wtf %}
+
 {% block page_content %}
 <div class="page-header">
   <p><h3>已订阅房间<small>（{{ subscribe_count }}/{{ g.user.subscribe_max }}）</small></h3></p>
 </div>
 {% if subscribe_count < 1 %}
-{% import "bootstrap/wtf.html" as wtf %}
-  <form action="" method="post" class="form form-inline" role="form">
-    {{ form.hidden_tag() }}
-    {{ wtf.form_errors(form, hiddens='only') }}
-    <div class="form-group {{ 'has-error' if form.roomurl.errors else '' }} {{ 'required' if form.roomurl.flags.required else '' }}">
-      {{ form.roomurl.label()|safe }}：{{ form.roomurl(class="form-control", size=40)|safe }}
+  <form method="post" class="form form-inline" role="form">
+    {{ addform.hidden_tag() }}
+    {{ wtf.form_errors(addform, hiddens='only') }}
+    <div class="form-group {{ 'has-error' if addform.roomurl.errors else '' }} {{ 'required' if addform.roomurl.flags.required else '' }}">
+      {{ addform.roomurl.label()|safe }}：{{ addform.roomurl(class="form-control", size=40)|safe }}
     </div>
-    <div class="form-group {{ 'has-error' if form.roomurl.errors else '' }}">
-      {% if form.roomurl.errors %}
-        {% for error in form.roomurl.errors %}
+    <div class="form-group {{ 'has-error' if addform.roomurl.errors else '' }}">
+      {% if addform.roomurl.errors %}
+        {% for error in addform.roomurl.errors %}
           <p class="help-block">{{ error }}</p>
         {% endfor %}
       {% endif %}
     </div>
-    {{ form.submit(class='btn btn-primary') }}
+    {{ addform.submit(class='btn btn-primary') }}
   </form>
 {% endif %}
 {% if rooms %}
-  {% import "_rooms.html" as macros_rooms with context %}
+  {% import "bootstrap/utils.html" as utils %}
   {% for site_name, room_list in rooms %}
     <h4>{{ site_name }}</h4>
-    {{ macros_rooms.rooms_display(rooms=room_list) }}
+    {% for room in room_list %}
+    <div class="row">
+      <div class="col-lg-4 col-md-5">
+        <img class="img-rounded" width="100%" src="{{ room.image_url if room.image_url else config['FLASK_NOPIC_IMAGE'] }}" title="{{ room.name|safe }}">
+      </div>
+      <div class="col-lg-8 col-md-7" style="text-align: left;">
+        <h3>
+          {{ room.name }}
+          <small>
+          {% if openstatus %}
+          <span class="label label-success">直播中</span>
+          {% else %}
+          <span class="label label-danger">未直播</span>
+          {% endif %}
+          </small>
+        </h3>
+        <p>
+          <h4>官网：<a href="{{ room.url }}" target="_blank">{{ room.url }}</a></h4>
+          <h4>
+            主播：{% if room.host.url %}<a href="{{ room.host.url }}" target="_blank">{{ room.host.nickname }}</a>{% else %}{{ room.host.nickname }}{% endif %}
+            &nbsp;&nbsp;频道：<a href="{{ url_for('main.channel', channel_id=room.channel.id) }}">{{ room.channel.name }}</a>
+            &nbsp;&nbsp;站点：<a href="{{ url_for('main.site', site_id=room.site.id) }}">{{ room.site.name }}</a>
+          </h4>
+          <form method="post" class="form form-inline" role="form">
+            {{ cancelform.csrf_token() }}
+            {{ wtf.form_errors(cancelform, hiddens='only') }}
+            {{ cancelform.roomid(value=room.id)|safe }}
+            {{ cancelform.submit(class='btn btn-danger') }}
+          </form>
+        </p>
+      </div>
+    </div>
+    {% endfor %}
   {% endfor %}
 {% endif %}
-{% endblock %}
-{% block scripts %}
-{{ super() }}
-<script>
-
-</script>
 {% endblock %}
