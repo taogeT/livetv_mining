@@ -13,9 +13,9 @@ import gevent
 __all__ = ['settings', 'crawl_task', 'request_headers',
            'crawl_channel_list', 'crawl_room_list', 'search_room_list', 'crawl_room_all', 'crawl_room']
 
-CHANNEL_LIST_API = 'http://www.douyu.com/api/RoomApi/game'
-ROOM_LIST_API = 'http://www.douyu.com/api/RoomApi/live/{}'
-ROOM_API = 'http://www.douyu.com/api/RoomApi/room/{}'
+CHANNEL_LIST_API = 'http://open.douyucdn.cn/api/RoomApi/game'
+ROOM_LIST_API = 'http://open.douyucdn.cn/api/RoomApi/live/{}'
+ROOM_API = 'http://open.douyucdn.cn/api/RoomApi/room/{}'
 request_headers = dict(base_headers, Host='www.douyu.com', Referer='http://www.douyu.com')
 settings = {
     'code': 'douyu',
