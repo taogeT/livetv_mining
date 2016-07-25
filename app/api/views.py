@@ -8,15 +8,19 @@ import hmac
 import hashlib
 
 
-@api.route('/github')
+@api.route('/github', methods=['POST'])
 def github():
     """ github回调 """
     deliveryid = request.headers.get('X-GitHub-Delivery', None)
     if deliveryid:
         signature = request.headers.get('X-Hub-Signature', None)
-        if not signature or signature == hmac.new(current_app.config['GITHUB_WEBHOOK_SECRET'], digestmod=hashlib.sha1).hexdigest():
-            event = request.headers.get('X-GitHub-Event', '')
-            if event == 'push':
-                subp = Popen('git checkout .;git pull', shell=True)
-                subp.wait()
+        if signature:
+            hashtype, remotesignstr = signature.split('=')
+            localsign = hmac.new(current_app.config['GITHUB_WEBHOOK_SECRET'], msg=request.data, digestmod=getattr(hashlib, hashtype))
+            if remotesignstr != localsign.hexdigest():
+                return jsonify({'error': 'no permission'}), 401
+        event = request.headers.get('X-GitHub-Event', '')
+        if event == 'push':
+            subp = Popen('git checkout .;git pull', shell=True)
+            subp.wait()
     return jsonify({})
