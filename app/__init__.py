@@ -55,9 +55,10 @@ def create_app(config_name):
     celery.init_app(app)
     login_manager.login_view = 'auth.login'
 
-    from .views import about
+    from .views import about, github
     app.add_url_rule('/', endpoint='index', view_func=main.views.sites_index)
     app.add_url_rule('/about', endpoint='about', view_func=about)
+    app.add_url_rule('/github', endpoint='github', view_func=github)
 
     fhandler = FileHandler(app.config.get('FLASK_ERROR_LOGFILE', 'error.log'))
     fhandler.setLevel(logging.ERROR)
