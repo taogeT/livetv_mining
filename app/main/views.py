@@ -1,5 +1,4 @@
 # -*- coding: UTF-8 -*-
-from markdown import markdown
 from flask import render_template, request, current_app
 from sqlalchemy import and_
 from datetime import datetime, timedelta
@@ -9,8 +8,6 @@ from . import main
 from ..models import LiveTVSite, LiveTVChannel, LiveTVRoom, LiveTVHost, \
                     LiveTVChannelData, LiveTVRoomData
 
-import codecs
-import os
 import pytz
 
 

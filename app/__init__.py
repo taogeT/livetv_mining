@@ -52,13 +52,15 @@ def create_app(config_name):
     from .subscribe import subscribe as subscribe_blueprint
     app.register_blueprint(subscribe_blueprint, url_prefix='/subscribe')
 
+    from .api import api as api_blueprint
+    app.register_blueprint(api_blueprint, url_prefix='/api')
+
     celery.init_app(app)
     login_manager.login_view = 'auth.login'
 
-    from .views import about, github
+    from .views import about
     app.add_url_rule('/', endpoint='index', view_func=main.views.sites_index)
     app.add_url_rule('/about', endpoint='about', view_func=about)
-    app.add_url_rule('/github', endpoint='github', view_func=github)
 
     fhandler = FileHandler(app.config.get('FLASK_ERROR_LOGFILE', 'error.log'))
     fhandler.setLevel(logging.ERROR)
