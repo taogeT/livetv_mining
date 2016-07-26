@@ -15,8 +15,6 @@ class Config(object):
     CELERY_TIMEZONE = 'UTC'
     CELERY_ACCEPT_CONTENT = ['pickle', 'json', 'msgpack', 'yaml']
     CELERY_SEND_TASK_ERROR_EMAILS = True
-    CELERY_ADMINS = [('taogeT', 'zwtzjd@gmail.com')]
-    CELERY_SUPERVISOR_ROWCOUNT = 80
     CELERY_IGNORE_RESULT = True
     SESSION_PROTECTION = 'strong'
 
