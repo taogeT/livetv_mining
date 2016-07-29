@@ -24,8 +24,6 @@ class ZhanqiRoom(LiveTVRoom):
     __tablename__ = 'zhanqi_room'
     id = db.Column(db.Integer, db.ForeignKey('livetv_room.id'), primary_key=True)
 
-    code = db.Column(db.String(64), index=True, doc='代码')
-    liveTime = db.Column(db.DateTime, index=True, doc='开始时间')
     fans = db.Column(db.Integer, index=True, doc='粉丝')
     fansTitle = db.Column(db.String(32), doc='粉丝名称')
     isstar_week = db.Column(db.Boolean, default=False, doc='周星')

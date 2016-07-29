@@ -100,8 +100,6 @@ def crawl_room_list(self, channel_list):
                 room.online = int(room_json['online']) if room_json['online'].isdecimal() else 0
                 room.crawl_date = datetime.utcnow()
                 room.openstatus = True
-                room.code = room_json['code']
-                room.liveTime = datetime.fromtimestamp(float(room_json['liveTime']))
                 db.session.add(room)
                 room_data = ZhanqiRoomData(room=room, online=room.online)
                 db.session.add(room_data)
