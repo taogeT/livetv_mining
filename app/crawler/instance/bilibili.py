@@ -100,12 +100,10 @@ def crawl_room_list(self, channel_list):
                 room.crawl_date = datetime.utcnow()
                 room.openstatus = True
                 room.short_id = room_json['short_id']
-                room.live_time = datetime.strptime(room_json['live_time'], '%Y-%m-%d %H:%M:%S')
-                room.url = urljoin(self.site.url, room_json['link'])
+                room.url = urljoin(self.site.url, str(room_json['link']))
                 db.session.add(room)
                 room_data = BilibiliRoomData(room=room, online=room.online)
                 db.session.add(room_data)
-                channel.officeid = room_json['area']
         elif restype == 'channel':
             db.session.add(channel)
             db.session.add(resjson)
