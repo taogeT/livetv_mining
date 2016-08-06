@@ -83,8 +83,6 @@ def crawl_room_list(self, channel_list):
                 host.nickname = room_json['uname']
                 host.url = urljoin(SPACE_API, str(room_json['uid']))
                 host.image_url = room_json['face']
-                host.master_level = room_json['master_level']
-                host.followers = room_json['attentions']
                 host.crawl_date = datetime.utcnow()
                 db.session.add(host)
 
