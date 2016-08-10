@@ -112,7 +112,7 @@ def crawl_room_list(self, channel_list):
 
 def search_room_list(self, channel, gqueue):
     current_app.logger.info('开始扫描频道房间 {}: {}'.format(channel.name, channel.url))
-    crawl_page, crawl_limit = 1, 32
+    crawl_page, crawl_limit = 1, 30
     crawl_room_count, roomjsonlen = 0, crawl_limit
     while roomjsonlen >= crawl_limit:
         roomjsonlen = 0
