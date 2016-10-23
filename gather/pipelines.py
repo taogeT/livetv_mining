@@ -83,5 +83,7 @@ class SqlalchemyPipeline(object):
                 spider.logger.debug('更新房间 {}:{}'.format(item['name'], item['url']))
             room.from_item(item)
             site_dict['session'].add(room)
+            roomdata = LiveTVRoomData(room=room, online=room.online)
+            site_dict['session'].add(roomdata)
             site_dict['session'].commit()
         return item

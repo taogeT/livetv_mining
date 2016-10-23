@@ -61,6 +61,7 @@ class LiveTVRoom(Base):
     name = Column(String, index=True, doc='名称')
     url = Column(String, index=True, doc='访问URL')
     image = Column(String, doc='图片')
+    host = Column(String, doc='主持')
     online = Column(Integer, default=0, index=True, doc='观众数')
     crawl_date = Column(DateTime, doc='最近一次扫描时间')
 
@@ -69,6 +70,7 @@ class LiveTVRoom(Base):
         self.name = item['name']
         self.url = item['url']
         self.image = item['image']
+        self.host = item.get('host', '')
         self.online = item['online']
         self.crawl_date = datetime.utcnow()
 

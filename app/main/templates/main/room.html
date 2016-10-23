@@ -1,77 +1,46 @@
 {% extends "base.html" %}
 
-{% block title %}{{ room.name }}-{{ room.site.name }}-房间信息{% endblock %}
+{% block navbar_li_room %}class="active"{% endblock %}
 
 {% block page_content %}
-<div class="row">
-  {% if room.image_url %}
-  <div class="col-lg-4 col-md-4">
-    <img class="img-rounded" width="90%" src="{{ room.image_url }}">
+<template id="room_detail">
+  <div class="row">
+    <div v-if="room.image" class="col-lg-4 col-md-4">
+      <img class="img-rounded" width="90%" v-bind:src="room.image">
+    </div>
+    <div v-bind:class="room.image ? 'col-lg-8 col-md-8' : 'col-lg-12 col-md-12'" style="text-align: left;">
+      <h2>
+        <span v-text="room.name"></span>
+        <small><a v-bind:href="room.url" target="_blank">官网</a></small></h2>
+      <p>
+        <h4>主播：<span v-text="room.host"></span></h4>
+        <h4>频道：<a v-bind:href="room.link.channel" target="_blank" v-text="room.channel"></a></h4>
+        <h4>站点：<a v-bind:href="room.link.site" target="_blank" v-text="room.site"></a><br></h4>
+        <h4>更新时间：<span v-text="room.crawl_date"></span></h4>
+        <h4>人气：<span v-text="room.online"></span></h4>
+      </p>
+    </div>
   </div>
-  <div class="col-lg-8 col-md-8" style="text-align: left;">
-  {% else %}
-  <div class="col-lg-12 col-md-12" style="text-align: left;">
-  {% endif %}
-    <h2>{{ room.name }}</h2>
-    <p>
-      <h4>官网：<a href="{{ room.url }}" target="_blank">{{ room.url }}</a></h4>
-      <h4>主播：
-      {% if room.host.url %}
-        <a href="{{ room.host.url }}" target="_blank">{{ room.host.nickname }}</a>
-      {% else %}
-        {{ room.host.nickname }}
-      {% endif %}
-      </h4>
-      <h4>
-        频道：<a href="{{ url_for('main.channel', channel_id=room.channel.id) }}">{{ room.channel.name }}</a>
-        &nbsp;&nbsp;
-        站点：<a href="{{ url_for('main.site', site_id=room.site.id) }}">{{ room.site.name }}</a>
-      </h4>
-      <h4>更新时间：{{ moment(room.crawl_date).format('YYYY-MM-DD HH:mm:ss') }}</h4>
-      <h4>人气：{{ room.online }}&nbsp;&nbsp;关注数：{{ room.host.followers }}</h4>
-    </p>
-  </div>
-</div>
-<div class="row">
-  <div class="col-lg-12 col-md-12">
-    <canvas id="yesterdayChart" width="700px" height="280px"></canvas>
-  </div>
-</div>
+</template>
 {% endblock %}
 
 {% block scripts %}
 {{ super() }}
-<script src="//cdn.bootcss.com/Chart.js/2.1.6/Chart.min.js"></script>
 <script>
-var yesdata = {
-    type: 'line',
+var room_detail = new Vue({
+    el: "#room_detail",
     data: {
-        labels: {{ chart_axis[0] | safe }},
-        datasets: [
-            {
-                label: "昨日人气波动",
-                fillColor : "rgba(151,187,205,0.5)",
-                strokeColor : "rgba(220,220,220,1)",
-                pointColor : "rgba(220,220,220,1)",
-                pointStrokeColor : "#fff",
-                data : {{ chart_axis[1] | safe }}
-            }
-        ]
+        room: {}
     },
-    options: {
-        title: {
-            fontSize: 14,
-        },
-        scales: {
-            yAxes: [{
-                ticks: {
-                    beginAtZero:true
-                }
-            }]
-        }
+    ready: function(){
+        this.$http.get("{{ room_url }}").then(
+            function(response){
+                this.$set("room", response.body)
+            }, function(response){
+                alert(response.body['message'])
+            }
+        )
     }
-}
-var yesctx = document.getElementById("yesterdayChart").getContext("2d")
-var yesChart = new Chart(yesctx, yesdata)
+})
 </script>
 {% endblock %}

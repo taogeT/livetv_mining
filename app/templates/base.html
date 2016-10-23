@@ -3,19 +3,17 @@
 {% block metas %}
 {{ super() }}
 <meta name="author" content="https://github.com/taogeT">
-<meta name="keywords" content="直播,直播排名,爬虫,Python,Celery,数据挖掘">
+<meta name="keywords" content="直播,直播排名,爬虫,Python,Scrapy,数据挖掘,直播数据挖掘">
 <meta name="description" content="爬虫收集直播网站实时数据，提供图表显示和分析">
 {% endblock %}
 
 {% block title %}Tao蜘蛛-直播平台爬虫{% endblock %}
 
 {% block styles %}
+{{ super() }}
 <link rel="shortcut icon" href="https://avatars2.githubusercontent.com/u/6917395?v=3&s=200" type="image/x-icon">
 <link rel="icon" href="https://avatars2.githubusercontent.com/u/6917395?v=3&s=200" type="image/x-icon">
-<link href="//cdn.bootcss.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
-<link href="//cdn.bootcss.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" rel="stylesheet">
 <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-{% block styles_private %}{% endblock %}
 {% endblock %}
 
 {% block navbar %}
@@ -33,9 +31,11 @@
     </div>
     <div class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-        <li {% block navbar_li_site %}{% endblock %}><a href="{{ url_for('main.sites_index') }}">站点</a></li>
-        <li {% block navbar_li_channel %}{% endblock %}><a href="{{ url_for('main.channels_index') }}">频道</a></li>
-        <li {% block navbar_li_search %}{% endblock %}><a href="{{ url_for('main.search') }}">搜索</a></li>
+        <li {% block navbar_li_room %}{% endblock %}><a href="{{ url_for('main.room_index') }}">房间</a></li>
+        <li {% block navbar_li_channel %}{% endblock %}><a href="{{ url_for('main.channel_index') }}">频道</a></li>
+        {% if g.user.is_authenticated %}
+        <li {% block navbar_li_search %}{% endblock %}><a href="{{ url_for('main.room_index') }}">搜索</a></li>
+        {% endif %}
       </ul>
       <ul class="nav navbar-nav navbar-right">
       {% if g.user.is_authenticated %}
@@ -75,8 +75,8 @@
 {% endblock %}
 
 {% block scripts %}
-<script src="//cdn.bootcss.com/jquery/2.2.4/jquery.min.js"></script>
-<script src="//cdn.bootcss.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
-{{ moment.include_moment(local_js="//cdn.bootcss.com/moment.js/2.11.2/moment-with-locales.min.js") }}
-{{ moment.lang('zh-cn') }}
+{{ super() }}
+<script src="{{ vue_find_resource('vue') }}"></script>
+<script src="{{ vue_find_resource('vue-resource') }}"></script>
+<script src="{{ vue_find_resource('vue-table') }}"></script>
 {% endblock %}

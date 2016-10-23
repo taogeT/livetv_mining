@@ -1,33 +1,66 @@
 {% extends "base.html" %}
 
-{% block title %}{{ site.name }}-站点信息{% endblock %}
-
-{% block navbar_li_site %}class="active"{% endblock %}
+{% block navbar_li_channel %}class="active"{% endblock %}
 
 {% block page_content %}
-<div class="page-header">
-  <table class="table">
-    <tbody>
-      <tr>
-        <td width="20%"><img src="{{ site.image_url }}"></td>
-        <td align="left">
-          <h1>{{ site.name }}&nbsp;<small><a href="{{ site.url }}" target="_blank">官网</a></small></h1>
-          <p><h4>频道数：{{ site.channels.filter_by(valid=True).count() }}</h4></p>
-          <p><h4>正在直播房间数：{{ site.rooms.filter_by(openstatus=True).count() }}</h4></p>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-</div>
-{% if channels %}
-<h3>频道列表</h3>
-{% import "_channels.html" as macros_channels with context %}
-{{ macros_channels.channels_display(channels=channels) }}
-{% endif %}
-{% if pagination %}
-<div style="text-align: center">
-{% import "bootstrap/pagination.html" as macros %}
-{{ macros.render_pagination(pagination, endpoint='main.site', args={'site_id': site.id}) }}
-</div>
-{% endif %}
+<template id="site_detail">
+  <div class="page-header">
+    <table class="table">
+      <tbody>
+        <tr>
+          <td width="20%"><img v-bind:src="site.image"></td>
+          <td align="left">
+            <h1>
+              <span v-text="site.name"></span>
+              <small><a v-bind:href="site.url" target="_blank">官网</a></small>
+            </h1>
+            <p><h4 v-text="'频道数：'+ site.channel_total"></h4></p>
+            <p><h4 v-text="'正在直播房间数：' + site.room_total"></h4></p>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <h3>频道列表</h3>
+  <div class="row">
+    <template v-for="item in channels">
+      <div class="col-lg-2 col-md-4" style="text-align: center;">
+        <a v-if="item.image" v-bind:href="item.link.detail" v-bind:title="item.name">
+          <img class="img-rounded" width="110%" v-bind:src="item.image_url">
+        </a>
+        <a v-bind:href="item.link.detail" v-html="item.image ? item.name : '<h2>'+item.name+'</h2>'"></a>
+        <p v-html="'房间数 ' + item.total + '<br>' + item.crawl_date + ' 更新'"></p>
+      </div>
+    </template>
+  </div>
+</template>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+var site_detail = new Vue({
+    el: "#site_detail",
+    data: {
+        site: {},
+        channels: []
+    },
+    ready: function(){
+        this.$http.get("{{ site_url }}").then(
+            function(response){
+                this.$set("site", response.body)
+                this.$http.get(this.site.rest.channel + "?per_page=1000").then(
+                    function(response){
+                        this.channels = response.body
+                    }, function(response){
+                        alert(response.body['message'])
+                    }
+                )
+            }, function(response){
+                alert(response.body['message'])
+            }
+        )
+    }
+})
+</script>
 {% endblock %}

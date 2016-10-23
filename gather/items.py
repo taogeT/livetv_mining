@@ -22,4 +22,5 @@ class RoomItem(Item):
     image = Field()
     url = Field()
     online = Field()
+    host = Field()
     channel = Field()

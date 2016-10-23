@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block navbar_li_channel %}class="active"{% endblock %}
+
+{% block page_content %}
+<div class="container" id="index_channel">
+  <div class="row">
+    <template v-for="item in site">
+      <div class="col-lg-4" style="text-align: center;">
+        <a v-bind:href="item.link.detail">
+          <img height="100px" v-bind:src="item.image">
+        </a>
+        <h4>
+          <p>
+            <span v-text="item.name"></span>
+            <a v-bind:href="item.link.detail">更多内容</a>
+          </p>
+        </h4>
+        <span style="text-align: left;">
+          <h3>频道房间数 TOP{{ config['FLASK_CHANNEL_RANK_NUM'] }}</h3>
+          <vuetable
+            v-bind:api-url="item.rest.channel"
+            v-bind:fields="channel_columns"
+            per-page="{{ config['FLASK_CHANNEL_RANK_NUM'] }}"
+            table-class="table table-striped"
+            show-pagination="false"
+            v-bind:append-params="['isvue=true']">
+          </vuetable>
+        </span>
+      </div>
+    </template>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+Vue.component("element-link", {
+    template: "<a v-bind:href='rowData.link.detail' v-text='rowData.name'></a>",
+    props: {
+      rowData: {
+        type: Object,
+        required: true
+      }
+    }
+})
+
+var site_channel = new Vue({
+    el: "#index_channel",
+    data: {
+        site: [],
+        channel_columns: [
+            { name: "__sequence", title: "排名" },
+            { name: "__component:element-link", title: "频道" },
+            { name: "total", title: "房间数" }
+        ]
+    },
+    ready: function(){
+        this.$http.get("{{ site_url }}").then(
+            function(response){
+                this.site = response.body
+            }, function(response){
+                alert(response.body['message'])
+            }
+        )
+    }
+})
+</script>
+{% endblock %}

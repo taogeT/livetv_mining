@@ -1,77 +1,75 @@
 {% extends "base.html" %}
 
-{% block title %}{{ channel.name }}-{{ channel.site.name }}-频道信息{% endblock %}
-
 {% block navbar_li_channel %}class="active"{% endblock %}
 
 {% block page_content %}
-<div class="row">
-  {% if channel.image_url %}
-  <div class="col-lg-4 col-md-4">
-    <img class="img-rounded" width="90%" src="{{ channel.image_url }}" />
+<template id="channel_detail">
+  <div class="row">
+    <div v-if="channel.image" class="col-lg-3 col-md-4">
+      <img class="img-rounded" width="100%" v-bind:src="channel.image">
+    </div>
+    <div v-bind:class="channel.image ? 'col-lg-9 col-md-8' : 'col-lg-12 col-md-12'" style="text-align: left;">
+      <h1>
+        <span v-text="channel.name"></span>
+        <small><a v-bind:href="channel.url" target="_blank">官网</a></small>
+      </h1>
+      <p>
+        <h4>
+          从属站点：<a v-bind:href="channel.link.site" v-text="channel.site"></a>
+          当前直播房间数：<span v-text="channel.total"></span>
+        </h4>
+        <h4>更新时间：<span v-text="channel.crawl_date"></span></h4>
+      </p>
+    </div>
   </div>
-  <div class="col-lg-8 col-md-8" style="text-align: left;">
-  {% else %}
-  <div class="col-lg-12 col-md-12" style="text-align: left;">
-  {% endif %}
-    <h1>{{ channel.name }}</h1>
-    <p>
-      <h4>官网：<a href="{{ channel.url }}" target="_blank">{{ channel.url }}</a></h4>
-      <h4>
-        站点：<a href="{{ url_for('main.site', site_id=channel.site.id) }}">{{ channel.site.name }}</a>
-        &nbsp;当前直播房间数：{{ channel.room_total }}
-      </h4>
-      <h4>更新时间：{{ moment(channel.crawl_date).format('YYYY-MM-DD HH:mm') }}</h4>
-    </p>
-    <canvas id="yesterdayChart" width="700px" height="280px"></canvas>
+  <h3>房间列表</h3>
+  <div class="row">
+    <template v-for="item in rooms">
+      <div class="col-lg-3 col-md-6" style="text-align: center;">
+        <a v-if="item.image" v-bind:href="item.link.detail">
+          <img class="img-rounded" width="108%" v-bind:src="item.image" v-bind:title="item.name">
+        </a>
+      <a v-bind:href="item.link.detail" v-text="item.name"></a>
+      <p>
+        主播 <span v-text="item.host"></span><br>
+        人气 <span v-text="item.online"></span> <span v-text="item.crawl_date"></span> 更新
+      </p>
+      </div>
+    </template>
   </div>
-</div>
-{% if rooms %}
-<h3>房间列表</h3>
-{% import "_rooms.html" as macros_rooms with context %}
-{{ macros_rooms.rooms_display(rooms=rooms) }}
-{% endif %}
-{% if pagination %}
-<div style="text-align: center">
-{% import "bootstrap/pagination.html" as macros %}
-{{ macros.render_pagination(pagination, endpoint='main.channel', args={'channel_id': channel.id}) }}
-</div>
-{% endif %}
+  <div class="row">
+    <template>
+      
+    </template>
+  </div>
+</template>
 {% endblock %}
 
 {% block scripts %}
 {{ super() }}
-<script src="//cdn.bootcss.com/Chart.js/2.1.6/Chart.min.js"></script>
 <script>
-var yesdata = {
-    type: 'line',
+var channel_detail = new Vue({
+    el: "#channel_detail",
     data: {
-        labels: {{ chart_axis[0] | safe }},
-        datasets: [
-            {
-                label: "昨日房间数",
-                fillColor : "rgba(151,187,205,0.5)",
-                strokeColor : "rgba(220,220,220,1)",
-                pointColor : "rgba(220,220,220,1)",
-                pointStrokeColor : "#fff",
-                data : {{ chart_axis[1] | safe }}
-            }
-        ]
+        channel: {},
+        rooms: []
     },
-    options: {
-        title: {
-            fontSize: 14,
-        },
-        scales: {
-            yAxes: [{
-                ticks: {
-                    beginAtZero:true
-                }
-            }]
-        }
+    ready: function(){
+        this.$http.get("{{ channel_url }}").then(
+            function(response){
+                this.$set("channel", response.body)
+                this.$http.get(this.channel.rest.room).then(
+                    function(response){
+                        this.rooms = response.body
+                    }, function(response){
+                        alert(response.body['message'])
+                    }
+                )
+            }, function(response){
+                alert(response.body['message'])
+            }
+        )
     }
-}
-var yesctx = document.getElementById("yesterdayChart").getContext("2d")
-var yesChart = new Chart(yesctx, yesdata)
+})
 </script>
 {% endblock %}
