@@ -4,18 +4,16 @@ from flask_script import Manager, Shell, Server
 from flask_migrate import Migrate, MigrateCommand
 
 from app import create_app, db
-from app.crawler.tasks import crawl_task, crawl_task_room_detail
 
-import os
 import sys
 
-app = create_app(os.environ.get('FLASK_CONFIG') or 'default')
+app = create_app()
 manager = Manager(app)
 migrate = Migrate(app, db)
 
 
 def make_shell_context():
-    return dict(app=app, db=db, crawl_task=crawl_task, crawl_task_room_detail=crawl_task_room_detail)
+    return dict(app=app, db=db)
 
 
 class GeventServer(Server):

@@ -26,7 +26,7 @@ login_manager = LoginManager()
 monkey.patch_all()
 
 
-def create_app(config_name):
+def create_app():
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_object(config[config_name])
     config[config_name].init_app(app)
