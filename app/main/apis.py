@@ -2,7 +2,7 @@
 from flask import request, current_app, jsonify, url_for
 from flask_restful import abort
 
-from ..models import LiveTVSite, LiveTVChannel, LiveTVRoom, LiveTVRoomData
+from ..models import LiveTVSite, LiveTVChannel, LiveTVRoom
 from . import main_api, Resource
 
 
@@ -56,6 +56,7 @@ class MainApiMixin(object):
             'url': room.url,
             'image': room.image,
             'online': room.online,
+            'host': room.host,
             'crawl_date': room.crawl_date.strftime('%m/%d %H:%M'),
             'channel': room.channel.name,
             'site': room.site.name,
@@ -63,22 +64,7 @@ class MainApiMixin(object):
                 'detail': url_for('main.room_detail', room_id=room.id),
                 'site': url_for('main.site_detail', site_id=room.site_id),
                 'channel': url_for('main.channel_detail', channel_id=room.channel_id)
-            },
-            'rest': {
-                'data': main_api.url_for(RoomDataMultiple, room_id=room.id)
             }
-        }
-
-    @classmethod
-    def _format_roomdata(cls, roomdata):
-        room = roomdata.room
-        return {
-            'create_date': roomdata.create_date.strftime('%Y-%m-%d %H:%M:%S'),
-            'online': roomdata.online,
-            'link': {
-                'room': main_api.url_for(Room, site_id=room.site_id, channel_id=room.channel_id,
-                                         room_id=room.id, _external=True)
-            },
         }
 
     @classmethod
@@ -194,21 +180,8 @@ class Room(Resource, MainApiMixin):
         return self._format_room(room)
 
 
-@main_api.resource('/site/<int:site_id>/channel/<int:channel_id>/room/<int:room_id>/data',
-                   '/site/<int:site_id>/room/<int:room_id>/data',
-                   '/channel/<int:channel_id>/room/<int:room_id>/data',
-                   '/room/<int:room_id>/data')
-class RoomDataMultiple(Resource, MainApiMixin):
+@main_api.resource('/search')
+class Search(Resource, MainApiMixin):
 
-    def get(self, room_id, site_id=None, channel_id=None):
-        page = request.args.get('page', 1, type=int)
-        per_page = request.args.get('per_page', current_app.config['FLASK_ROOMDATA_PER_PAGE'], type=int)
-        roomdata_query = LiveTVRoomData.query.join(LiveTVRoom).filter(LiveTVRoom.id == room_id)
-        if site_id:
-            roomdata_query = roomdata_query.filter(LiveTVRoom.site_id == site_id)
-        if channel_id:
-            roomdata_query = roomdata_query.filter(LiveTVRoom.channel_id == channel_id)
-        pagination = roomdata_query.order_by(LiveTVRoomData.create_date.desc()) \
-                                   .paginate(page=page, error_out=False, per_page=per_page)
-        return jsonify(dict(self._format_pagination(pagination),
-                            data=[self._format_roomdata(item) for item in pagination.items]))
+    def post(self):
+        pass

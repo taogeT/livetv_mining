@@ -46,6 +46,7 @@ class DouyuSpider(Spider):
                 'image': rjson['room_src'],
                 'url': rjson['url'],
                 'online': rjson['online'],
+                'host': rjson['nickname'],
                 'channel': response.meta['channel'],
             })
         if len(room_list) > 0:

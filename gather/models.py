@@ -38,6 +38,7 @@ class LiveTVChannel(Base):
     url = Column(String, index=True, unique=True, doc='官网地址')
     image = Column(String, doc='图片')
     total = Column(Integer, default=0, index=True, doc='房间数')
+    valid = Column(Boolean, default=True, doc='是否有效')
     crawl_date = Column(DateTime, doc='最近一次扫描时间')
 
     def from_item(self, item):
@@ -46,6 +47,7 @@ class LiveTVChannel(Base):
         self.name = item['name']
         self.url = item['url']
         self.image = item.get('image', '')
+        self.valid = True
         self.crawl_date = datetime.utcnow()
 
 
@@ -63,6 +65,7 @@ class LiveTVRoom(Base):
     image = Column(String, doc='图片')
     host = Column(String, doc='主持')
     online = Column(Integer, default=0, index=True, doc='观众数')
+    opened = Column(Boolean, default=True, doc='是否正在直播')
     crawl_date = Column(DateTime, doc='最近一次扫描时间')
 
     def from_item(self, item):
@@ -72,6 +75,7 @@ class LiveTVRoom(Base):
         self.image = item['image']
         self.host = item.get('host', '')
         self.online = item['online']
+        self.opened = True
         self.crawl_date = datetime.utcnow()
 
 

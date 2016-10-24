@@ -4,6 +4,7 @@
 #
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: http://doc.scrapy.org/en/latest/topics/item-pipeline.html
+from datetime import datetime
 from scrapy.exceptions import CloseSpider
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -17,9 +18,6 @@ class SqlalchemyPipeline(object):
     def __init__(self, sqlalchemy_database_uri):
         self.engine = create_engine(sqlalchemy_database_uri)
         self.site = {}
-
-    def __del__(self):
-        self.engine.dispose()
 
     @classmethod
     def from_crawler(cls, crawler):
@@ -41,15 +39,24 @@ class SqlalchemyPipeline(object):
                               image=site_setting['image'], show_seq=site_setting['show_seq'])
             session.add(site)
             session.commit()
-        self.site[site.code] = {'id': site.id, 'session': session, 'channels': {}}
+        self.site[site.code] = {'id': site.id, 'session': session,
+                                'starttime': datetime.utcnow(), 'channels': {}}
 
     def close_spider(self, spider):
         site_dict = self.site[spider.settings.get('SITE')['code']]
+        site_dict['session'].query(LiveTVChannel).filter(LiveTVChannel.crawl_date < site_dict['starttime']) \
+                                                 .update({LiveTVChannel.valid: False})
+        site_dict['session'].query(LiveTVRoom).filter(LiveTVRoom.crawl_date < site_dict['starttime']) \
+                                                 .update({LiveTVRoom.opened: False})
+        site_dict['session'].commit()
         for channel in site_dict['session'].query(LiveTVChannel).filter(LiveTVChannel.site_id == site_dict['id']).all():
             channel.total = channel.rooms.count()
             site_dict['session'].add(channel)
         site_dict['session'].commit()
         site_dict['session'].close()
+        del site_dict
+        if not self.site:
+            self.engine.dispose()
 
     def process_item(self, item, spider):
         site_dict = self.site[spider.settings.get('SITE')['code']]

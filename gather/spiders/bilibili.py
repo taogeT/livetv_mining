@@ -45,6 +45,7 @@ class BilibiliSpider(Spider):
                 'image': rjson['cover'],
                 'url': response.urljoin(rjson['link']),
                 'online': rjson['online'],
+                'host': rjson['uname'],
                 'channel': response.meta['channel'],
             })
         if len(room_list) > 0:

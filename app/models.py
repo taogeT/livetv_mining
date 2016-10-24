@@ -36,6 +36,7 @@ class LiveTVChannel(db.Model):
     url = db.Column(db.String, unique=True, doc='官网地址')
     image = db.Column(db.String, doc='图片')
     total = db.Column(db.Integer, default=0, index=True, doc='房间数')
+    valid = db.Column(db.Boolean, default=True, doc='是否有效')
     crawl_date = db.Column(db.DateTime, doc='最近一次扫描时间')
 
 
@@ -54,6 +55,7 @@ class LiveTVRoom(db.Model):
     image = db.Column(db.String, doc='图片')
     host = db.Column(db.String, doc='主持')
     online = db.Column(db.Integer, default=0, index=True, doc='观众数')
+    opened = db.Column(db.Boolean, default=True, doc='是否正在直播')
     crawl_date = db.Column(db.DateTime, doc='最近一次扫描时间')
 
 

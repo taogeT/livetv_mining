@@ -5,17 +5,17 @@ from datetime import datetime, timedelta
 
 from .forms import SearchRoomForm
 from . import main, main_api
-from .apis import SiteMultiple, Site, Channel, Room, RoomMultiple
+from .apis import SiteMultiple, Site, Channel, Room, Search
 
 import pytz
 
 
-@main.route('/index/room')
+@main.route('/room/index')
 def room_index():
     return render_template('main/room_index.html', site_url=main_api.url_for(SiteMultiple))
 
 
-@main.route('/index/channel')
+@main.route('/channel/index')
 def channel_index():
     return render_template('main/channel_index.html', site_url=main_api.url_for(SiteMultiple))
 
@@ -36,6 +36,12 @@ def channel_detail(channel_id):
 def room_detail(room_id):
     """ 网站详细&频道列表 """
     return render_template('main/room.html', room_url=main_api.url_for(Room, room_id=room_id))
+
+
+@main.route('/room/search')
+def room_search():
+    """ 导航栏搜索 """
+    return render_template('main/search.html', room_url=main_api.url_for(Search))
 
 '''
 @main.route('/search', methods=['GET', 'POST'])
