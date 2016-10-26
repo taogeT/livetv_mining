@@ -26,10 +26,10 @@
   <div class="row">
     <template v-for="item in rooms">
       <div class="col-lg-3 col-md-6" style="text-align: center;">
-        <a v-if="item.image" v-bind:href="item.link.detail">
-          <img class="img-rounded" width="108%" v-bind:src="item.image" v-bind:title="item.name">
+        <a v-if="item.image" v-bind:href="item.link.detail" v-bind:title="item.name">
+          <img class="img-rounded" width="108%" v-bind:src="item.image">
         </a>
-      <a v-bind:href="item.link.detail" v-text="item.name"></a>
+      <a v-bind:href="item.link.detail" v-bind:title="item.name" v-text="item.name | except 36"></a>
       <p>
         主播 <span v-text="item.host"></span><br>
         人气 <span v-text="item.online"></span> <span v-text="item.crawl_date"></span> 更新
@@ -48,6 +48,25 @@
 {% block scripts %}
 {{ super() }}
 <script>
+Vue.filter("except", function (value, number){
+    var real_length = value.replace(/[^\x00-\xff]/g,"01").length
+    if(real_length > number){
+        var append_str = "..."
+        ret_value = ""
+        ret_length = 0
+        for(var i=0; i < value.length; i++){
+            ret_length += (value[i].charCodeAt(0) < 299 ? 1 : 2)
+            ret_value += value[i]
+            if(ret_length > number - append_str.length){
+                break
+            }
+        }
+        return ret_value + append_str
+    }else{
+        return value
+    }
+})
+
 var channel_detail = new Vue({
     el: "#channel_detail",
     data: {

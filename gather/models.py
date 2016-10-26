@@ -15,12 +15,12 @@ class LiveTVSite(Base):
     channels = relationship('LiveTVChannel', backref='site', lazy='dynamic')
     rooms = relationship('LiveTVRoom', backref='site', lazy='dynamic')
 
-    code = Column(String, unique=True, index=True, doc='代码')
-    name = Column(String, doc='名称')
-    url = Column(String, unique=True, index=True, doc='官网地址')
-    image = Column(String, doc='图片')
+    code = Column(String(32), unique=True, index=True, doc='代码')
+    name = Column(String(64), doc='名称')
+    url = Column(String(1024), unique=True, index=True, doc='官网地址')
+    image = Column(String(1024), doc='图片')
     show_seq = Column(Integer, index=True, doc='排序')
-    description = Column(String, doc='站点描述')
+    description = Column(String(512), doc='站点描述')
     valid = Column(Boolean, default=True, doc='是否有效')
 
 
@@ -32,10 +32,10 @@ class LiveTVChannel(Base):
     site_id = Column(Integer, ForeignKey('livetv_site.id'))
     rooms = relationship('LiveTVRoom', backref='channel', lazy='dynamic')
 
-    office_id = Column(String, index=True, doc='官方ID')
-    short = Column(String, index=True, doc='简称')
-    name = Column(String, index=True, doc='名称')
-    url = Column(String, index=True, unique=True, doc='官网地址')
+    office_id = Column(String(32), index=True, doc='官方ID')
+    short = Column(String(64), index=True, doc='简称')
+    name = Column(String(128), index=True, doc='名称')
+    url = Column(String(1024), unique=True, doc='官网地址')
     image = Column(String, doc='图片')
     total = Column(Integer, default=0, index=True, doc='房间数')
     valid = Column(Boolean, default=True, doc='是否有效')
@@ -59,11 +59,11 @@ class LiveTVRoom(Base):
     site_id = Column(Integer, ForeignKey('livetv_site.id'))
     hisdata = relationship('LiveTVRoomData', backref='room', lazy='dynamic')
 
-    office_id = Column(String, index=True, doc='官方ID')
-    name = Column(String, index=True, doc='名称')
-    url = Column(String, index=True, doc='访问URL')
-    image = Column(String, doc='图片')
-    host = Column(String, doc='主持')
+    office_id = Column(String(32), index=True, doc='官方ID')
+    name = Column(String(258), index=True, doc='名称')
+    url = Column(String(1024), index=True, doc='访问URL')
+    image = Column(String(1024), doc='图片')
+    host = Column(String(128), doc='主持')
     online = Column(Integer, default=0, index=True, doc='观众数')
     opened = Column(Boolean, default=True, doc='是否正在直播')
     crawl_date = Column(DateTime, doc='最近一次扫描时间')
@@ -73,7 +73,7 @@ class LiveTVRoom(Base):
         self.name = item['name']
         self.url = item['url']
         self.image = item['image']
-        self.host = item.get('host', '')
+        self.host = item['host']
         self.online = item['online']
         self.opened = True
         self.crawl_date = datetime.utcnow()
