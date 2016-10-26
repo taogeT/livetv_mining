@@ -40,7 +40,7 @@ class BilibiliSpider(Spider):
         room_list = json.loads(response.text)['data']
         for rjson in room_list:
             yield RoomItem({
-                'office_id': rjson['roomid'],
+                'office_id': str(rjson['roomid']),
                 'name': rjson['title'],
                 'image': rjson['cover'],
                 'url': response.urljoin(rjson['link']),

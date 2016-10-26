@@ -17,6 +17,7 @@ class SqlalchemyPipeline(object):
 
     def __init__(self, sqlalchemy_database_uri):
         self.engine = create_engine(sqlalchemy_database_uri)
+        self.session_maker = sessionmaker(bind=self.engine)
         self.site = {}
 
     @classmethod
@@ -26,7 +27,7 @@ class SqlalchemyPipeline(object):
         )
 
     def open_spider(self, spider):
-        session = sessionmaker(bind=self.engine)()
+        session = self.session_maker()
         site_setting = spider.settings.get('SITE')
         if not site_setting:
             error_msg = 'Can not find the website configuration from settings.'
@@ -39,29 +40,31 @@ class SqlalchemyPipeline(object):
                               image=site_setting['image'], show_seq=site_setting['show_seq'])
             session.add(site)
             session.commit()
-        self.site[site.code] = {'id': site.id, 'session': session,
-                                'starttime': datetime.utcnow(), 'channels': {}}
+        self.site[site.code] = {'id': site.id, 'starttime': datetime.utcnow(), 'channels': {}}
+        session.close()
 
     def close_spider(self, spider):
+        session = self.session_maker()
         site_dict = self.site[spider.settings.get('SITE')['code']]
-        site_dict['session'].query(LiveTVChannel).filter(LiveTVChannel.crawl_date < site_dict['starttime']) \
+        session.query(LiveTVChannel).filter(LiveTVChannel.crawl_date < site_dict['starttime']) \
                                                  .update({LiveTVChannel.valid: False})
-        site_dict['session'].query(LiveTVRoom).filter(LiveTVRoom.crawl_date < site_dict['starttime']) \
+        session.query(LiveTVRoom).filter(LiveTVRoom.crawl_date < site_dict['starttime']) \
                                                  .update({LiveTVRoom.opened: False})
-        site_dict['session'].commit()
-        for channel in site_dict['session'].query(LiveTVChannel).filter(LiveTVChannel.site_id == site_dict['id']).all():
+        session.commit()
+        for channel in session.query(LiveTVChannel).filter(LiveTVChannel.site_id == site_dict['id']).all():
             channel.total = channel.rooms.count()
-            site_dict['session'].add(channel)
-        site_dict['session'].commit()
-        site_dict['session'].close()
+            session.add(channel)
+        session.commit()
+        session.close()
         del site_dict
         if not self.site:
             self.engine.dispose()
 
     def process_item(self, item, spider):
+        session = self.session_maker()
         site_dict = self.site[spider.settings.get('SITE')['code']]
         if isinstance(item, ChannelItem):
-            channel = site_dict['session'].query(LiveTVChannel) \
+            channel = session.query(LiveTVChannel) \
                 .filter(LiveTVChannel.site_id == site_dict['id']) \
                 .filter(LiveTVChannel.short == item['short']).one_or_none()
             if not channel:
@@ -70,15 +73,15 @@ class SqlalchemyPipeline(object):
             else:
                 spider.logger.debug('更新频道 {}:{}'.format(item['name'], item['url']))
             channel.from_item(item)
-            site_dict['session'].add(channel)
-            site_dict['session'].commit()
+            session.add(channel)
+            session.commit()
             if not channel.office_id:
                 channel.office_id = channel.id
-                site_dict['session'].add(channel)
-                site_dict['session'].commit()
+                session.add(channel)
+                session.commit()
             site_dict['channels'][channel.short] = channel.id
         elif isinstance(item, RoomItem):
-            room = site_dict['session'].query(LiveTVRoom) \
+            room = session.query(LiveTVRoom) \
                 .filter(LiveTVRoom.site_id == site_dict['id']) \
                 .filter(LiveTVRoom.channel_id == site_dict['channels'][item['channel']]) \
                 .filter(LiveTVRoom.office_id == item['office_id']).one_or_none()
@@ -89,8 +92,8 @@ class SqlalchemyPipeline(object):
             else:
                 spider.logger.debug('更新房间 {}:{}'.format(item['name'], item['url']))
             room.from_item(item)
-            site_dict['session'].add(room)
             roomdata = LiveTVRoomData(room=room, online=room.online)
-            site_dict['session'].add(roomdata)
-            site_dict['session'].commit()
+            session.add(room, roomdata)
+            session.commit()
+        session.close()
         return item

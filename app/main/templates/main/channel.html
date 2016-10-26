@@ -29,7 +29,7 @@
         <a v-if="item.image" v-bind:href="item.link.detail" v-bind:title="item.name">
           <img class="img-rounded" width="108%" v-bind:src="item.image">
         </a>
-      <a v-bind:href="item.link.detail" v-bind:title="item.name" v-text="item.name | except 36"></a>
+      <a v-bind:href="item.link.detail" v-bind:title="item.name" v-text="item.name | except 34"></a>
       <p>
         主播 <span v-text="item.host"></span><br>
         人气 <span v-text="item.online"></span> <span v-text="item.crawl_date"></span> 更新
@@ -38,9 +38,28 @@
     </template>
   </div>
   <div class="row">
-    <template>
-      
-    </template>
+    <div class="pagination">
+      <a v-bind:class="['btn-nav', 'btn', 'btn-default', room_pagi.current_page == 1 ? 'disabled' : '']"
+         v-on:click="room_page(1)">
+        <span>«</span>
+      </a>
+      <a v-bind:class="['btn-nav', 'btn', 'btn-default', room_pagi.current_page == 1 ? 'disabled' : '']"
+         v-on:click="room_page(room_pagi.current_page - 1)">
+        <span>&nbsp;‹</span>
+      </a>
+      <template v-if="true" v-for="ep in page_array">
+        <a v-bind:class="['btn', 'btn-default', ep == room_pagi.current_page ? 'active' : '']"
+           v-on:click="room_page(ep)" v-text="ep"></a>
+      </template>
+      <a v-bind:class="['btn-nav', 'btn', 'btn-default', room_pagi.current_page == room_pagi.last_page ? 'disabled' : '']"
+         v-on:click="room_page(room_pagi.current_page + 1)">
+        <span>›&nbsp;</span>
+      </a>
+      <a v-bind:class="['btn-nav', 'btn', 'btn-default', room_pagi.current_page == room_pagi.last_page ? 'disabled' : '']"
+         v-on:click="room_page(room_pagi.last_page)">
+        <span>»</span>
+      </a>
+    </div>
   </div>
 </template>
 {% endblock %}
@@ -71,23 +90,54 @@ var channel_detail = new Vue({
     el: "#channel_detail",
     data: {
         channel: {},
-        rooms: []
+        rooms: [],
+        room_pagi: {},
+        page_array: []
     },
     ready: function(){
         this.$http.get("{{ channel_url }}").then(
             function(response){
                 this.$set("channel", response.body)
-                this.$http.get(this.channel.rest.room).then(
-                    function(response){
-                        this.rooms = response.body
-                    }, function(response){
-                        alert(response.body['message'])
-                    }
-                )
+                this.room_page(1)
             }, function(response){
                 alert(response.body['message'])
             }
         )
+    },
+    methods: {
+        room_page: function(page){
+            this.$http.get(this.channel.rest.room + "?isvue=1&page=" + page).then(
+                function(response){
+                    this.rooms = response.body.data
+                    base_pagi = response.body.links.pagination
+                    page_array = [base_pagi.current_page]
+                    leftn = 2
+                    rightn = 2
+                    while(leftn > 0 || rightn > 0){
+                        if(leftn > 0){
+                            if(page_array[0] - 1 > 0){
+                                page_array.splice(0, 0, page_array[0] - 1)
+                            }else{
+                                rightn += 1
+                            }
+                            leftn -= 1
+                        }
+                        if(rightn > 0){
+                            if(page_array[page_array.length - 1] + 1 < base_pagi.last_page){
+                                page_array.push(page_array[page_array.length - 1] + 1)
+                            }else{
+                                leftn += 1
+                            }
+                            rightn -= 1
+                        }
+                    }
+                    this.$set("room_pagi", base_pagi)
+                    this.page_array = page_array
+                }, function(response){
+                    alert(response.body['message'])
+                }
+            )
+        }
     }
 })
 </script>

@@ -41,7 +41,7 @@ class DouyuSpider(Spider):
         room_list = json.loads(response.text)['data']
         for rjson in room_list:
             yield RoomItem({
-                'office_id': rjson['room_id'],
+                'office_id': str(rjson['room_id']),
                 'name': rjson['room_name'],
                 'image': rjson['room_src'],
                 'url': rjson['url'],
