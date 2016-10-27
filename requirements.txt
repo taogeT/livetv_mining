@@ -1,6 +1,10 @@
 alembic==0.8.8
+amqp==1.4.9
 aniso8601==1.2.0
+anyjson==0.3.3
 attrs==16.2.0
+billiard==3.3.0.23
+celery==3.1.24
 cffi==1.8.3
 click==6.6
 cryptography==1.5.2
@@ -8,6 +12,7 @@ cssselect==1.0.0
 dominate==2.2.1
 Flask==0.11.1
 Flask-Bootstrap==3.3.7.0
+Flask-Celery-py3==0.2.4
 Flask-Login==0.3.2
 Flask-Migrate==2.0.0
 Flask-Moment==0.5.1
@@ -22,8 +27,10 @@ greenlet==0.4.10
 idna==2.1
 itsdangerous==0.24
 Jinja2==2.8
+kombu==3.0.37
 lxml==3.6.4
 Mako==1.0.4
+Markdown==2.6.7
 MarkupSafe==0.23
 oauthlib==2.0.0
 parsel==1.0.3
