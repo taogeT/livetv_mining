@@ -47,9 +47,11 @@ class SqlalchemyPipeline(object):
         session = self.session_maker()
         site_dict = self.site[spider.settings.get('SITE')['code']]
         session.query(LiveTVChannel).filter(LiveTVChannel.crawl_date < site_dict['starttime']) \
-                                                 .update({LiveTVChannel.valid: False})
+                                    .filter(LiveTVChannel.site_id == site_dict['id']) \
+                                    .update({LiveTVChannel.valid: False})
         session.query(LiveTVRoom).filter(LiveTVRoom.crawl_date < site_dict['starttime']) \
-                                                 .update({LiveTVRoom.opened: False})
+                                 .filter(LiveTVRoom.site_id == site_dict['id']) \
+                                 .update({LiveTVRoom.opened: False})
         session.commit()
         for channel in session.query(LiveTVChannel).filter(LiveTVChannel.site_id == site_dict['id']).all():
             channel.total = channel.rooms.count()

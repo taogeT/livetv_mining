@@ -115,7 +115,7 @@ class ChannelMultiple(Resource, MainApiMixin):
         isvue = request.args.get('isvue', False, type=bool)
         page = request.args.get('page', 1, type=int)
         per_page = request.args.get('per_page', current_app.config['FLASK_CHANNEL_PER_PAGE'], type=int)
-        channel_query = LiveTVChannel.query.filter_by(site_id=site_id)
+        channel_query = LiveTVChannel.query.filter_by(site_id=site_id).filter_by(valid=True)
         pagination = channel_query.order_by(LiveTVChannel.total.desc()) \
                                   .paginate(page=page, error_out=False, per_page=per_page)
         pagiitems = [self._format_channel(item) for item in pagination.items]
@@ -148,7 +148,7 @@ class RoomMultiple(Resource, MainApiMixin):
         isvue = request.args.get('isvue', False, type=bool)
         page = request.args.get('page', 1, type=int)
         per_page = request.args.get('per_page', current_app.config['FLASK_ROOM_PER_PAGE'], type=int)
-        room_query = LiveTVRoom.query
+        room_query = LiveTVRoom.query.filter_by(opened=True)
         if site_id:
             room_query = room_query.filter_by(site_id=site_id)
         if channel_id:

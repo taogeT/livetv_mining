@@ -22,9 +22,9 @@
     </table>
   </div>
   <h3>频道列表</h3>
-  <div class="row">
+  <div class="row" style="text-align: center;">
     <template v-for="item in channels">
-      <div class="col-lg-2 col-md-4" style="text-align: center;">
+      <div class="col-lg-2 col-md-4">
         <a v-if="item.image" v-bind:href="item.link.detail" v-bind:title="item.name">
           <img class="img-rounded" width="110%" v-bind:src="item.image">
         </a>
