@@ -29,7 +29,10 @@
           <img class="img-rounded" width="110%" v-bind:src="item.image">
         </a>
         <a v-bind:href="item.link.detail" v-html="item.image ? item.name : '<h2>'+item.name+'</h2>'"></a>
-        <p v-html="'房间数 ' + item.total + '<br>' + item.crawl_date + ' 更新'"></p>
+        <p>
+          房间数 <span v-text="item.total"></span><br>
+          <span v-text="item.crawl_date | moment"></span> 更新<br>
+        </p>
       </div>
     </template>
   </div>

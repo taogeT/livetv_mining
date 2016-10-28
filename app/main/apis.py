@@ -36,7 +36,7 @@ class MainApiMixin(object):
             'url': channel.url,
             'image': channel.image,
             'total': channel.total,
-            'crawl_date': channel.crawl_date.strftime('%m/%d %H:%M'),
+            'crawl_date': channel.crawl_date.strftime('%Y-%m-%d %H:%M:%S'),
             'site': channel.site.name,
             'link': {
                 'detail': url_for('main.channel_detail', channel_id=channel.id),
@@ -57,7 +57,7 @@ class MainApiMixin(object):
             'image': room.image,
             'online': room.online,
             'host': room.host,
-            'crawl_date': room.crawl_date.strftime('%m/%d %H:%M'),
+            'crawl_date': room.crawl_date.strftime('%Y-%m-%d %H:%M:%S'),
             'channel': room.channel.name,
             'site': room.site.name,
             'link': {

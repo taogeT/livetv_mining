@@ -1,23 +1,19 @@
 # -*- coding: UTF-8 -*-
 from flask import Flask
 from flask_bootstrap import Bootstrap
-from flask_moment import Moment
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import CsrfProtect
 from flask_oauthlib.client import OAuth
 from flask_login import LoginManager
 from flask_vue import Vue
-from flask_celery import Celery
 from gevent import monkey
 
 bootstrap = Bootstrap()
-moment = Moment()
 db = SQLAlchemy()
 csrf = CsrfProtect()
 oauth = OAuth()
 login_manager = LoginManager()
 vue = Vue()
-celery = Celery()
 monkey.patch_all()
 
 
@@ -27,13 +23,11 @@ def create_app():
     app.config.from_pyfile('config.py', silent=True)
 
     bootstrap.init_app(app)
-    moment.init_app(app)
     db.init_app(app)
     csrf.init_app(app)
     oauth.init_app(app)
     login_manager.init_app(app)
     vue.init_app(app)
-    celery.init_app(app)
 
     from .main import main as main_blueprint
     app.register_blueprint(main_blueprint)

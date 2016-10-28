@@ -13,7 +13,6 @@ Flask-Bootstrap==3.3.7.0
 Flask-Celery-py3==0.2.4
 Flask-Login==0.3.2
 Flask-Migrate==2.0.0
-Flask-Moment==0.5.1
 Flask-OAuthlib==0.9.3
 Flask-RESTful==0.3.5
 Flask-Script==2.0.5

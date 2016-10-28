@@ -79,4 +79,29 @@
 <script src="{{ vue_find_resource('vue') }}"></script>
 <script src="{{ vue_find_resource('vue-resource') }}"></script>
 <script src="{{ vue_find_resource('vue-table') }}"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.15.2/moment-with-locales.min.js"></script>
+<script>
+Vue.filter('moment', function (value){
+    return moment.utc(value).local().format("MM-DD HH:mm")
+})
+
+Vue.filter("except", function (value, number){
+    var real_length = value.replace(/[^\x00-\xff]/g,"01").length
+    if(real_length > number){
+        var append_str = "..."
+        ret_value = ""
+        ret_length = 0
+        for(var i=0; i < value.length; i++){
+            ret_length += (value[i].charCodeAt(0) < 299 ? 1 : 2)
+            ret_value += value[i]
+            if(ret_length > number - append_str.length){
+                break
+            }
+        }
+        return ret_value + append_str
+    }else{
+        return value
+    }
+})
+</script>
 {% endblock %}
