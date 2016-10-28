@@ -1,10 +1,8 @@
 alembic==0.8.8
-amqp==1.4.9
 aniso8601==1.2.0
 anyjson==0.3.3
 attrs==16.2.0
 billiard==3.3.0.23
-celery==3.1.24
 cffi==1.8.3
 click==6.6
 cryptography==1.5.2
@@ -45,7 +43,6 @@ pytz==2016.7
 queuelib==1.4.2
 redis==2.10.5
 requests==2.11.1
-requests-oauthlib==0.7.0
 Scrapy==1.2.1
 scrapy-redis==0.6.3
 service-identity==16.0.0
