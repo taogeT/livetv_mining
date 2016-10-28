@@ -14,7 +14,7 @@ github = oauth.remote_app(
     access_token_method='POST',
     access_token_url='https://github.com/login/oauth/access_token',
     authorize_url='https://github.com/login/oauth/authorize',
-    app_key='GITHUB_AUTH'
+    app_key='GITHUB'
 )
 
 
