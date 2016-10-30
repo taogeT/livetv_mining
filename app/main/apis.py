@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-from flask import request, current_app, jsonify, url_for
+from flask import request, current_app, url_for
 from flask_restful import abort
 
 from ..models import LiveTVSite, LiveTVChannel, LiveTVRoom
@@ -56,6 +56,7 @@ class MainApiMixin(object):
             'url': room.url,
             'image': room.image,
             'online': room.online,
+            'opened': room.opened,
             'host': room.host,
             'crawl_date': room.crawl_date.strftime('%Y-%m-%d %H:%M:%S'),
             'channel': room.channel.name,
@@ -120,9 +121,9 @@ class ChannelMultiple(Resource, MainApiMixin):
                                   .paginate(page=page, error_out=False, per_page=per_page)
         pagiitems = [self._format_channel(item) for item in pagination.items]
         if isvue:
-            return jsonify(dict(self._format_pagination(pagination), data=pagiitems))
+            return dict(self._format_pagination(pagination), data=pagiitems)
         else:
-            return jsonify(pagiitems)
+            return pagiitems
 
 
 @main_api.resource('/site/<int:site_id>/channel/<int:channel_id>',
@@ -147,19 +148,25 @@ class RoomMultiple(Resource, MainApiMixin):
     def get(self, site_id=None, channel_id=None):
         isvue = request.args.get('isvue', False, type=bool)
         page = request.args.get('page', 1, type=int)
+        name = request.args.get('name', '', type=str)
+        host = request.args.get('host', '', type=str)
         per_page = request.args.get('per_page', current_app.config['FLASK_ROOM_PER_PAGE'], type=int)
         room_query = LiveTVRoom.query.filter_by(opened=True)
         if site_id:
             room_query = room_query.filter_by(site_id=site_id)
         if channel_id:
             room_query = room_query.filter_by(channel_id=channel_id)
+        if name:
+            room_query = room_query.filter(LiveTVRoom.name.like('%{}%'.format(name)))
+        if host:
+            room_query = room_query.filter(LiveTVRoom.host.like('%{}%'.format(host)))
         pagination = room_query.order_by(LiveTVRoom.online.desc()) \
             .paginate(page=page, error_out=False, per_page=per_page)
         pagiitems = [self._format_room(item) for item in pagination.items]
         if isvue:
-            return jsonify(dict(self._format_pagination(pagination), data=pagiitems))
+            return dict(self._format_pagination(pagination), data=pagiitems)
         else:
-            return jsonify(pagiitems)
+            return pagiitems
 
 
 @main_api.resource('/site/<int:site_id>/channel/<int:channel_id>/room/<int:room_id>',
@@ -178,10 +185,3 @@ class Room(Resource, MainApiMixin):
         if not room:
             abort(400, message='Can not find channel record by room: {}.'.format(str(room_id)))
         return self._format_room(room)
-
-
-@main_api.resource('/search')
-class Search(Resource, MainApiMixin):
-
-    def post(self):
-        pass

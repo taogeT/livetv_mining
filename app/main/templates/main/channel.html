@@ -29,7 +29,7 @@
         <a v-if="item.image" v-bind:href="item.link.detail" v-bind:title="item.name">
           <img class="img-rounded" width="100%" v-bind:src="item.image">
         </a>
-      <a v-bind:href="item.link.detail" v-bind:title="item.name" v-text="item.name | except 34"></a>
+      <a v-bind:href="item.link.detail" v-bind:title="item.name" v-html="item.name | except 34"></a>
       <p>
         主播 <span v-text="item.host"></span><br>
         人气 <span v-text="item.online"></span> <span v-text="item.crawl_date | moment"></span> 更新

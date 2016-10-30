@@ -10,13 +10,20 @@
     </div>
     <div v-bind:class="room.image ? 'col-lg-8 col-md-8' : 'col-lg-12 col-md-12'" style="text-align: left;">
       <h2>
-        <span v-text="room.name"></span>
+        <span v-html="room.name"></span>
         <small><a v-bind:href="room.url" target="_blank">官网</a></small></h2>
       <p>
         <h4>主播：<span v-text="room.host"></span></h4>
-        <h4>频道：<a v-bind:href="room.link.channel" target="_blank" v-text="room.channel"></a></h4>
-        <h4>站点：<a v-bind:href="room.link.site" target="_blank" v-text="room.site"></a><br></h4>
-        <h4>更新时间：<span v-text="room.crawl_date | moment"></span></h4>
+        <h4>
+          频道：<a v-bind:href="room.link.channel" target="_blank" v-text="room.channel"></a>
+          &nbsp;&nbsp;&nbsp;&nbsp;
+          站点：<a v-bind:href="room.link.site" target="_blank" v-text="room.site"></a>
+        </h4>
+        <h4>
+          状态：<span v-text="room.opened ? '正在直播': '未直播'"></span>
+          &nbsp;&nbsp;&nbsp;&nbsp;
+          更新时间：<span v-text="room.crawl_date | moment"></span>
+        </h4>
         <h4>人气：<span v-text="room.online"></span></h4>
       </p>
     </div>

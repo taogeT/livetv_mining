@@ -34,7 +34,7 @@
         <li {% block navbar_li_room %}{% endblock %}><a href="{{ url_for('main.room_index') }}">房间</a></li>
         <li {% block navbar_li_channel %}{% endblock %}><a href="{{ url_for('main.channel_index') }}">频道</a></li>
         {% if g.user.is_authenticated %}
-        <li {% block navbar_li_search %}{% endblock %}><a href="{{ url_for('main.room_index') }}">搜索</a></li>
+        <li {% block navbar_li_search %}{% endblock %}><a href="{{ url_for('main.room_search') }}">搜索</a></li>
         {% endif %}
       </ul>
       <ul class="nav navbar-nav navbar-right">

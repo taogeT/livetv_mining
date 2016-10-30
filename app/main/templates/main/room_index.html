@@ -29,7 +29,7 @@
               <tr v-for="roomitem in item.rooms">
                 <td v-text="$index + 1"></td>
                 <td>
-                  <a v-bind:href="roomitem.link.detail" v-text="roomitem.name"></a>
+                  <a v-bind:href="roomitem.link.detail" v-html="roomitem.name"></a>
                   <span v-if="$index < 3"><br>
                     <a v-bind:href="roomitem.link.detail">
                       <img width="250px" height="150px" v-bind:src="roomitem.image">
