@@ -46,15 +46,13 @@ class SqlalchemyPipeline(object):
     def close_spider(self, spider):
         session = self.session_maker()
         site_dict = self.site[spider.settings.get('SITE')['code']]
-        session.query(LiveTVChannel).filter(LiveTVChannel.crawl_date < site_dict['starttime']) \
-                                    .filter(LiveTVChannel.site_id == site_dict['id']) \
-                                    .update({LiveTVChannel.valid: False})
         session.query(LiveTVRoom).filter(LiveTVRoom.crawl_date < site_dict['starttime']) \
                                  .filter(LiveTVRoom.site_id == site_dict['id']) \
                                  .update({LiveTVRoom.opened: False})
         session.commit()
         for channel in session.query(LiveTVChannel).filter(LiveTVChannel.site_id == site_dict['id']).all():
-            channel.total = channel.rooms.count()
+            channel.total = channel.rooms.filter_by(opened=True).count()
+            channel.valid = channel.total > 0
             session.add(channel)
         session.commit()
         session.close()

@@ -94,22 +94,28 @@ var channel_detail = new Vue({
                     page_array = [base_pagi.current_page]
                     leftn = 2
                     rightn = 2
-                    while(leftn > 0 || rightn > 0){
-                        if(leftn > 0){
+                    leftstop = false
+                    rightstop = false
+                    while((leftn > 0 || rightn > 0) && !(leftstop || rightstop)){
+                        if(!leftstop && leftn > 0){
                             if(page_array[0] - 1 > 0){
                                 page_array.splice(0, 0, page_array[0] - 1)
+                                leftn -= 1
                             }else{
-                                rightn += 1
+                                leftstop = true
+                                rightn += leftn
+                                leftn = 0
                             }
-                            leftn -= 1
                         }
-                        if(rightn > 0){
+                        if(!rightstop && rightn > 0){
                             if(page_array[page_array.length - 1] + 1 < base_pagi.last_page){
                                 page_array.push(page_array[page_array.length - 1] + 1)
+                                rightn -= 1
                             }else{
-                                leftn += 1
+                                rightstop = true
+                                leftn += rightn
+                                rightn = 0
                             }
-                            rightn -= 1
                         }
                     }
                     this.$set("room_pagi", base_pagi)
