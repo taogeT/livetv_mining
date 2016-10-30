@@ -103,8 +103,8 @@ class Site(Resource, MainApiMixin):
         if not site:
             abort(400, message='Can not find site by site_id {}'.format(str(site_id)))
         site_dict = self._format_site(site)
-        site_dict['channel_total'] = site.channels.count()
-        site_dict['room_total'] = site.rooms.count()
+        site_dict['channel_total'] = site.channels.filter_by(valid=True).count()
+        site_dict['room_total'] = site.rooms.filter_by(opened=True).count()
         return site_dict
 
 

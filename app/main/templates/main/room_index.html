@@ -18,14 +18,29 @@
         </h4>
         <span style="text-align: left;">
           <h3>房间人气 TOP{{ config['FLASK_ROOM_RANK_NUM'] }}</h3>
-          <vuetable
-            v-bind:api-url="item.rest.room"
-            v-bind:fields="room_columns"
-            per-page="{{ config['FLASK_ROOM_RANK_NUM'] }}"
-            table-class="table table-striped"
-            show-pagination="false"
-            v-bind:append-params="['isvue=true']">
-          </vuetable>
+          <table class="table table-striped">
+            <thead>
+              <th width="50px">排名</th>
+              <th>房间</th>
+              <th>频道</th>
+              <th>人气</th>
+            </thead>
+            <tbody>
+              <tr v-for="roomitem in item.rooms">
+                <td v-text="$index + 1"></td>
+                <td>
+                  <a v-bind:href="roomitem.link.detail" v-text="roomitem.name"></a>
+                  <span v-if="$index < 3"><br>
+                    <a v-bind:href="roomitem.link.detail">
+                      <img width="250px" height="150px" v-bind:src="roomitem.image">
+                    </a>
+                  </span>
+                </td>
+                <td><a v-bind:href="roomitem.link.channel" v-text="roomitem.channel"></a></td>
+                <td v-text="roomitem.online"></td>
+              </tr>
+            </tbody>
+          </table>
         </span>
       </div>
     </template>
@@ -36,34 +51,33 @@
 {% block scripts %}
 {{ super() }}
 <script>
-Vue.component("element-link", {
-    template: "<a v-bind:href='rowData.link.detail' v-text='rowData.name'></a>",
-    props: {
-      rowData: {
-        type: Object,
-        required: true
-      }
-    }
-})
-
 var site_room = new Vue({
     el: "#index_room",
     data: {
-        site: [],
-        room_columns: [
-            { name: "__sequence", title: "排名" },
-            { name: "__component:element-link", title: "房间名" },
-            { name: "online", title: "人气" }
-        ]
+        site: []
     },
     ready: function(){
         this.$http.get("{{ site_url }}").then(
             function(response){
                 this.site = response.body
+                for(index in this.site){
+                    this.get_site_rooms(index)
+                }
             }, function(response){
                 alert(response.body['message'])
             }
         )
+    },
+    methods: {
+        get_site_rooms: function(index){
+            this.$http.get(this.site[index].rest.room + "?per_page={{ config['FLASK_ROOM_RANK_NUM'] }}").then(
+                function(resp){
+                    this.$set("site[" + index + "].rooms", resp.body)
+                }, function(resp){
+                    alert(resp.body['message'])
+                }
+            )
+        }
     }
 })
 </script>

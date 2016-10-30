@@ -18,14 +18,20 @@
         </h4>
         <span style="text-align: left;">
           <h3>频道房间数 TOP{{ config['FLASK_CHANNEL_RANK_NUM'] }}</h3>
-          <vuetable
-            v-bind:api-url="item.rest.channel"
-            v-bind:fields="channel_columns"
-            per-page="{{ config['FLASK_CHANNEL_RANK_NUM'] }}"
-            table-class="table table-striped"
-            show-pagination="false"
-            v-bind:append-params="['isvue=true']">
-          </vuetable>
+          <table class="table table-striped">
+            <thead>
+              <th>排名</th>
+              <th>频道</th>
+              <th>房间数</th>
+            </thead>
+            <tbody>
+              <tr v-for="channelitem in item.channels">
+                <td v-text="$index + 1"></td>
+                <td><a v-bind:href='channelitem.link.detail' v-text='channelitem.name'></a></td>
+                <td v-text="channelitem.total"></td>
+              </tr>
+            </tbody>
+          </table>
         </span>
       </div>
     </template>
@@ -36,34 +42,33 @@
 {% block scripts %}
 {{ super() }}
 <script>
-Vue.component("element-link", {
-    template: "<a v-bind:href='rowData.link.detail' v-text='rowData.name'></a>",
-    props: {
-      rowData: {
-        type: Object,
-        required: true
-      }
-    }
-})
-
 var site_channel = new Vue({
     el: "#index_channel",
     data: {
         site: [],
-        channel_columns: [
-            { name: "__sequence", title: "排名" },
-            { name: "__component:element-link", title: "频道" },
-            { name: "total", title: "房间数" }
-        ]
     },
     ready: function(){
         this.$http.get("{{ site_url }}").then(
             function(response){
                 this.site = response.body
+                for(index in this.site){
+                    this.get_site_channels(index)
+                }
             }, function(response){
                 alert(response.body['message'])
             }
         )
+    },
+    methods: {
+        get_site_channels: function(index){
+            this.$http.get(this.site[index].rest.channel + "?per_page={{ config['FLASK_CHANNEL_RANK_NUM'] }}").then(
+                function(resp){
+                    this.$set("site[" + index + "].channels", resp.body)
+                }, function(resp){
+                    alert(resp.body['message'])
+                }
+            )
+        }
     }
 })
 </script>
