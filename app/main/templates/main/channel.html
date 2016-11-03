@@ -23,20 +23,26 @@
     </div>
   </div>
   <h3>房间列表</h3>
-  <div class="row" style="text-align: center;">
-    <template v-for="item in rooms">
-      <div class="col-lg-3 col-md-6">
-        <a v-if="item.image" v-bind:href="item.link.detail" v-bind:title="item.name">
-          <img class="img-rounded" width="100%" v-bind:src="item.image">
-        </a>
-      <a v-bind:href="item.link.detail" v-bind:title="item.name" v-html="item.name | except 34"></a>
-      <p>
-        主播 <span v-text="item.host"></span><br>
-        人气 <span v-text="item.online"></span> <span v-text="item.crawl_date | moment"></span> 更新
-      </p>
-      </div>
-    </template>
-  </div>
+  <template v-for="n_item in Math.ceil(rooms.length / 4)">
+    <div class="row" style="text-align: center;">
+      <template v-for="n_subitem in 4">
+        <div v-if="n_item * 4 + n_subitem + 1 <= rooms.length" class="col-lg-3 col-md-6">
+          <a v-if="rooms[n_item * 4 + n_subitem].image" v-bind:href="rooms[n_item * 4 + n_subitem].link.detail"
+             v-bind:title="rooms[n_item * 4 + n_subitem].name">
+            <img class="img-rounded" width="100%" v-bind:src="rooms[n_item * 4 + n_subitem].image">
+          </a>
+        <a v-bind:href="rooms[n_item * 4 + n_subitem].link.detail"
+           v-bind:title="rooms[n_item * 4 + n_subitem].name"
+           v-html="rooms[n_item * 4 + n_subitem].name | except 34"></a>
+        <p>
+          主播 <span v-text="rooms[n_item * 4 + n_subitem].host"></span><br>
+          人气 <span v-text="rooms[n_item * 4 + n_subitem].online"></span>&nbsp;
+          <span v-text="rooms[n_item * 4 + n_subitem].crawl_date | moment"></span> 更新
+        </p>
+        </div>
+      </template>
+    </div>
+  </template>
   <div class="row">
     <div class="pagination">
       <a v-bind:class="['btn-nav', 'btn', 'btn-default', room_pagi.current_page == 1 ? 'disabled' : '']"
@@ -96,7 +102,7 @@ var channel_detail = new Vue({
                     rightn = 2
                     leftstop = false
                     rightstop = false
-                    while((leftn > 0 || rightn > 0) && !(leftstop || rightstop)){
+                    while((leftn > 0 || rightn > 0) && !(leftstop && rightstop)){
                         if(!leftstop && leftn > 0){
                             if(page_array[0] - 1 > 0){
                                 page_array.splice(0, 0, page_array[0] - 1)

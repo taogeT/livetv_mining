@@ -22,20 +22,25 @@
     </table>
   </div>
   <h3>频道列表</h3>
-  <div class="row" style="text-align: center;">
-    <template v-for="item in channels">
-      <div class="col-lg-2 col-md-4">
-        <a v-if="item.image" v-bind:href="item.link.detail" v-bind:title="item.name">
-          <img class="img-rounded" width="110%" v-bind:src="item.image">
-        </a>
-        <a v-bind:href="item.link.detail" v-html="item.image ? item.name : '<h2>'+item.name+'</h2>'"></a>
-        <p>
-          房间数 <span v-text="item.total"></span><br>
-          <span v-text="item.crawl_date | moment"></span> 更新<br>
-        </p>
-      </div>
-    </template>
-  </div>
+  <template v-for="n_item in Math.ceil(channels.length / 6)">
+    <div class="row" style="text-align: center;">
+      <template v-for="n_subitem in 6">
+        <div v-if="n_item * 6 + n_subitem + 1 <= channels.length" class="col-lg-2 col-md-4">
+          <a v-if="channels[n_item * 6 + n_subitem].image"
+             v-bind:href="channels[n_item * 6 + n_subitem].link.detail"
+             v-bind:title="channels[n_item * 6 + n_subitem].name">
+            <img class="img-rounded" width="110%" v-bind:src="channels[n_item * 6 + n_subitem].image">
+          </a>
+          <a v-bind:href="channels[n_item * 6 + n_subitem].link.detail"
+             v-html="channels[n_item * 6 + n_subitem].image ? channels[n_item * 6 + n_subitem].name : '<h2>'+channels[n_item * 6 + n_subitem].name+'</h2>'"></a>
+          <p>
+            房间数 <span v-text="channels[n_item * 6 + n_subitem].total"></span><br>
+            <span v-text="channels[n_item * 6 + n_subitem].crawl_date | moment"></span> 更新<br>
+          </p>
+        </div>
+      </template>
+    </div>
+  </template>
 </template>
 {% endblock %}
 
