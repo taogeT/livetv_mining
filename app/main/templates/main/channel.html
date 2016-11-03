@@ -102,7 +102,7 @@ var channel_detail = new Vue({
                     rightn = 2
                     leftstop = false
                     rightstop = false
-                    while((leftn > 0 || rightn > 0) && !(leftstop && rightstop)){
+                    while((!leftstop && leftn > 0) || (!rightstop && rightn > 0)){
                         if(!leftstop && leftn > 0){
                             if(page_array[0] - 1 > 0){
                                 page_array.splice(0, 0, page_array[0] - 1)
@@ -114,7 +114,7 @@ var channel_detail = new Vue({
                             }
                         }
                         if(!rightstop && rightn > 0){
-                            if(page_array[page_array.length - 1] + 1 < base_pagi.last_page){
+                            if(page_array[page_array.length - 1] + 1 <= base_pagi.last_page){
                                 page_array.push(page_array[page_array.length - 1] + 1)
                                 rightn -= 1
                             }else{

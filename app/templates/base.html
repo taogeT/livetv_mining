@@ -44,7 +44,7 @@
             {{ g.user.nickname if g.user.nickname else g.user.username }} <span class="caret"></span>
           </a>
           <ul class="dropdown-menu">
-            <li><a href="{{ url_for('subscribe.slist') }}">订阅</a></li>
+            <li><a href="{{ url_for('subscribe.slist') }}">订阅房间</a></li>
             <li role="separator" class="divider"></li>
             <li><a href="{{ url_for('auth.logout') }}">退出</a></li>
           </ul>

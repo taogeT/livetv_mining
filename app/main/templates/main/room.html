@@ -24,7 +24,11 @@
           &nbsp;&nbsp;&nbsp;&nbsp;
           更新时间：<span v-text="room.crawl_date | moment"></span>
         </h4>
-        <h4>人气：<span v-text="room.online"></span></h4>
+        <h4>
+          当前人气：<span v-text="room.online"></span>
+          &nbsp;&nbsp;&nbsp;&nbsp;
+          人气中位数：<span v-text="room.median.online"></span>
+        </h4>
       </p>
     </div>
   </div>

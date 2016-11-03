@@ -1,8 +1,10 @@
 # -*- coding: UTF-8 -*-
 from flask_login import UserMixin
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from . import db
+
+import numpy as np
 
 
 class LiveTVSite(db.Model):
@@ -57,6 +59,16 @@ class LiveTVRoom(db.Model):
     online = db.Column(db.Integer, default=0, index=True, doc='观众数')
     opened = db.Column(db.Boolean, default=True, doc='是否正在直播')
     crawl_date = db.Column(db.DateTime, doc='最近一次扫描时间')
+
+    @property
+    def median(self):
+        last30days = datetime.utcnow() - timedelta(days=30)
+        online_list = []
+        for roomdata in self.hisdata.filter(LiveTVRoomData.create_date > last30days).all():
+            online_list.append(roomdata.online)
+        return {
+            'online': np.median(online_list)
+        }
 
 
 class LiveTVRoomData(db.Model):
