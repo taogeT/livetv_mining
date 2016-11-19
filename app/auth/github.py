@@ -33,12 +33,12 @@ def github_authorized():
         )
     session['github_token'] = (resp['access_token'], '')
     userjson = github.get('user').data
-    user = User.query.filter_by(officeid=str(userjson['id']), symbol='github').one_or_none()
+    user = User.query.filter_by(office_id=str(userjson['id']), symbol='github').one_or_none()
     if not user:
-        user = User(officeid=userjson['id'], username=userjson['login'], url=userjson['url'], symbol='github')
+        user = User(office_id=userjson['id'], username=userjson['login'], url=userjson['url'], symbol='github')
     user.nickname = userjson['name']
     user.email = userjson['email']
-    user.image_url = userjson['avatar_url']
+    user.image = userjson['avatar_url']
     user.description = userjson['bio']
     db.session.add(user)
     db.session.commit()

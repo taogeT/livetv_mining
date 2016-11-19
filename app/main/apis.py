@@ -183,7 +183,7 @@ class Room(Resource, MainApiMixin):
             room_query = room_query.filter_by(channel_id=channel_id)
         room = room_query.one_or_none()
         if not room:
-            abort(400, message='Can not find channel record by room: {}.'.format(str(room_id)))
+            abort(400, message='Can not find room record by room: {}.'.format(str(room_id)))
         roomdict = self._format_room(room)
         roomdict['median'] = room.median
         return roomdict

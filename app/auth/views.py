@@ -2,11 +2,11 @@
 from flask import render_template, url_for, g, redirect
 from flask_login import logout_user, current_user
 from datetime import datetime
+from importlib import import_module
 
 from .. import db, login_manager
 from ..models import User
 from . import auth
-from .github import github
 
 
 @auth.route('/login')
@@ -16,7 +16,8 @@ def login():
 
 @auth.route('/login/<string:authtype>')
 def login_authorize(authtype):
-    return github.authorize(callback=url_for('auth.{}_authorized'.format(authtype), _external=True))
+    oauth = import_module(authtype, '{}.{}'.format(__package__, authtype))
+    return oauth.authorize(callback=url_for('auth.{}_authorized'.format(authtype), _external=True))
 
 
 @auth.route('/logout')
