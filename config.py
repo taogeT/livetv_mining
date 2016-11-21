@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 
-SECRET_KEY = ''
+SECRET_KEY = ' Set Your Own Key '
 SQLALCHEMY_DATABASE_URI = 'sqlite:///database.db'
 USER_AGENT_FILE = ''
 GITHUB_CONSUMER_KEY = ''

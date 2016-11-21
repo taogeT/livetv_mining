@@ -64,8 +64,7 @@ def test(coverage=False):
     if coverage and not os.environ.get('FLASK_COVERAGE'):
         os.environ['FLASK_COVERAGE'] = '1'
         os.execvp(sys.executable, [sys.executable] + sys.argv)
-    tests = TestLoader().discover('tests')
-    TextTestRunner(verbosity=2).run(tests)
+    testresult = TextTestRunner(verbosity=2).run(TestLoader().discover('tests'))
     if cov:
         cov.stop()
         cov.save()
@@ -79,6 +78,8 @@ def test(coverage=False):
             cov.html_report(directory=covdir)
             print('Coverage HTML version: file://{}/index.html'.format(covdir))
         cov.erase()
+    if len(testresult.failures) + len(testresult.errors) > 0:
+        sys.exit(1)
 
 
 manager.add_command('shell', Shell(make_context=make_shell_context))

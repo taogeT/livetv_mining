@@ -13,6 +13,7 @@ class AbstractTestCase(TestCase):
     @classmethod
     def setUpClass(cls):
         cls.app = current_app if current_app else create_app()
+        cls.app.config['TESTING'] = True
         db.create_all()
         cls.test_site = {
             'code': 'test_site_code',
