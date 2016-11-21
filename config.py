@@ -1,7 +1,7 @@
 # -*- coding: UTF-8 -*-
 
 SECRET_KEY = ''
-SQLALCHEMY_DATABASE_URI = ''
+SQLALCHEMY_DATABASE_URI = 'sqlite:///database.db'
 USER_AGENT_FILE = ''
 GITHUB_CONSUMER_KEY = ''
 GITHUB_CONSUMER_SECRET = ''

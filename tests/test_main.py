@@ -95,9 +95,7 @@ class MainApiTest(AbstractTestCase):
         self.assertIsInstance(resplist, list)
         resp = self.client.get(main_api.url_for(Room, site_id=1000, channel_id=1000, room_id=1000))
         self.assertTrue(resp.status_code == 400)
-        resp = self.client.get(main_api.url_for(Room, site_id=self.test_site['id'],
-                                                room_id=self.test_room['id'],
-                                                channel_id=self.test_channel['id']))
+        resp = self.client.get(main_api.url_for(Room, room_id=self.test_room['id']))
         self.assertTrue(resp.status_code == 200)
         respjson = json.loads(resp.get_data(as_text=True))
         self.assertIsInstance(respjson, dict)
