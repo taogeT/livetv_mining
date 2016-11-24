@@ -83,14 +83,13 @@ class SqlalchemyPipeline(object):
         elif isinstance(item, RoomItem):
             room = session.query(LiveTVRoom) \
                 .filter(LiveTVRoom.site_id == site_dict['id']) \
-                .filter(LiveTVRoom.channel_id == site_dict['channels'][item['channel']]) \
                 .filter(LiveTVRoom.office_id == item['office_id']).one_or_none()
             if not room:
-                room = LiveTVRoom(office_id=item['office_id'], site_id=site_dict['id'],
-                                  channel_id=site_dict['channels'][item['channel']])
+                room = LiveTVRoom(office_id=item['office_id'], site_id=site_dict['id'])
                 spider.logger.debug('新增房间 {}: {}'.format(item['name'], item['url']))
             else:
                 spider.logger.debug('更新房间 {}:{}'.format(item['name'], item['url']))
+            room.channel_id = site_dict['channels'][item['channel']]
             room.from_item(item)
             roomdata = LiveTVRoomData(room=room, online=room.online)
             session.add(room, roomdata)
