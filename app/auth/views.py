@@ -16,7 +16,7 @@ def login():
 
 @auth.route('/login/<string:authtype>')
 def login_authorize(authtype):
-    oauth = import_module(authtype, '{}.{}'.format(__package__, authtype))
+    oauth = getattr(import_module('.'+authtype, __package__), authtype)
     return oauth.authorize(callback=url_for('auth.{}_authorized'.format(authtype), _external=True))
 
 
