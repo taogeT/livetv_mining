@@ -53,6 +53,7 @@
         <li {% block navbar_li_login %}{% endblock %}><a href="{{ url_for('auth.login') }}">登录</a></li>
       {% endif %}
         <li {% block navbar_li_aboutme %}{% endblock %}><a href="{{ url_for('about') }}">关于站点</a></li>
+        <li><a href="http://blog.zhengwentao.com">作者博客</a></li>
       </ul>
     </div>
     {% endblock %}
