@@ -1,21 +1,21 @@
 <template>
   <div class="pagination">
     <div class="row">
-      <a class="btn btn-nav btn-default" v-show="currentPage != 1" v-on:click="seek(1)">
+      <a class="btn btn-nav btn-default" :class="{ disabled: currentPage == 1 }" v-on:click="seek(1)">
         <span>«</span>
       </a>
-      <a class="btn btn-nav btn-default" v-show="currentPage != 1" v-on:click="seek(currentPage - 1)">
+      <a class="btn btn-nav btn-default" :class="{ disabled: currentPage == 1 }" v-on:click="seek(currentPage - 1)">
         <span>&nbsp;‹</span>
       </a>
       <template v-for="ep in page_array">
-        <a :class="['btn', 'btn-default', { 'active': ep == currentPage }]" v-on:click="seek(ep)">
+        <a class="btn btn-default" :class="{ active: ep == currentPage }" v-on:click="seek(ep)">
           {{ ep }}
         </a>
       </template>
-      <a class="btn btn-nav btn-default" v-show="currentPage != totalPage" v-on:click="seek(currentPage + 1)">
+      <a class="btn btn-nav btn-default" :class="{ disabled: currentPage == totalPage }" v-on:click="seek(currentPage + 1)">
         <span>›&nbsp;</span>
       </a>
-      <a class="btn btn-nav btn-default" v-show="currentPage != totalPage" v-on:click="seek(totalPage)">
+      <a class="btn btn-nav btn-default" :class="{ disabled: currentPage == totalPage }" v-on:click="seek(totalPage)">
         <span>»</span>
       </a>
     </div>

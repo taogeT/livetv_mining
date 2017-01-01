@@ -16,23 +16,38 @@
       </div>
     </div>
     <h3>房间列表</h3>
-    <room-list :channel-id="this.$route.params.id"></room-list>
+    <room-list :rooms="this.rooms"></room-list>
+    <pagination :current-page="pagination.current_page" :total-page="pagination.last_page" v-on:seek="seekPage"></pagination>
   </div>
 </template>
 
 <script>
 import RoomList from '../../components/RoomList.vue'
+import Pagination from '../../components/Pagination.vue'
 
 export default {
   name: 'channel-detail',
   data () {
-    return { channel: {} }
+    return { channel: {}, rooms: [], pagination: {} }
   },
-  components: { RoomList },
+  components: { RoomList, Pagination },
+  methods: {
+    seekPage (pageNum) {
+      this.$http.get('http://www.zhengwentao.com/rest/channel/' + this.channel.id + '/room?isvue=1&page=' + pageNum).then(
+        (response) => {
+          this.rooms = response.body.data
+          this.pagination = Object.assign({}, this.pagination, response.body.links.pagination)
+        }, (response) => {
+          console.log(response.body['message'])
+        }
+      )
+    }
+  },
   mounted () {
-    this.$http.get('http://localhost:5000/rest/channel/' + this.$route.params.id).then(
+    this.$http.get('http://www.zhengwentao.com/rest/channel/' + this.$route.params.id).then(
       (response) => {
         this.channel = response.body
+        this.seekPage(1)
       }, (response) => {
         console.log(response.body['message'])
       }

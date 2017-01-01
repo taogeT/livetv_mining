@@ -16,34 +16,15 @@
         </div>
       </div>
     </template>
-    <pagination :current-page="pagination.current_page" :total-page="pagination.last_page" v-on:seek="seekPage"></pagination>
   </div>
 </template>
 
 <script>
-import Pagination from './Pagination.vue'
-
 export default {
   name: 'room-list',
-  props: ['channelId'],
-  components: { Pagination },
+  props: ['rooms'],
   data () {
-    return { rooms: [], pagination: {}, columnnum: 4 }
-  },
-  methods: {
-    seekPage (pageNum) {
-      this.$http.get('http://localhost:5000/rest/channel/' + this.channelId + '/room?isvue=1&page=' + pageNum).then(
-        (response) => {
-          this.rooms = response.body.data
-          this.pagination = Object.assign({}, this.pagination, response.body.pagination)
-        }, (response) => {
-          console.log(response.body['message'])
-        }
-      )
-    }
-  },
-  mounted () {
-    this.seekPage(1)
+    return { columnnum: 4 }
   }
 }
 </script>

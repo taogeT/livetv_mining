@@ -46,7 +46,7 @@ export default {
   },
   components: { SiteHeader },
   mounted () {
-    this.$http.get('http://localhost:5000/rest/site').then(
+    this.$http.get('http://www.zhengwentao.com/rest/site').then(
       (response) => {
         this.site = response.body
         for(const index in this.site){
@@ -59,7 +59,7 @@ export default {
   },
   methods: {
     get_site_channels: function(index){
-      this.$http.get('http://localhost:5000/rest/site/' + this.site[index].id + '/channel?per_page=' + this.rank_num).then(
+      this.$http.get('http://www.zhengwentao.com/rest/site/' + this.site[index].id + '/channel?per_page=' + this.rank_num).then(
         (resp) => {
           this.$set(this.site[index], 'channels', resp.body)
         }, (resp) => {

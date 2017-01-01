@@ -15,7 +15,7 @@
       </table>
     </div>
     <h3>频道列表</h3>
-    <channel-list :site-id="this.$route.params.id"></channel-list>
+    <channel-list :channels="this.channels"></channel-list>
   </div>
 </template>
 
@@ -26,12 +26,19 @@ export default {
   name: 'site-detail',
   components: { ChannelList },
   data () {
-    return { site: {} }
+    return { site: {}, channels: [] }
   },
-  beforeCreate () {
-    this.$http.get('http://localhost:5000/rest/site/' + this.$route.params.id).then(
+  mounted () {
+    this.$http.get('http://www.zhengwentao.com/rest/site/' + this.$route.params.id).then(
       (response) => {
         this.site = response.body
+        this.$http.get('http://www.zhengwentao.com/rest/site/' + this.site.id + '/channel?per_page=1000').then(
+          (response) => {
+            this.channels = response.body
+          }, (response) => {
+            console.log(response.body['message'])
+          }
+        )
       }, (response) => {
         console.log(response.body['message'])
       }
