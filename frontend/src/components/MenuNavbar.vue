@@ -30,11 +30,11 @@
               <ul class="dropdown-menu">
                 <li><a href="/">订阅房间</a></li>
                 <li role="separator" class="divider"></li>
-                <li><a href="/">退出</a></li>
+                <li><a href="/auth/logout">退出</a></li>
               </ul>
             </li>
-            <li><a href="/">登录</a></li>
-            <li><a href="/">关于站点</a></li>
+            <li><router-link :to="{ name: 'login' }">登录</router-link></li>
+            <li><router-link :to="{ name: 'about' }">关于站点</router-link></li>
             <li><a href="http://blog.zhengwentao.com/">作者博客</a></li>
           </ul>
         </div>

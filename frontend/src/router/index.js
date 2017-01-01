@@ -37,6 +37,18 @@ const Search = resolve => {
     })
 }
 
+const Login = resolve => {
+    require.ensure(['../views/Login.vue'], () => {
+        resolve(require('../views/Login.vue'))
+    })
+}
+
+const About = resolve => {
+    require.ensure(['../../README.md'], () => {
+        resolve(require('../../README.md'))
+    })
+}
+
 export default new VueRouter({
   //mode: 'history',
     scrollBehavior: () => ({ y: 0 }),
@@ -47,6 +59,8 @@ export default new VueRouter({
         { path: '/channel/rank', component: ChannelRank, name: 'channelrank' },
         { path: '/site/:id(\\d+)?', component: Site, name: 'site' },
         { path: '/search', component: Search, name: 'search' },
+        { path: '/login', component: Login, name: 'login' },
+        { path: '/about', component: About, name: 'about' },
         { path: '/', component: RoomRank, name: 'index' }
     ]
 })
