@@ -6,7 +6,7 @@ module.exports = {
     entry: './src/main',
     output: {
         path: path.join(__dirname, 'dist'),
-        filename: '[name].js'
+        filename: '[name].[hash:7].js'
     },
     module: {
         loaders: [
@@ -45,6 +45,11 @@ module.exports = {
         new webpack.optimize.OccurrenceOrderPlugin(),
         new webpack.HotModuleReplacementPlugin(),
         new webpack.NoErrorsPlugin(),
+        new webpack.optimize.UglifyJsPlugin({
+            compress: {
+                warnings: false
+            }
+        }),
         new HtmlWebpackPlugin({
           filename: 'index.html',
           template: 'index.html',

@@ -3,51 +3,14 @@ import VueRouter from 'vue-router'
 
 Vue.use(VueRouter)
 
-const RoomRank = resolve => {
-    require.ensure(['../views/room/Rank.vue'], () => {
-        resolve(require('../views/room/Rank.vue'))
-        })
-}
-const RoomDetail = resolve => {
-    require.ensure(['../views/room/Detail.vue'], () => {
-        resolve(require('../views/room/Detail.vue'))
-    })
-}
-
-const ChannelRank = resolve => {
-    require.ensure(['../views/channel/Rank.vue'], () => {
-        resolve(require('../views/channel/Rank.vue'))
-    })
-}
-const ChannelDetail = resolve => {
-    require.ensure(['../views/channel/Detail.vue'], () => {
-        resolve(require('../views/channel/Detail.vue'))
-    })
-}
-
-const Site = resolve => {
-    require.ensure(['../views/Site.vue'], () => {
-        resolve(require('../views/Site.vue'))
-    })
-}
-
-const Search = resolve => {
-    require.ensure(['../views/Search.vue'], () => {
-        resolve(require('../views/Search.vue'))
-    })
-}
-
-const Login = resolve => {
-    require.ensure(['../views/Login.vue'], () => {
-        resolve(require('../views/Login.vue'))
-    })
-}
-
-const About = resolve => {
-    require.ensure(['../../README.md'], () => {
-        resolve(require('../../README.md'))
-    })
-}
+import RoomRank from '../views/room/Rank.vue'
+import RoomDetail from '../views/room/Detail.vue'
+import ChannelRank from '../views/channel/Rank.vue'
+import ChannelDetail from '../views/channel/Detail.vue'
+import Site from '../views/Site.vue'
+import Search from '../views/Search.vue'
+import Login from '../views/Login.vue'
+import About from '../../README.md'
 
 export default new VueRouter({
   //mode: 'history',
