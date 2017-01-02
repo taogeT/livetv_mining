@@ -5,8 +5,6 @@ import store from './store'
 import * as filters from './filters'
 import App from './App'
 
-Vue.use(VueResource)
-
 Object.keys(filters).forEach(key => {
     Vue.filter(key, filters[key])
 })

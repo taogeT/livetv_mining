@@ -55,7 +55,7 @@ export default {
   },
   components: { SiteHeader },
   mounted () {
-    this.$http.get('http://www.zhengwentao.com/rest/site').then(
+    this.$http.get('/rest/site').then(
       (response) => {
         this.site = response.body
         for(const index in this.site){
@@ -68,7 +68,7 @@ export default {
   },
   methods: {
     get_site_rooms (index) {
-      this.$http.get('http://www.zhengwentao.com/rest/site/' + this.site[index].id + '/room?per_page=' + this.rank_num).then(
+      this.$http.get('/rest/site/' + this.site[index].id + '/room?per_page=' + this.rank_num).then(
         (resp) => {
           this.$set(this.site[index], 'rooms', resp.body)
         }, (resp) => {
