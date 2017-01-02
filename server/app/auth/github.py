@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-from flask import session, redirect, request, url_for
+from flask import session, redirect, request
 from flask_login import login_user
 
 from .. import oauth, db
@@ -43,4 +43,4 @@ def github_authorized():
     db.session.add(user)
     db.session.commit()
     login_user(user)
-    return redirect(request.args.get('next') or url_for('index'))
+    return redirect(request.args.get('next') or '/')

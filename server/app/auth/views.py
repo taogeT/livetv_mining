@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-from flask import render_template, url_for, g, redirect
+from flask import url_for, g, redirect
 from flask_login import logout_user, current_user
 from datetime import datetime
 from importlib import import_module
@@ -7,11 +7,6 @@ from importlib import import_module
 from .. import db, login_manager
 from ..models import User
 from . import auth
-
-
-@auth.route('/login')
-def login():
-    return render_template('auth/login.html')
 
 
 @auth.route('/login/<string:authtype>')
@@ -23,7 +18,7 @@ def login_authorize(authtype):
 @auth.route('/logout')
 def logout():
     logout_user()
-    return redirect(url_for('index'))
+    return redirect('/')
 
 
 @auth.before_app_request
