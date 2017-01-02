@@ -13,7 +13,7 @@ import Login from '../views/Login.vue'
 import About from '../../README.md'
 
 export default new VueRouter({
-  //mode: 'history',
+    mode: 'history',
     scrollBehavior: () => ({ y: 0 }),
     routes: [
         { path: '/room/:id(\\d+)?', component: RoomDetail, name: 'room' },
