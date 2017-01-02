@@ -1,9 +1,11 @@
 import Vue from 'vue'
+import VueResource from 'vue-resource'
 import router from './router'
+import store from './store'
 import * as filters from './filters'
 import App from './App'
 
-Vue.config.debug = true
+Vue.use(VueResource)
 
 Object.keys(filters).forEach(key => {
     Vue.filter(key, filters[key])
@@ -11,6 +13,7 @@ Object.keys(filters).forEach(key => {
 
 new Vue({
     router,
+    store,
     el: '#app',
     render: h => h(App)
 })

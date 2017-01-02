@@ -35,7 +35,7 @@
             </li>
             <li><router-link :to="{ name: 'login' }">登录</router-link></li>
             <li><router-link :to="{ name: 'about' }">关于站点</router-link></li>
-            <li><a href="http://blog.zhengwentao.com/">作者博客</a></li>
+            <li><a href="http://blog.zhengwentao.com/" target="_blank">作者博客</a></li>
           </ul>
         </div>
       </div>

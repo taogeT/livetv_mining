@@ -51,7 +51,7 @@ export default {
   },
   components: { RoomList },
   mounted () {
-    this.$http.get('/rest/site').then(
+    this.$http.get('http://www.zhengwentao.com/rest/site').then(
       (response) => {
         this.site = response.body
         for(var si in this.site){
@@ -70,7 +70,7 @@ export default {
     },
     get_site_rooms: function(index){
       var data = { name: this.name, host: this.host, per_page: this.per_page }
-      this.$http.get('/rest/site/' + this.site[index].id + '/room', {params: data}).then(
+      this.$http.get('http://www.zhengwentao.com/rest/site/' + this.site[index].id + '/room', {params: data}).then(
         (resp) => {
           this.$set(this.site[index], 'rooms', resp.body)
         }, (resp) => {

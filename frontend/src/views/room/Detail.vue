@@ -34,7 +34,7 @@ export default {
     return { room: {} }
   },
   mounted () {
-    this.$http.get('/rest/room/' + this.$route.params.id).then(
+    this.$http.get('http://www.zhengwentao.com/rest/room/' + this.$route.params.id).then(
       (response) => {
         console.log(response.body)
         this.room = response.body

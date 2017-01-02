@@ -58,4 +58,4 @@
 
 | 微信 | 支付宝 |
 | ---- | :------|
-| ![wechat](http://ww4.sinaimg.cn/large/77ef2ab1gw1f2ne2zgy4zj20bt0bqq4s.jpg) | ![alipay](http://ww3.sinaimg.cn/mw690/77ef2ab1gw1f2ne2zc10cj209a09bdgz.jpg) |
+| <img width="80%" src="http://ww4.sinaimg.cn/large/77ef2ab1gw1f2ne2zgy4zj20bt0bqq4s.jpg"> | ![alipay](http://ww3.sinaimg.cn/mw690/77ef2ab1gw1f2ne2zc10cj209a09bdgz.jpg) |

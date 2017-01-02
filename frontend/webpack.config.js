@@ -37,6 +37,7 @@ module.exports = {
         'jquery': 'jQuery',
         'vue': 'Vue',
         'vue-router': 'VueRouter',
+        'vuex': 'Vuex',
         'vue-resource': 'VueResource',
         'moment': 'moment'
     },

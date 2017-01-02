@@ -29,10 +29,10 @@ export default {
     return { site: {}, channels: [] }
   },
   mounted () {
-    this.$http.get('/rest/site/' + this.$route.params.id).then(
+    this.$http.get('http://www.zhengwentao.com/rest/site/' + this.$route.params.id).then(
       (response) => {
         this.site = response.body
-        this.$http.get('/rest/site/' + this.site.id + '/channel?per_page=1000').then(
+        this.$http.get('http://www.zhengwentao.com/rest/site/' + this.site.id + '/channel?per_page=1000').then(
           (response) => {
             this.channels = response.body
           }, (response) => {

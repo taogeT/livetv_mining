@@ -6,7 +6,7 @@
     <div class="row" style="text-align: center;">
       <div class="col-lg-4 col-md-3"></div>
       <div class="col-lg-4 col-md-6">
-        <a href="/auth/login/github" class="btn btn-default btn-lg btn-block">
+        <a href="http://www.zhengwentao.com/auth/login/github" class="btn btn-default btn-lg btn-block">
           <img src="https://assets-cdn.github.com/favicon.ico">&nbsp;&nbsp;Github登录
         </a>
       </div>

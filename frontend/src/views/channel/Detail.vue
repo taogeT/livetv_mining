@@ -33,7 +33,7 @@ export default {
   components: { RoomList, Pagination },
   methods: {
     seekPage (pageNum) {
-      this.$http.get('/rest/channel/' + this.channel.id + '/room?isvue=1&page=' + pageNum).then(
+      this.$http.get('http://www.zhengwentao.com/rest/channel/' + this.channel.id + '/room?isvue=1&page=' + pageNum).then(
         (response) => {
           this.rooms = response.body.data
           this.pagination = Object.assign({}, this.pagination, response.body.pagination)
@@ -44,7 +44,7 @@ export default {
     }
   },
   mounted () {
-    this.$http.get('/rest/channel/' + this.$route.params.id).then(
+    this.$http.get('http://www.zhengwentao.com/rest/channel/' + this.$route.params.id).then(
       (response) => {
         this.channel = response.body
         this.seekPage(1)
