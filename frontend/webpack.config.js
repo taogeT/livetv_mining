@@ -51,9 +51,13 @@ module.exports = {
             }
         }),
         new HtmlWebpackPlugin({
-          filename: 'index.html',
-          template: 'index.html',
-          inject: true
+            filename: 'index.html',
+            template: 'index.html',
+            inject: true,
+            minify: {
+                removeComments: true, //移除HTML中的注释
+                collapseWhitespace: true //删除空白符与换行符
+            }
         })
     ]
 }

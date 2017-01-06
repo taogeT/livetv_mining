@@ -28,13 +28,15 @@
 </template>
 
 <script>
+import { RoomRes } from '../../resource'
+
 export default {
   name: 'room-detail',
   data () {
     return { room: {} }
   },
   mounted () {
-    this.$http.get('/rest/room/' + this.$route.params.id).then(
+    RoomRes.query({ id: this.$route.params.id }).then(
       (response) => {
         console.log(response.body)
         this.room = response.body

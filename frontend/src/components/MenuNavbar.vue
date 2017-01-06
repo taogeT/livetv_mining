@@ -9,16 +9,16 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="/">Tao蜘蛛</a>
+          <router-link class="navbar-brand" :to="{ name: 'index' }">Tao蜘蛛</router-link>
         </div>
         <div class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
-            <li :class="{ active: ['index', 'roomrank', 'site'].indexOf(routername) >= 0 }">
+            <li :class="{ active: ['index', 'roomrank', 'site', 'room'].indexOf(this.$route.name) >= 0 }">
               <router-link :to="{ name: 'roomrank'}">房间</router-link>
             </li>
-            <li :class="{ active: routername == 'channelrank' }">
+            <li :class="{ active: ['channelrank', 'channel'].indexOf(this.$route.name) >= 0 }">
               <router-link :to="{ name: 'channelrank'}">频道</router-link>
-            <li :class="{ active: routername == 'search' }">
+            <li :class="{ active: this.$route.name == 'search' }">
               <router-link :to="{ name: 'search'}">搜索</router-link>
             </li>
           </ul>
@@ -33,8 +33,12 @@
                 <li><a href="/auth/logout">退出</a></li>
               </ul>
             </li>
-            <li><router-link :to="{ name: 'login' }">登录</router-link></li>
-            <li><router-link :to="{ name: 'about' }">关于站点</router-link></li>
+            <li :class="{ active: this.$route.name == 'login' }">
+              <router-link :to="{ name: 'login' }">登录</router-link>
+            </li>
+            <li :class="{ active: this.$route.name == 'about' }">
+              <router-link :to="{ name: 'about' }">关于站点</router-link>
+            </li>
             <li><a href="http://blog.zhengwentao.com/" target="_blank">作者博客</a></li>
           </ul>
         </div>
@@ -45,16 +49,6 @@
 
 <script>
 export default {
-  name: 'menu',
-  data () {
-    return {
-      routername: 'index'
-    }
-  },
-  watch: {
-    $route () {
-      this.routername = this.$route.name
-    }
-  }
+  name: 'menu'
 }
 </script>

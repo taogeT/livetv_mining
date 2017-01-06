@@ -35,6 +35,7 @@
 
 <script>
 import SiteHeader from '../../components/SiteHeader.vue'
+import { SiteRes } from '../../resource'
 
 export default {
   name: 'channel-rank',
@@ -46,7 +47,7 @@ export default {
   },
   components: { SiteHeader },
   mounted () {
-    this.$http.get('/rest/site').then(
+    SiteRes.query().then(
       (response) => {
         this.site = response.body
         for(const index in this.site){
@@ -59,7 +60,7 @@ export default {
   },
   methods: {
     get_site_channels: function(index){
-      this.$http.get('/rest/site/' + this.site[index].id + '/channel?per_page=' + this.rank_num).then(
+      SiteRes.query({ id: this.site[index].id, subType: 'channel', per_page: this.rank_num }).then(
         (resp) => {
           this.$set(this.site[index], 'channels', resp.body)
         }, (resp) => {

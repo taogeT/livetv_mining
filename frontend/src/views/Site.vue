@@ -21,6 +21,7 @@
 
 <script>
 import ChannelList from '../components/ChannelList.vue'
+import { SiteRes } from '../resource'
 
 export default {
   name: 'site-detail',
@@ -29,10 +30,10 @@ export default {
     return { site: {}, channels: [] }
   },
   mounted () {
-    this.$http.get('/rest/site/' + this.$route.params.id).then(
+    SiteRes.query({ id: this.$route.params.id }).then(
       (response) => {
         this.site = response.body
-        this.$http.get('/rest/site/' + this.site.id + '/channel?per_page=1000').then(
+        SiteRes.query({ id: this.site.id, subType: 'channel', per_page: 1000 }).then(
           (response) => {
             this.channels = response.body
           }, (response) => {

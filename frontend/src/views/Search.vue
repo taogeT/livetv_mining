@@ -43,6 +43,7 @@
 
 <script>
 import RoomList from '../components/RoomList.vue'
+import { SiteRes } from '../resource'
 
 export default {
   name: 'search',
@@ -51,7 +52,7 @@ export default {
   },
   components: { RoomList },
   mounted () {
-    this.$http.get('/rest/site').then(
+    SiteRes.query().then(
       (response) => {
         this.site = response.body
         for(var si in this.site){
@@ -70,7 +71,7 @@ export default {
     },
     get_site_rooms: function(index){
       var data = { name: this.name, host: this.host, per_page: this.per_page }
-      this.$http.get('/rest/site/' + this.site[index].id + '/room', {params: data}).then(
+      SiteRes.query({ id: this.site[index].id, subType: 'room' }, data).then(
         (resp) => {
           this.$set(this.site[index], 'rooms', resp.body)
         }, (resp) => {
