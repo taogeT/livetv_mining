@@ -1,6 +1,6 @@
 import Vue from 'vue'
 
-const root_url = 'http://www.zhengwentao.com/rest';
+const root_url = '/rest';
 
 function transformUrl(url){
     return url.match(/^(https?:)?\//) ? root_url + url : url

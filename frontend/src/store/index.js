@@ -6,14 +6,19 @@ const store = new Vuex.Store({
     state: {
         user: null
     },
-    getters: {
-        isLogin (state) {
+    mutations: {
+        modifyUser (state, userobj) {
+            state.user = userobj
+        }
+    },
+    actions: {
+        verify (context) {
             return UserRes.query({ subType: 'verify'}).then(
                 (resp) => {
                     if(state.user == null || state.user.username != resp.username){
                         return UserRes.query().then(
                             (resp) => {
-                                state.user = resp
+                                context.commit('modifyUser', resp)
                                 return true
                             }, (resp) => {
                                 return false
@@ -22,7 +27,7 @@ const store = new Vuex.Store({
                     }
                     return true
                 }, (resp) => {
-                    state.user = null
+                    context.commit('modifyUser', null)
                     return false
                 }
             )

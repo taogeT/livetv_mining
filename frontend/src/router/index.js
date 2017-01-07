@@ -27,11 +27,11 @@ const router = new VueRouter({
 })
 
 router.beforeEach((to, from, next) => {
-    store.getters.isLogin.then((v) => {
-        if(v){
+    store.dispatch('verify').then((v) => {
+        if(!to.meta.auth || v){
             next()
-        }else  if(to.meta.auth){
-            next({ name: 'login', params: { next: to.path } })
+        }else{
+            next({ path: '/login?next=' + to.path })
         }
     })
 })
