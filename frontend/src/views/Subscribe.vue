@@ -8,7 +8,7 @@
       </p>
     </div>
 
-    <div class="alert alert-warning alert-dismissible" role="alert" v-if="errorMsg != ''">
+    <div class="alert alert-danger alert-dismissible" role="alert" v-if="errorMsg != ''">
       <button type="button" class="close" data-dismiss="alert">
         <span aria-hidden="true">&times;</span>
         <span class="sr-only">Close</span>
@@ -21,13 +21,13 @@
         <label>房间URL</label>
         <input class="form-control" size="40" type="text" v-model="roomUrl">
       </div>
-      <button class="btn btn-primary" :disabled="roomUrl != ''" v-on:click="add" >订阅</button>
+      <button class="btn btn-primary" :disabled="roomUrl == ''" v-on:click="add" >订阅</button>
     </form>
     <hr>
 
     <template v-for="(roomitems, roomkey) in rooms">
-      <h3>{{ roomkey }}</h3>
-      <template v-if="roomitems && roomitems.length > 0" v-for="(room, roomindex) in roomitems">
+      <h3 v-if="roomitems.length > 0">{{ roomkey }}</h3>
+      <template v-for="(room, roomindex) in roomitems">
         <div class="row">
           <div class="col-lg-4 col-md-5">
             <img v-if="room.image" class="img-rounded" width="100%" :src="room.image" :title="room.name">
@@ -96,7 +96,7 @@ export default {
     },
     cancel (roomid, roomindex, roomkey) {
       this.errorMsg = ''
-      SubscribeRes.delete({ subType: 'room' }, { id: roomid }).then(
+      SubscribeRes.delete({ subType: 'room/' + roomid }).then(
         (resp) => {
           this.rooms[roomkey].splice(roomindex, 1)
         }, (resp) => {

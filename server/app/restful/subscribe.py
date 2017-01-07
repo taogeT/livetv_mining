@@ -27,13 +27,13 @@ class Subscribe(Resource):
         }
 
     def post(self):
-        room_url = request.form.get('url', '')
+        room_url = request.json.get('url', '')
         if not room_url:
             return {'message': '请先输入房间URL'}, 400
         room = LiveTVRoom.query.filter_by(url=room_url).one_or_none()
         if not room:
             return {'message': '找不到对应的房间记录，请检查URL是否正确'}, 400
-        elif g.user.rooms.count() >= g.user.subscribe_max:
+        elif g.user.rooms.count() >= g.user.subscription:
             return {'message': '订阅数已满，无法订阅新房间'}, 400
         else:
             g.user.rooms.append(room)
@@ -41,11 +41,11 @@ class Subscribe(Resource):
             db.session.commit()
         return {'site': room.site.name, 'room': room.to_dict()}
 
-    def delete(self):
-        room_id = request.form.get('id', None, type=int)
-        if not room_id:
-            return {'message': '请先输入房间ID'}, 400
 
+@subscribe_api.resource('/subscribe/room/<int:room_id>')
+class SubscribeModify(Resource):
+
+    def delete(self, room_id):
         room = LiveTVRoom.query.get(room_id)
         if not room:
             return {'message': '找不到对应的房间记录，请检查ID是否正确'}, 400

@@ -80,7 +80,9 @@ class LiveTVRoom(db.Model):
             'online': self.online,
             'opened': self.opened,
             'host': self.host,
-            'crawl_date': self.crawl_date.strftime('%Y-%m-%d %H:%M:%S')
+            'crawl_date': self.crawl_date.strftime('%Y-%m-%d %H:%M:%S'),
+            'channel_id': self.channel_id,
+            'site_id': self.site_id
         }
 
 
