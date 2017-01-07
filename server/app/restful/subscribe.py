@@ -33,7 +33,7 @@ class Subscribe(Resource):
         room = LiveTVRoom.query.filter_by(url=room_url).one_or_none()
         if not room:
             return {'message': '找不到对应的房间记录，请检查URL是否正确'}, 400
-        elif g.user.rooms.count() >= g.user.subscribe_max:
+        elif g.user.rooms.count() >= g.user.subscription:
             return {'message': '订阅数已满，无法订阅新房间'}, 400
         else:
             g.user.rooms.append(room)

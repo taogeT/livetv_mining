@@ -1,23 +1,23 @@
 <template>
   <div class="subscribe">
     <div class="page-header">
-      <p><h3>已订阅房间<small>（{{ subscribe_count }}/{{ this.$store.state.user.subscribe_max }}）</small></h3></p>
+      <p><h3>已订阅房间<small>（{{ subscribeCount }}/{{ this.$store.state.user.subscription }}）</small></h3></p>
     </div>
 
-    <div class="alert alert-warning alert-dismissible" role="alert" v-if="error_msg != ''">
+    <div class="alert alert-warning alert-dismissible" role="alert" v-if="errorMsg != ''">
       <button type="button" class="close" data-dismiss="alert">
         <span aria-hidden="true">&times;</span>
         <span class="sr-only">Close</span>
       </button>
-      {{ error_msg }}
+      {{ errorMsg }}
     </div>
 
     <form class="form form-inline" role="form" onsubmit="return false">
       <div class="form-group required">
         <label for="roomurl">房间URL</label>
-        <input class="form-control" size="40" type="text" v-model="room_url">
+        <input class="form-control" size="40" type="text" v-model="roomUrl">
       </div>
-      <button class="btn btn-primary" :disabled="room_url != ''" v-on:click="add" >订阅</button>
+      <button class="btn btn-primary" :disabled="roomUrl != ''" v-on:click="add" >订阅</button>
     </form>
 
     <template v-for="(roomitems, roomkey) in rooms">
@@ -59,16 +59,16 @@ export default {
   data () {
     return {
       rooms: {},
-      subscribe_count: 0,
-      room_url: '',
-      error_msg: ''
+      subscribeCount: 0,
+      roomUrl: '',
+      errorMsg: ''
     }
   },
   mounted () {
     SubscribeRes.query({ subType: 'room' }).then(
       (resp) => {
         this.rooms = Object.assign({}, this.rooms, resp.body.rooms)
-        this.subscribe_count = resp.body.subscribe_count
+        this.subscribeCount = resp.body.subscribe_count
       }, (resp) => {
         console.log(resp.body['message'])
       }
@@ -76,8 +76,8 @@ export default {
   },
   method: {
     add () {
-      this.error_msg = ''
-      SubscribeRes.save({ subType: 'room' }, { url: this.room_url }).then(
+      this.errorMsg = ''
+      SubscribeRes.save({ subType: 'room' }, { url: this.roomUrl }).then(
         (resp) => {
           if(this.rooms[resp.body['site']]){
             this.rooms[resp.body['site']].push(resp.body['room'])
@@ -85,17 +85,17 @@ export default {
             this.rooms[resp.body['site']] = [resp.body['room']]
           }
         }, (resp) => {
-          this.error_msg = resp.body['message']
+          this.errorMsg = resp.body['message']
         }
       )
     },
-    cancel (room_id, roomindex, roomkey) {
-      this.error_msg = ''
-      SubscribeRes.delete({ subType: 'room' }, { id: room_id }).then(
+    cancel (roomid, roomindex, roomkey) {
+      this.errorMsg = ''
+      SubscribeRes.delete({ subType: 'room' }, { id: roomid }).then(
         (resp) => {
           this.rooms[roomkey].splice(roomindex, 1)
         }, (resp) => {
-          this.error_msg = resp.body['message']
+          this.errorMsg = resp.body['message']
         }
       )
     }

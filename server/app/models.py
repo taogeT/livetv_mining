@@ -111,7 +111,7 @@ class User(UserMixin, db.Model):
     description = db.Column(db.Text, doc='描述')
     member_since = db.Column(db.DateTime, default=datetime.utcnow)
     last_seen = db.Column(db.DateTime, default=datetime.utcnow)
-    subscribe_max = db.Column(db.Integer, index=True, default=3, doc='最大订阅数')
+    subscription = db.Column(db.Integer, index=True, default=3, doc='最大订阅数')
 
     def to_dict(self):
         return {
@@ -121,7 +121,7 @@ class User(UserMixin, db.Model):
             'url': self.url,
             'image': self.image,
             'description': self.description,
-            'subscribe_max': self.subscribe_max
+            'subscription': self.subscription
         }
 
 
