@@ -12,4 +12,4 @@ export const ChannelRes = new Vue.resource(transformUrl('/channel{/id}{/subType}
 
 export const RoomRes = new Vue.resource(transformUrl('/room{/id}'))
 
-export const AuthRes = new Vue.resource(transformUrl('/auth{/subType}'))
+export const UserRes = new Vue.resource(transformUrl('/user{/subType}'))

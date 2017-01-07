@@ -1,13 +1,10 @@
 # -*- coding: UTF-8 -*-
-from flask_restful import Api, Resource
 from flask_login import login_required
 
-from . import auth
-
-auth_api = Api(auth)
+from . import restful_api as user_api, Resource
 
 
-@auth_api.resource('/verify')
+@user_api.resource('/user/verify')
 class Verify(Resource):
 
     method_decorators = [login_required]
@@ -16,7 +13,7 @@ class Verify(Resource):
         return {'username': g.user.username}
 
 
-@auth_api.resource('/user')
+@user_api.resource('/user')
 class User(Resource):
 
     method_decorators = [login_required]

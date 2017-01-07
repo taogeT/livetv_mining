@@ -17,5 +17,3 @@ SESSION_PROTECTION = 'strong'
 RESTFUL_JSON = {
     'ensure_ascii': False
 }
-CORS_SUPPORTS_CREDENTIALS = True
-CORS_ALLOW_HEADERS = ['GET']

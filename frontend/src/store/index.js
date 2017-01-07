@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import { AuthRes } from '../resource'
+import { UserRes } from '../resource'
 
 const store = new Vuex.Store({
     state: {
@@ -8,10 +8,10 @@ const store = new Vuex.Store({
     },
     getters: {
         isLogin (state) {
-            return AuthRes.query({ subType: 'verify'}).then(
+            return UserRes.query({ subType: 'verify'}).then(
                 (resp) => {
                     if(state.user == null || state.user.username != resp.username){
-                        return AuthRes.query({ subType: 'user'}).then(
+                        return UserRes.query().then(
                             (resp) => {
                                 state.user = resp
                                 return true
