@@ -11,3 +11,5 @@ export const SiteRes = new Vue.resource(transformUrl('/site{/id}{/subType}'))
 export const ChannelRes = new Vue.resource(transformUrl('/channel{/id}{/subType}'))
 
 export const RoomRes = new Vue.resource(transformUrl('/room{/id}'))
+
+export const AuthRes = new Vue.resource(transformUrl('/auth{/subType}'))

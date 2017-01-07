@@ -13,7 +13,7 @@ class Verify(Resource):
     method_decorators = [login_required]
 
     def get(self):
-        return {'message': 'Token verification is successful.'}
+        return {'username': g.user.username}
 
 
 @auth_api.resource('/user')

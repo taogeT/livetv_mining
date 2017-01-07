@@ -18,14 +18,15 @@
             </li>
             <li :class="{ active: ['channelrank', 'channel'].indexOf(this.$route.name) >= 0 }">
               <router-link :to="{ name: 'channelrank'}">频道</router-link>
-            <li :class="{ active: this.$route.name == 'search' }">
+            <li :class="{ active: this.$route.name == 'search' }" v-if="this.$store.state.user != null">
               <router-link :to="{ name: 'search'}">搜索</router-link>
             </li>
           </ul>
           <ul class="nav navbar-nav navbar-right">
-            <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                用户名 <span class="caret"></span>
+            <li class="dropdown" v-if="this.$store.state.user != null">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                aria-haspopup="true" aria-expanded="false">
+                {{ this.$store.user.nickname }} <span class="caret"></span>
               </a>
               <ul class="dropdown-menu">
                 <li><a href="/">订阅房间</a></li>
@@ -33,7 +34,7 @@
                 <li><a href="/auth/logout">退出</a></li>
               </ul>
             </li>
-            <li :class="{ active: this.$route.name == 'login' }">
+            <li :class="{ active: this.$route.name == 'login' }" v-if="this.$store.state.user == null">
               <router-link :to="{ name: 'login' }">登录</router-link>
             </li>
             <li :class="{ active: this.$route.name == 'about' }">
