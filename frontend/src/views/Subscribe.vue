@@ -52,7 +52,7 @@
 </template>
 
 <script>
-import { SubscribeRes } from '../../resource'
+import { SubscribeRes } from '../resource'
 
 export default {
   name: 'subscribe',
@@ -65,19 +65,16 @@ export default {
     }
   },
   mounted () {
-    this.get_subscribe_list()
+    SubscribeRes.query({ subType: 'room' }).then(
+      (resp) => {
+        this.rooms = Object.assign({}, this.rooms, resp.body.rooms)
+        this.subscribe_count = resp.body.subscribe_count
+      }, (resp) => {
+        console.log(resp.body['message'])
+      }
+    )
   },
   method: {
-    get_subscribe_list () {
-      SubscribeRes.query({ subType: 'room' }).then(
-        (resp) => {
-          this.rooms = Object.assign({}, this.rooms, resp.body.rooms)
-          this.subscribe_count = resp.body.subscribe_count
-        }, (resp) => {
-          console.log(resp.body['message'])
-        }
-      )
-    },
     add () {
       this.error_msg = ''
       SubscribeRes.save({ subType: 'room' }, { url: this.room_url }).then(
@@ -94,7 +91,7 @@ export default {
     },
     cancel (room_id, roomindex, roomkey) {
       this.error_msg = ''
-      SubscribeRes.delete({ subType: 'room' }, { room_id: room_id }).then(
+      SubscribeRes.delete({ subType: 'room' }, { id: room_id }).then(
         (resp) => {
           this.rooms[roomkey].splice(roomindex, 1)
         }, (resp) => {

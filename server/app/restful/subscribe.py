@@ -17,9 +17,9 @@ class Subscribe(Resource):
         subscribe_count = 0
         for room in g.user.rooms.all():
             if room.site.name in rooms:
-                rooms[room.site.name].append(room)
+                rooms[room.site.name].append(room.to_dict())
             else:
-                rooms[room.site.name] = [room]
+                rooms[room.site.name] = [room.to_dict()]
             subscribe_count += 1
         return {
             'rooms': rooms,
@@ -39,7 +39,7 @@ class Subscribe(Resource):
             g.user.rooms.append(room)
             db.session.add(g.user)
             db.session.commit()
-        return {'site': room.site.name, 'room': room}
+        return {'site': room.site.name, 'room': room.to_dict()}
 
     def delete(self):
         room_id = request.data.get('id', None, type=int)

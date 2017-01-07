@@ -70,6 +70,19 @@ class LiveTVRoom(db.Model):
             'online': np.median(online_list)
         }
 
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'office_id': self.office_id,
+            'name': self.name,
+            'url': self.url,
+            'image': self.image,
+            'online': self.online,
+            'opened': self.opened,
+            'host': self.host,
+            'crawl_date': self.crawl_date.strftime('%Y-%m-%d %H:%M:%S')
+        }
+
 
 class LiveTVRoomData(db.Model):
     """ 扫描房间数据保存，作为曲线图基础数据 """
