@@ -2,7 +2,7 @@
 from flask import Blueprint
 from flask_restful import Api, Resource
 
-rest = Blueprint('rest', __name__)
-rest_api = Api(rest)
+restful = Blueprint('restful', __name__)
+restful_api = Api(restful)
 
 from .main import *

@@ -23,7 +23,7 @@ def create_app():
     login_manager.init_app(app)
     cors.init_app(app)
 
-    from .rest import rest as rest_blueprint
+    from .restful import restful as rest_blueprint
     app.register_blueprint(rest_blueprint, url_prefix='/rest')
 
     from .auth import auth as auth_blueprint

@@ -2,7 +2,7 @@
 from flask import g
 from flask_login import login_required
 
-from . import rest_api as subscribe_api, Resource
+from . import restful_api as subscribe_api, Resource
 
 
 @subscribe_api.resource('/subscribe')

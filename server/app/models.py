@@ -100,6 +100,17 @@ class User(UserMixin, db.Model):
     last_seen = db.Column(db.DateTime, default=datetime.utcnow)
     subscribe_max = db.Column(db.Integer, index=True, default=1, doc='最大订阅数')
 
+    def to_dict(self):
+        return {
+            'username': self.username,
+            'nickname': self.nickname,
+            'email': self.email,
+            'url': self.url,
+            'image': self.image,
+            'description': self.description,
+            'subscribe_max': self.subscribe_max
+        }
+
 
 class UserRoomLink(db.Model):
     __tablename__ = 'user_room_link'

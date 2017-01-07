@@ -3,7 +3,7 @@ from flask import request, current_app
 from flask_restful import abort
 
 from ..models import LiveTVSite, LiveTVChannel, LiveTVRoom
-from . import rest_api as main_api, Resource
+from . import restful_api as main_api, Resource
 
 
 class MainApiMixin(object):
