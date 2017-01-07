@@ -38,7 +38,6 @@ export default {
   mounted () {
     RoomRes.query({ id: this.$route.params.id }).then(
       (response) => {
-        console.log(response.body)
         this.room = response.body
       }, (response) => {
         console.log(response.body['message'])

@@ -6,6 +6,7 @@ import ChannelRank from '../views/channel/Rank.vue'
 import ChannelDetail from '../views/channel/Detail.vue'
 import Site from '../views/Site.vue'
 import Search from '../views/Search.vue'
+import Subscribe from '../views/Subscribe.vue'
 import Login from '../views/Login.vue'
 import About from '../../README.md'
 import store from '../store'
@@ -20,6 +21,7 @@ const router = new VueRouter({
         { path: '/channel/rank', component: ChannelRank, name: 'channelrank' },
         { path: '/site/:id(\\d+)?', component: Site, name: 'site' },
         { path: '/search', component: Search, name: 'search', meta: { auth: true } },
+        { path: '/subscribe', component: Subscribe, name: 'subscribe', meta: { auth: true } },
         { path: '/login', component: Login, name: 'login' },
         { path: '/about', component: About, name: 'about' },
         { path: '/', component: RoomRank, name: 'index' }

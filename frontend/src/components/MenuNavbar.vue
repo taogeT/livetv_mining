@@ -26,10 +26,10 @@
             <li class="dropdown" v-if="this.$store.state.user != null">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
                 aria-haspopup="true" aria-expanded="false">
-                {{ this.$store.user.nickname }} <span class="caret"></span>
+                {{ this.$store.state.user.nickname }} <span class="caret"></span>
               </a>
               <ul class="dropdown-menu">
-                <li><a href="/">订阅房间</a></li>
+                <li><router-link :to="{ name: 'subscribe' }">订阅</router-link></li>
                 <li role="separator" class="divider"></li>
                 <li><a href="/auth/logout">退出</a></li>
               </ul>

@@ -15,10 +15,10 @@ const store = new Vuex.Store({
         verify (context) {
             return UserRes.query({ subType: 'verify'}).then(
                 (resp) => {
-                    if(state.user == null || state.user.username != resp.username){
+                    if(context.state.user == null || context.state.user.username != resp.username){
                         return UserRes.query().then(
                             (resp) => {
-                                context.commit('modifyUser', resp)
+                                context.commit('modifyUser', resp.body)
                                 return true
                             }, (resp) => {
                                 return false
