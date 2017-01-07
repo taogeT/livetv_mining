@@ -72,8 +72,15 @@ export default {
   mounted () {
     SubscribeRes.query({ subType: 'room' }).then(
       (resp) => {
-        this.rooms = Object.assign({}, this.rooms, resp.body.rooms)
-        this.subscribeCount = resp.body.subscribe_count
+        for(var rindex in resp.body){
+          var roomobj = resp.body[rindex]
+          if(this.rooms[roomobj.site]){
+            this.rooms[roomobj.site].push(roomobj)
+          }else{
+            this.$set(this.rooms, roomobj.site, [roomobj])
+          }
+          this.subscribeCount += 1
+        }
       }, (resp) => {
         console.log(resp.body['message'])
       }
@@ -84,10 +91,11 @@ export default {
       this.errorMsg = ''
       SubscribeRes.save({ subType: 'room' }, { url: this.roomUrl }).then(
         (resp) => {
-          if(this.rooms[resp.body['site']]){
-            this.rooms[resp.body['site']].push(resp.body['room'])
+          var roomobj = resp.body
+          if(this.rooms[roomobj.site]){
+            this.rooms[roomobj.site].push(roomobj)
           }else{
-            this.rooms[resp.body['site']] = [resp.body['room']]
+            this.$set(this.rooms, roomobj.site, [roomobj])
           }
         }, (resp) => {
           this.errorMsg = resp.body['message']
@@ -96,7 +104,7 @@ export default {
     },
     cancel (roomid, roomindex, roomkey) {
       this.errorMsg = ''
-      SubscribeRes.delete({ subType: 'room/' + roomid }).then(
+      SubscribeRes.delete({ subType: 'room', id: roomid }).then(
         (resp) => {
           this.rooms[roomkey].splice(roomindex, 1)
         }, (resp) => {

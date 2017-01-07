@@ -14,4 +14,4 @@ export const RoomRes = new Vue.resource(transformUrl('/room{/id}'))
 
 export const UserRes = new Vue.resource(transformUrl('/user{/subType}'))
 
-export const SubscribeRes = new Vue.resource(transformUrl('/subscribe{/subType}'))
+export const SubscribeRes = new Vue.resource(transformUrl('/subscribe{/subType}{/id}'))

@@ -23,6 +23,16 @@ class LiveTVSite(db.Model):
     description = db.Column(db.String(512), doc='站点描述')
     valid = db.Column(db.Boolean, default=True, doc='是否有效')
 
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'code': self.code,
+            'url': self.url,
+            'image': self.image,
+            'description': self.description
+        }
+
 
 class LiveTVChannel(db.Model):
     """ 频道 """
@@ -40,6 +50,20 @@ class LiveTVChannel(db.Model):
     total = db.Column(db.Integer, default=0, index=True, doc='房间数')
     valid = db.Column(db.Boolean, default=True, doc='是否有效')
     crawl_date = db.Column(db.DateTime, doc='最近一次扫描时间')
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'office_id': self.office_id,
+            'short': self.short,
+            'name': self.name,
+            'url': self.url,
+            'image': self.image,
+            'total': self.total,
+            'crawl_date': self.crawl_date.strftime('%Y-%m-%d %H:%M:%S'),
+            'site': self.site.name,
+            'site_id': self.site_id
+        }
 
 
 class LiveTVRoom(db.Model):
@@ -82,7 +106,9 @@ class LiveTVRoom(db.Model):
             'host': self.host,
             'crawl_date': self.crawl_date.strftime('%Y-%m-%d %H:%M:%S'),
             'channel_id': self.channel_id,
-            'site_id': self.site_id
+            'site_id': self.site_id,
+            'channel': self.channel.name,
+            'site': self.site.name
         }
 
 

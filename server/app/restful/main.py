@@ -9,50 +9,6 @@ from . import restful_api as main_api, Resource
 class MainApiMixin(object):
 
     @classmethod
-    def _format_site(cls, site):
-        return {
-            'id': site.id,
-            'name': site.name,
-            'code': site.code,
-            'url': site.url,
-            'image': site.image,
-            'description': site.description
-        }
-
-    @classmethod
-    def _format_channel(cls, channel):
-        return {
-            'id': channel.id,
-            'office_id': channel.office_id,
-            'short': channel.short,
-            'name': channel.name,
-            'url': channel.url,
-            'image': channel.image,
-            'total': channel.total,
-            'crawl_date': channel.crawl_date.strftime('%Y-%m-%d %H:%M:%S'),
-            'site': channel.site.name,
-            'site_id': channel.site_id
-        }
-
-    @classmethod
-    def _format_room(cls, room):
-        return {
-            'id': room.id,
-            'office_id': room.office_id,
-            'name': room.name,
-            'url': room.url,
-            'image': room.image,
-            'online': room.online,
-            'opened': room.opened,
-            'host': room.host,
-            'crawl_date': room.crawl_date.strftime('%Y-%m-%d %H:%M:%S'),
-            'channel': room.channel.name,
-            'channel_id': room.channel_id,
-            'site': room.site.name,
-            'site_id': room.site_id
-        }
-
-    @classmethod
     def _format_pagination(cls, pagination):
         if pagination.has_next:
             links_to = pagination.page * pagination.per_page
@@ -75,7 +31,7 @@ class SiteMultiple(Resource, MainApiMixin):
 
     def get(self):
         site_query = LiveTVSite.query.filter_by(valid=True).order_by(LiveTVSite.show_seq.asc())
-        return [self._format_site(site) for site in site_query.all()]
+        return [site.to_dict() for site in site_query.all()]
 
 
 @main_api.resource('/site/<int:site_id>')
@@ -85,7 +41,7 @@ class Site(Resource, MainApiMixin):
         site = LiveTVSite.query.filter_by(id=site_id).one_or_none()
         if not site:
             abort(400, message='Can not find site by site_id {}'.format(str(site_id)))
-        site_dict = self._format_site(site)
+        site_dict = site.to_dict()
         site_dict['channel_total'] = site.channels.filter_by(valid=True).count()
         site_dict['room_total'] = site.rooms.filter_by(opened=True).count()
         return site_dict
@@ -101,7 +57,7 @@ class ChannelMultiple(Resource, MainApiMixin):
         channel_query = LiveTVChannel.query.filter_by(site_id=site_id).filter_by(valid=True)
         pagination = channel_query.order_by(LiveTVChannel.total.desc()) \
                                   .paginate(page=page, error_out=False, per_page=per_page)
-        pagiitems = [self._format_channel(item) for item in pagination.items]
+        pagiitems = [item.to_dict() for item in pagination.items]
         if isvue:
             return dict(self._format_pagination(pagination), data=pagiitems)
         else:
@@ -119,7 +75,7 @@ class Channel(Resource, MainApiMixin):
         channel = channel_query.one_or_none()
         if not channel:
             abort(400, message='Can not find channel record by channel: {}.'.format(str(channel_id)))
-        return self._format_channel(channel)
+        return channel.to_dict()
 
 
 @main_api.resource('/site/<int:site_id>/channel/<int:channel_id>/room',
@@ -144,7 +100,7 @@ class RoomMultiple(Resource, MainApiMixin):
             room_query = room_query.filter(LiveTVRoom.host.like('%{}%'.format(host)))
         pagination = room_query.order_by(LiveTVRoom.online.desc()) \
             .paginate(page=page, error_out=False, per_page=per_page)
-        pagiitems = [self._format_room(item) for item in pagination.items]
+        pagiitems = [item.to_dict() for item in pagination.items]
         if isvue:
             return dict(self._format_pagination(pagination), data=pagiitems)
         else:
@@ -166,6 +122,6 @@ class Room(Resource, MainApiMixin):
         room = room_query.one_or_none()
         if not room:
             abort(400, message='Can not find room record by room: {}.'.format(str(room_id)))
-        roomdict = self._format_room(room)
+        roomdict = room.to_dict()
         roomdict['median'] = room.median
         return roomdict

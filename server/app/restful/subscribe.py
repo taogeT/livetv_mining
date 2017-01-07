@@ -13,18 +13,7 @@ class Subscribe(Resource):
     method_decorators = [login_required]
 
     def get(self):
-        rooms = {}
-        subscribe_count = 0
-        for room in g.user.rooms.all():
-            if room.site.name in rooms:
-                rooms[room.site.name].append(room.to_dict())
-            else:
-                rooms[room.site.name] = [room.to_dict()]
-            subscribe_count += 1
-        return {
-            'rooms': rooms,
-            'subscribe_count': subscribe_count
-        }
+        return [room.to_dict() for room in g.user.rooms.all()]
 
     def post(self):
         room_url = request.json.get('url', '')
@@ -39,7 +28,7 @@ class Subscribe(Resource):
             g.user.rooms.append(room)
             db.session.add(g.user)
             db.session.commit()
-        return {'site': room.site.name, 'room': room.to_dict()}
+        return room.to_dict()
 
 
 @subscribe_api.resource('/subscribe/room/<int:room_id>')
