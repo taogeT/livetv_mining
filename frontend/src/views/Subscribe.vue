@@ -1,7 +1,11 @@
 <template>
   <div class="subscribe">
     <div class="page-header">
-      <p><h3>已订阅房间<small>（{{ subscribeCount }}/{{ this.$store.state.user.subscription }}）</small></h3></p>
+      <p>
+        <h3>已订阅房间
+          <small>（{{ subscribeCount }}/{{ this.$store.state.user.subscription }}）</small>
+        </h3>
+      </p>
     </div>
 
     <div class="alert alert-warning alert-dismissible" role="alert" v-if="errorMsg != ''">
@@ -14,22 +18,23 @@
 
     <form class="form form-inline" role="form" onsubmit="return false">
       <div class="form-group required">
-        <label for="roomurl">房间URL</label>
+        <label>房间URL</label>
         <input class="form-control" size="40" type="text" v-model="roomUrl">
       </div>
       <button class="btn btn-primary" :disabled="roomUrl != ''" v-on:click="add" >订阅</button>
     </form>
+    <hr>
 
     <template v-for="(roomitems, roomkey) in rooms">
-      <h4>{{ roomkey }}</h4>
-      <template v-if="roomitems" v-for="(room, roomindex) in roomitems">
+      <h3>{{ roomkey }}</h3>
+      <template v-if="roomitems && roomitems.length > 0" v-for="(room, roomindex) in roomitems">
         <div class="row">
           <div class="col-lg-4 col-md-5">
-            <img v-if="room.image_url" class="img-rounded" width="100%" :src="room.image_url" :title="room.name">
+            <img v-if="room.image" class="img-rounded" width="100%" :src="room.image" :title="room.name">
           </div>
           <div class="col-lg-8 col-md-7" style="text-align: left;">
             <h3>
-              <router-link :to={ name: 'room', params: { id: room.id} }">{{ room.name }}</router-link>
+              <router-link :to="{ name: 'room', params: { id: room.id} }">{{ room.name }}</router-link>
               <small>
                 <span v-if="room.opened" class="label label-success">直播中</span>
                 <span v-else class="label label-danger">未直播</span>
@@ -74,7 +79,7 @@ export default {
       }
     )
   },
-  method: {
+  methods: {
     add () {
       this.errorMsg = ''
       SubscribeRes.save({ subType: 'room' }, { url: this.roomUrl }).then(
