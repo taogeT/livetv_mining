@@ -16,7 +16,7 @@ class Subscribe(Resource):
         return [room.to_dict() for room in g.user.rooms.all()]
 
     def post(self):
-        room_url = request.json.get('url', '')
+        room_url = (request.get_json() if request.json else request.values).get('url', '')
         if not room_url:
             return {'message': '请先输入房间URL'}, 400
         room = LiveTVRoom.query.filter_by(url=room_url).one_or_none()
