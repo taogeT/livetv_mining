@@ -18,8 +18,7 @@
 
     <form class="form form-inline" role="form" onsubmit="return false">
       <div class="form-group required">
-        <label>房间URL</label>
-        <input class="form-control" size="40" type="text" v-model="roomUrl">
+        <input class="form-control" size="40" type="text" v-model="roomUrl" placeholder="房间官网URL">
       </div>
       <button class="btn btn-primary" :disabled="roomUrl == ''" v-on:click="add" >订阅</button>
     </form>
@@ -91,6 +90,7 @@ export default {
       this.errorMsg = ''
       SubscribeRes.save({ subType: 'room' }, { url: this.roomUrl }).then(
         (resp) => {
+          this.roomUrl = ''
           var roomobj = resp.body
           if(this.rooms[roomobj.site]){
             this.rooms[roomobj.site].push(roomobj)

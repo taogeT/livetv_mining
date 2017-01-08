@@ -12,6 +12,7 @@ dominate==2.2.1
 Flask==0.11.1
 Flask-Bootstrap==3.3.7.0
 Flask-Celery-py3==0.2.4
+Flask-Cors==3.0.2
 Flask-Login==0.3.2
 Flask-Migrate==2.0.0
 Flask-OAuthlib==0.9.3
