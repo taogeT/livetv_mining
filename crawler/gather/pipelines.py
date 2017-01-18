@@ -10,7 +10,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from .items import ChannelItem, RoomItem
-from .models import LiveTVSite, LiveTVChannel, LiveTVRoom, LiveTVRoomData
+from .models import LiveTVSite, LiveTVChannel, LiveTVRoom
 
 
 class SqlalchemyPipeline(object):
@@ -66,9 +66,9 @@ class SqlalchemyPipeline(object):
         if isinstance(item, ChannelItem):
             channel = session.query(LiveTVChannel) \
                 .filter(LiveTVChannel.site_id == site_dict['id']) \
-                .filter(LiveTVChannel.short == item['short']).one_or_none()
+                .filter(LiveTVChannel.url == item['url']).one_or_none()
             if not channel:
-                channel = LiveTVChannel(short=item['short'], site_id=site_dict['id'])
+                channel = LiveTVChannel(url=item['url'], site_id=site_dict['id'])
                 spider.logger.debug('新增频道 {}: {}'.format(item['name'], item['url']))
             else:
                 spider.logger.debug('更新频道 {}:{}'.format(item['name'], item['url']))
@@ -91,8 +91,7 @@ class SqlalchemyPipeline(object):
                 spider.logger.debug('更新房间 {}:{}'.format(item['name'], item['url']))
             room.channel_id = site_dict['channels'][item['channel']]
             room.from_item(item)
-            roomdata = LiveTVRoomData(room=room, online=room.online)
-            session.add(room, roomdata)
+            session.add(room)
             session.commit()
         session.close()
         return item

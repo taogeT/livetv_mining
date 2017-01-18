@@ -19,7 +19,7 @@
             状态：{{ room.opened ? '正在直播': '未直播' }}&nbsp;&nbsp;&nbsp;&nbsp;更新时间：{{ room.crawl_date | moment }}
           </h4>
           <h4>
-            当前人气：{{ room.online }}&nbsp;&nbsp;&nbsp;&nbsp;人气中位数：{{ room.median ? room.median.online : '' }}
+            当前人气：{{ room.online }}
           </h4>
         </p>
       </div>

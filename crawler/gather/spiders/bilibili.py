@@ -29,7 +29,7 @@ class BilibiliSpider(Spider):
         room_query_list = []
         for a_element in response.xpath('//div[{}]/a'.format(' and '.join(panel_xpath)))[1:-2]:
             url = a_element.xpath('@href').extract_first()
-            short = url[1:]
+            short = url[url.rfind('/') + 1:]
             name = a_element.xpath('div/text()').extract_first()
             yield ChannelItem({'short': short, 'name': name, 'url': response.urljoin(url)})
             self.logger.debug('遍历频道 {}...'.format(name))

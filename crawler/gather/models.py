@@ -57,7 +57,6 @@ class LiveTVRoom(Base):
     id = Column(Integer, primary_key=True)
     channel_id = Column(Integer, ForeignKey('livetv_channel.id'))
     site_id = Column(Integer, ForeignKey('livetv_site.id'))
-    hisdata = relationship('LiveTVRoomData', backref='room', lazy='dynamic')
 
     office_id = Column(String(32), index=True, doc='官方ID')
     name = Column(String(258), index=True, doc='名称')
@@ -77,13 +76,3 @@ class LiveTVRoom(Base):
         self.online = item['online']
         self.opened = True
         self.crawl_date = datetime.utcnow()
-
-
-class LiveTVRoomData(Base):
-    """ 扫描房间数据保存，作为曲线图基础数据 """
-    __tablename__ = 'livetv_room_data'
-    id = Column(Integer, primary_key=True)
-    room_id = Column(Integer, ForeignKey('livetv_room.id'))
-
-    create_date = Column(DateTime, default=datetime.utcnow, index=True, doc='创建时间')
-    online = Column(Integer, default=0, doc='观众数')

@@ -1,10 +1,8 @@
 # -*- coding: UTF-8 -*-
 from flask_login import UserMixin
-from datetime import datetime, timedelta
+from datetime import datetime
 
 from . import db
-
-import numpy as np
 
 
 class LiveTVSite(db.Model):
@@ -73,7 +71,6 @@ class LiveTVRoom(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     channel_id = db.Column(db.Integer, db.ForeignKey('livetv_channel.id'))
     site_id = db.Column(db.Integer, db.ForeignKey('livetv_site.id'))
-    hisdata = db.relationship('LiveTVRoomData', backref='room', lazy='dynamic')
 
     office_id = db.Column(db.String(32), index=True, doc='官方ID')
     name = db.Column(db.String(258), index=True, doc='名称')
@@ -81,18 +78,8 @@ class LiveTVRoom(db.Model):
     image = db.Column(db.String(1024), doc='图片')
     host = db.Column(db.String(128), doc='主持')
     online = db.Column(db.Integer, default=0, index=True, doc='观众数')
-    opened = db.Column(db.Boolean, default=True, doc='是否正在直播')
-    crawl_date = db.Column(db.DateTime, doc='最近一次扫描时间')
-
-    @property
-    def median(self):
-        last30days = datetime.utcnow() - timedelta(days=30)
-        online_list = []
-        for roomdata in self.hisdata.filter(LiveTVRoomData.create_date > last30days).all():
-            online_list.append(roomdata.online)
-        return {
-            'online': np.median(online_list)
-        }
+    opened = db.Column(db.Boolean, default=True, index=True, doc='是否正在直播')
+    crawl_date = db.Column(db.DateTime, index=True, doc='最近一次扫描时间')
 
     def to_dict(self):
         return {
@@ -110,16 +97,6 @@ class LiveTVRoom(db.Model):
             'channel': self.channel.name,
             'site': self.site.name
         }
-
-
-class LiveTVRoomData(db.Model):
-    """ 扫描房间数据保存，作为曲线图基础数据 """
-    __tablename__ = 'livetv_room_data'
-    id = db.Column(db.Integer, primary_key=True)
-    room_id = db.Column(db.Integer, db.ForeignKey('livetv_room.id'))
-
-    create_date = db.Column(db.DateTime, default=datetime.utcnow, index=True, doc='创建时间')
-    online = db.Column(db.Integer, default=0, doc='观众数')
 
 
 class User(UserMixin, db.Model):
