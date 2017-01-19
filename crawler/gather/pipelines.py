@@ -89,7 +89,7 @@ class SqlalchemyPipeline(object):
                 spider.logger.debug('新增房间 {}: {}'.format(item['name'], item['url']))
             else:
                 spider.logger.debug('更新房间 {}:{}'.format(item['name'], item['url']))
-            room.channel_id = site_dict['channels'][item['channel']]
+            room.channel_id = site_dict['channels'].get(item['channel'], None)
             room.from_item(item)
             session.add(room)
             session.commit()

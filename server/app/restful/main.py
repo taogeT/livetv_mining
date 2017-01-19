@@ -123,5 +123,4 @@ class Room(Resource, MainApiMixin):
         if not room:
             abort(400, message='Can not find room record by room: {}.'.format(str(room_id)))
         roomdict = room.to_dict()
-        roomdict['median'] = room.median
         return roomdict
