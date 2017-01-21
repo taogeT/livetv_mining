@@ -1,4 +1,3 @@
 User-agent: *
 
-Disallow: /rest/
-Disallow: /room/
+Disallow: /rest/*

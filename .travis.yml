@@ -7,4 +7,5 @@ services:
 install:
   - pip install -r requirements.txt
 script:
+  - cd server
   - python manage.py test --coverage
