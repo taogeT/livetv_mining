@@ -4,7 +4,7 @@ from datetime import datetime
 from flask import current_app
 
 from app import db, create_app
-from app.models import LiveTVSite, LiveTVChannel, LiveTVRoom, LiveTVRoomData, \
+from app.models import LiveTVSite, LiveTVChannel, LiveTVRoom, \
                        User, UserRoomLink
 
 
@@ -58,8 +58,7 @@ class AbstractTestCase(TestCase):
                           url=cls.test_room['url'], image=cls.test_room['image'],
                           host=cls.test_room['host'], online=cls.test_room['online'],
                           crawl_date=cls.test_room['crawl_date'], channel=channel, site=site)
-        roomdata = LiveTVRoomData(online=cls.test_room['online'], room=room)
-        db.session.add(room, roomdata)
+        db.session.add(room)
         db.session.commit()
         cls.test_room['id'] = room.id
         cls.user = User(symbol='test_symbol', office_id='test_user_office',
