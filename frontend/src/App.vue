@@ -13,8 +13,8 @@
 </template>
 
 <script>
-import MenuNavbar from './components/MenuNavbar'
-import Intro from './components/Intro'
+import MenuNavbar from 'components/MenuNavbar'
+import Intro from 'components/Intro'
 
 export default {
   name: 'app',

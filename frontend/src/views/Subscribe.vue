@@ -56,7 +56,7 @@
 </template>
 
 <script>
-import { SubscribeRes } from '../resource'
+import { SubscribeRes } from 'resource'
 
 export default {
   name: 'subscribe',

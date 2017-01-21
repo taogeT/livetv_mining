@@ -22,9 +22,9 @@
 </template>
 
 <script>
-import RoomList from '../../components/RoomList.vue'
-import Pagination from '../../components/Pagination.vue'
-import { ChannelRes } from '../../resource'
+import RoomList from 'components/RoomList.vue'
+import Pagination from 'components/Pagination.vue'
+import { ChannelRes } from 'resource'
 
 export default {
   name: 'channel-detail',

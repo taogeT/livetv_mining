@@ -20,8 +20,8 @@
 </template>
 
 <script>
-import ChannelList from '../components/ChannelList.vue'
-import { SiteRes } from '../resource'
+import ChannelList from 'components/ChannelList.vue'
+import { SiteRes } from 'resource'
 
 export default {
   name: 'site-detail',

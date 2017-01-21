@@ -28,7 +28,7 @@
 </template>
 
 <script>
-import { RoomRes } from '../../resource'
+import { RoomRes } from 'resource'
 
 export default {
   name: 'room-detail',

@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import { UserRes } from '../resource'
+import { UserRes } from 'resource'
 
 const store = new Vuex.Store({
     state: {

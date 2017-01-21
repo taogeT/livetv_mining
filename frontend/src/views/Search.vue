@@ -42,8 +42,8 @@
 </template>
 
 <script>
-import RoomList from '../components/RoomList.vue'
-import { SiteRes } from '../resource'
+import RoomList from 'components/RoomList.vue'
+import { SiteRes } from 'resource'
 
 export default {
   name: 'search',

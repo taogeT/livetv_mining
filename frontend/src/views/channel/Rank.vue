@@ -34,8 +34,8 @@
 </template>
 
 <script>
-import SiteHeader from '../../components/SiteHeader.vue'
-import { SiteRes } from '../../resource'
+import SiteHeader from 'components/SiteHeader.vue'
+import { SiteRes } from 'resource'
 
 export default {
   name: 'channel-rank',
