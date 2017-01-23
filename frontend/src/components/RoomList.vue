@@ -11,7 +11,7 @@
           </router-link>
           <p>
             主播 {{ item.host }}<br>
-            人气 {{ item.online }}&nbsp;{{ item.crawl_date | moment }} 更新
+            人气 <span style="color: red;">{{ item.online }}</span> 更新 {{ item.crawl_date | moment }}
           </p>
         </div>
       </div>
