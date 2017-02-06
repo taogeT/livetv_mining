@@ -24,7 +24,8 @@ const router = new VueRouter({
         { path: '/subscribe', component: Subscribe, name: 'subscribe', meta: { auth: true } },
         { path: '/login', component: Login, name: 'login' },
         { path: '/about', component: About, name: 'about' },
-        { path: '/', component: RoomRank, name: 'index' }
+        { path: '/', component: RoomRank, name: 'index' },
+        { path: '*', redirect: { name: 'index' } }
     ]
 })
 
