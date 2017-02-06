@@ -4,13 +4,11 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_oauthlib.client import OAuth
 from flask_login import LoginManager
 from flask_cors import CORS
-from gevent import monkey
 
 db = SQLAlchemy()
 oauth = OAuth()
 login_manager = LoginManager()
 cors = CORS()
-monkey.patch_all()
 
 
 def create_app():
