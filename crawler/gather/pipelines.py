@@ -46,7 +46,7 @@ class SqlalchemyPipeline(object):
         site_dict = self.site[spider.settings.get('SITE')['code']]
         self.session.query(LiveTVRoom).filter(LiveTVRoom.crawl_date < site_dict['starttime']) \
                                  .filter(LiveTVRoom.site_id == site_dict['id']) \
-                                 .update({LiveTVRoom.opened: False})
+                                 .update({'opened': False})
         self.session.commit()
         for channel in self.session.query(LiveTVChannel).filter(LiveTVChannel.site_id == site_dict['id']).all():
             channel.total = channel.rooms.filter_by(opened=True).count()
