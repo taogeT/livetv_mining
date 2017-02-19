@@ -27,44 +27,41 @@ class SqlalchemyPipeline(object):
         )
 
     def open_spider(self, spider):
-        session = self.session_maker()
+        self.session = self.session_maker()
         site_setting = spider.settings.get('SITE')
         if not site_setting:
             error_msg = 'Can not find the website configuration from settings.'
             spider.logger.error(error_msg)
             raise CloseSpider(error_msg)
-        site = session.query(LiveTVSite).filter(LiveTVSite.code == site_setting['code']).one_or_none()
+        site = self.session.query(LiveTVSite).filter(LiveTVSite.code == site_setting['code']).one_or_none()
         if not site:
             site = LiveTVSite(code=site_setting['code'], name=site_setting['name'],
                               description=site_setting['description'], url=site_setting['url'],
                               image=site_setting['image'], show_seq=site_setting['show_seq'])
-            session.add(site)
-            session.commit()
+            self.session.add(site)
+            self.session.commit()
         self.site[site.code] = {'id': site.id, 'starttime': datetime.utcnow(), 'channels': {}}
-        session.close()
 
     def close_spider(self, spider):
-        session = self.session_maker()
         site_dict = self.site[spider.settings.get('SITE')['code']]
-        session.query(LiveTVRoom).filter(LiveTVRoom.crawl_date < site_dict['starttime']) \
+        self.session.query(LiveTVRoom).filter(LiveTVRoom.crawl_date < site_dict['starttime']) \
                                  .filter(LiveTVRoom.site_id == site_dict['id']) \
                                  .update({LiveTVRoom.opened: False})
-        session.commit()
-        for channel in session.query(LiveTVChannel).filter(LiveTVChannel.site_id == site_dict['id']).all():
+        self.session.commit()
+        for channel in self.session.query(LiveTVChannel).filter(LiveTVChannel.site_id == site_dict['id']).all():
             channel.total = channel.rooms.filter_by(opened=True).count()
             channel.valid = channel.total > 0
-            session.add(channel)
-        session.commit()
-        session.close()
+            self.session.add(channel)
+        self.session.commit()
+        self.session.close()
         del site_dict
         if not self.site:
             self.engine.dispose()
 
     def process_item(self, item, spider):
-        session = self.session_maker()
         site_dict = self.site[spider.settings.get('SITE')['code']]
         if isinstance(item, ChannelItem):
-            channel = session.query(LiveTVChannel) \
+            channel = self.session.query(LiveTVChannel) \
                 .filter(LiveTVChannel.site_id == site_dict['id']) \
                 .filter(LiveTVChannel.url == item['url']).one_or_none()
             if not channel:
@@ -73,15 +70,15 @@ class SqlalchemyPipeline(object):
             else:
                 spider.logger.debug('更新频道 {}:{}'.format(item['name'], item['url']))
             channel.from_item(item)
-            session.add(channel)
-            session.commit()
+            self.session.add(channel)
+            self.session.commit()
             if not channel.office_id:
                 channel.office_id = channel.id
-                session.add(channel)
-                session.commit()
+                self.session.add(channel)
+                self.session.commit()
             site_dict['channels'][channel.short] = channel.id
         elif isinstance(item, RoomItem):
-            room = session.query(LiveTVRoom) \
+            room = self.session.query(LiveTVRoom) \
                 .filter(LiveTVRoom.site_id == site_dict['id']) \
                 .filter(LiveTVRoom.office_id == item['office_id']).one_or_none()
             if not room:
@@ -91,7 +88,6 @@ class SqlalchemyPipeline(object):
                 spider.logger.debug('更新房间 {}:{}'.format(item['name'], item['url']))
             room.channel_id = site_dict['channels'].get(item['channel'], None)
             room.from_item(item)
-            session.add(room)
-            session.commit()
-        session.close()
+            self.session.add(room)
+            self.session.commit()
         return item
