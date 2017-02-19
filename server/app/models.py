@@ -9,7 +9,7 @@ class LiveTVSite(db.Model):
     """ 直播站点 """
     __tablename__ = 'livetv_site'
 
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, index=True)
     channels = db.relationship('LiveTVChannel', backref='site', lazy='dynamic')
     rooms = db.relationship('LiveTVRoom', backref='site', lazy='dynamic')
 
@@ -36,8 +36,8 @@ class LiveTVChannel(db.Model):
     """ 频道 """
     __tablename__ = 'livetv_channel'
 
-    id = db.Column(db.Integer, primary_key=True)
-    site_id = db.Column(db.Integer, db.ForeignKey('livetv_site.id'))
+    id = db.Column(db.Integer, primary_key=True, index=True)
+    site_id = db.Column(db.Integer, db.ForeignKey('livetv_site.id'), index=True)
     rooms = db.relationship('LiveTVRoom', backref='channel', lazy='dynamic')
 
     office_id = db.Column(db.String(32), index=True, doc='官方ID')
@@ -68,9 +68,9 @@ class LiveTVRoom(db.Model):
     """ 房间 """
     __tablename__ = 'livetv_room'
 
-    id = db.Column(db.Integer, primary_key=True)
-    channel_id = db.Column(db.Integer, db.ForeignKey('livetv_channel.id'))
-    site_id = db.Column(db.Integer, db.ForeignKey('livetv_site.id'))
+    id = db.Column(db.Integer, primary_key=True, index=True)
+    channel_id = db.Column(db.Integer, db.ForeignKey('livetv_channel.id'), index=True)
+    site_id = db.Column(db.Integer, db.ForeignKey('livetv_site.id'), index=True)
 
     office_id = db.Column(db.String(32), index=True, doc='官方ID')
     name = db.Column(db.String(258), index=True, doc='名称')
@@ -103,7 +103,7 @@ class User(UserMixin, db.Model):
     """ 用户 """
     __tablename__ = 'user'
 
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, index=True)
     rooms = db.relationship('LiveTVRoom', secondary='user_room_link', backref='users', lazy='dynamic')
     symbol = db.Column(db.String(32), doc='站点标记')
 
@@ -132,6 +132,6 @@ class User(UserMixin, db.Model):
 
 class UserRoomLink(db.Model):
     __tablename__ = 'user_room_link'
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
-    room_id = db.Column(db.Integer, db.ForeignKey('livetv_room.id'), primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True, index=True)
+    room_id = db.Column(db.Integer, db.ForeignKey('livetv_room.id'), primary_key=True, index=True)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)

@@ -29,7 +29,7 @@ class LiveTVChannel(Base):
     __tablename__ = 'livetv_channel'
 
     id = Column(Integer, primary_key=True)
-    site_id = Column(Integer, ForeignKey('livetv_site.id'))
+    site_id = Column(Integer, ForeignKey('livetv_site.id'), index=True)
     rooms = relationship('LiveTVRoom', backref='channel', lazy='dynamic')
 
     office_id = Column(String(32), index=True, doc='官方ID')
@@ -55,8 +55,8 @@ class LiveTVRoom(Base):
     """ 房间 """
     __tablename__ = 'livetv_room'
     id = Column(Integer, primary_key=True)
-    channel_id = Column(Integer, ForeignKey('livetv_channel.id'))
-    site_id = Column(Integer, ForeignKey('livetv_site.id'))
+    channel_id = Column(Integer, ForeignKey('livetv_channel.id'), index=True)
+    site_id = Column(Integer, ForeignKey('livetv_site.id'), index=True)
 
     office_id = Column(String(32), index=True, doc='官方ID')
     name = Column(String(258), index=True, doc='名称')
