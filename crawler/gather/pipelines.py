@@ -43,16 +43,18 @@ class SqlalchemyPipeline(object):
         self.site[site.code] = {'id': site.id, 'starttime': datetime.utcnow(), 'channels': {}}
 
     def close_spider(self, spider):
+        self.session.commit()
         site_dict = self.site[spider.settings.get('SITE')['code']]
         self.session.query(LiveTVRoom).filter(LiveTVRoom.crawl_date < site_dict['starttime']) \
                                  .filter(LiveTVRoom.site_id == site_dict['id']) \
                                  .update({'opened': False})
-        self.session.commit()
+        self.session.flush()
         for channel in self.session.query(LiveTVChannel).filter(LiveTVChannel.site_id == site_dict['id']).all():
             channel.total = site_dict['channels'][channel.short]['total']
             channel.valid = channel.total > 0
             self.session.add(channel)
-            self.session.commit()
+            self.session.flush()
+        self.session.commit()
         self.session.close()
 
     def process_item(self, item, spider):
@@ -68,11 +70,11 @@ class SqlalchemyPipeline(object):
                 spider.logger.debug('更新频道 {}:{}'.format(item['name'], item['url']))
             channel.from_item(item)
             self.session.add(channel)
-            self.session.commit()
+            self.session.flush()
             if not channel.office_id:
                 channel.office_id = channel.id
                 self.session.add(channel)
-                self.session.commit()
+                self.session.flush()
             site_dict['channels'][channel.short] = {'id': channel.id, 'total': 0}
         elif isinstance(item, RoomItem):
             room = self.session.query(LiveTVRoom) \
@@ -89,5 +91,5 @@ class SqlalchemyPipeline(object):
                 channel_dict['total'] += 1
             room.from_item(item)
             self.session.add(room)
-            self.session.commit()
+            self.session.flush()
         return item
