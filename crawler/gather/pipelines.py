@@ -52,11 +52,8 @@ class SqlalchemyPipeline(object):
             channel.total = site_dict['channels'][channel.short]['total']
             channel.valid = channel.total > 0
             self.session.add(channel)
-        self.session.commit()
+            self.session.commit()
         self.session.close()
-        del site_dict
-        if not self.site:
-            self.engine.dispose()
 
     def process_item(self, item, spider):
         site_dict = self.site[spider.settings.get('SITE')['code']]
