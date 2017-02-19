@@ -17,6 +17,7 @@ NEWSPIDER_MODULE = 'gather.spiders'
 
 LOG_LEVEL = 'INFO'
 REACTOR_THREADPOOL_MAXSIZE = 50
+CLOSESPIDER_TIMEOUT = 1000
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 USER_AGENT = 'Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:16.0) Gecko/20121026 Firefox/16.0'

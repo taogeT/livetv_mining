@@ -49,7 +49,7 @@ class SqlalchemyPipeline(object):
                                  .update({'opened': False})
         self.session.commit()
         for channel in self.session.query(LiveTVChannel).filter(LiveTVChannel.site_id == site_dict['id']).all():
-            channel.total = channel.rooms.filter_by(opened=True).count()
+            channel.total = site_dict['channels'][channel.short]['total']
             channel.valid = channel.total > 0
             self.session.add(channel)
         self.session.commit()
@@ -76,7 +76,7 @@ class SqlalchemyPipeline(object):
                 channel.office_id = channel.id
                 self.session.add(channel)
                 self.session.commit()
-            site_dict['channels'][channel.short] = channel.id
+            site_dict['channels'][channel.short] = {'id': channel.id, 'total': 0}
         elif isinstance(item, RoomItem):
             room = self.session.query(LiveTVRoom) \
                 .filter(LiveTVRoom.site_id == site_dict['id']) \
@@ -86,7 +86,10 @@ class SqlalchemyPipeline(object):
                 spider.logger.debug('新增房间 {}: {}'.format(item['name'], item['url']))
             else:
                 spider.logger.debug('更新房间 {}:{}'.format(item['name'], item['url']))
-            room.channel_id = site_dict['channels'].get(item['channel'], None)
+            channel_dict = site_dict['channels'].get(item['channel'], {})
+            if 'id' in channel_dict:
+                room.channel_id = channel_dict['id']
+                channel_dict['total'] += 1
             room.from_item(item)
             self.session.add(room)
             self.session.commit()
