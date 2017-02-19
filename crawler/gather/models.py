@@ -64,8 +64,8 @@ class LiveTVRoom(Base):
     image = Column(String(1024), doc='图片')
     host = Column(String(128), doc='主持')
     online = Column(Integer, default=0, index=True, doc='观众数')
-    opened = Column(Boolean, default=True, doc='是否正在直播')
-    crawl_date = Column(DateTime, doc='最近一次扫描时间')
+    opened = Column(Boolean, default=True, index=True, doc='是否正在直播')
+    crawl_date = Column(DateTime, index=True, doc='最近一次扫描时间')
 
     def from_item(self, item):
         self.office_id = item['office_id']
