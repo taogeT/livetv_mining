@@ -18,7 +18,7 @@
             </li>
             <li :class="{ active: ['channelrank', 'channel'].indexOf(this.$route.name) >= 0 }">
               <router-link :to="{ name: 'channelrank'}">频道</router-link>
-            <li :class="{ active: this.$route.name == 'search' }" v-if="this.$store.state.user != null">
+            <li :class="{ active: this.$route.name == 'search' }">
               <router-link :to="{ name: 'search'}">搜索</router-link>
             </li>
           </ul>

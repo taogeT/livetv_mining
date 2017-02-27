@@ -20,7 +20,7 @@ const router = new VueRouter({
         { path: '/channel/:id(\\d+)?', component: ChannelDetail, name: 'channel' },
         { path: '/channel/rank', component: ChannelRank, name: 'channelrank' },
         { path: '/site/:id(\\d+)?', component: Site, name: 'site' },
-        { path: '/search', component: Search, name: 'search', meta: { auth: true } },
+        { path: '/search', component: Search, name: 'search' },
         { path: '/subscribe', component: Subscribe, name: 'subscribe', meta: { auth: true } },
         { path: '/login', component: Login, name: 'login' },
         { path: '/about', component: About, name: 'about' },
