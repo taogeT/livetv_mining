@@ -33,7 +33,6 @@ class DouyuSpider(Spider):
                 'image': cjson['game_src'],
                 'url': cjson['game_url'],
             })
-            self.logger.debug('遍历频道 {}...'.format(cjson['game_name']))
             url = 'http://open.douyucdn.cn/api/RoomApi/live/{}?limit=100'.format(cjson['short_name'])
             room_query_list.append({'url': url, 'offset': 0, 'channel': cjson['short_name']})
         for room_query in room_query_list:
@@ -42,17 +41,18 @@ class DouyuSpider(Spider):
 
     def parse_room_list(self, response):
         room_list = json.loads(response.text)['data']
-        for rjson in room_list:
-            yield RoomItem({
-                'office_id': str(rjson['room_id']),
-                'name': rjson['room_name'],
-                'image': rjson['room_src'],
-                'url': rjson['url'],
-                'online': rjson['online'],
-                'host': rjson['nickname'],
-                'channel': response.meta['channel'],
-            })
-        if len(room_list) > 0:
-            next_meta = dict(response.meta, offset=response.meta['offset'] + len(room_list))
-            yield Request('{}&offset={}'.format(next_meta['url'], str(next_meta['offset'])),
-                          callback=self.parse_room_list, meta=next_meta)
+        if isinstance(room_list, list):
+            for rjson in room_list:
+                yield RoomItem({
+                    'office_id': str(rjson['room_id']),
+                    'name': rjson['room_name'],
+                    'image': rjson['room_src'],
+                    'url': rjson['url'],
+                    'online': rjson['online'],
+                    'host': rjson['nickname'],
+                    'channel': response.meta['channel']
+                })
+            if len(room_list) > 0:
+                next_meta = dict(response.meta, offset=response.meta['offset'] + len(room_list))
+                yield Request('{}&offset={}'.format(next_meta['url'], str(next_meta['offset'])),
+                              callback=self.parse_room_list, meta=next_meta)

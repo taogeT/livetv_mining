@@ -32,7 +32,6 @@ class BilibiliSpider(Spider):
             short = url[url.rfind('/') + 1:]
             name = a_element.xpath('div/text()').extract_first()
             yield ChannelItem({'short': short, 'name': name, 'url': response.urljoin(url)})
-            self.logger.debug('遍历频道 {}...'.format(name))
             url = 'http://live.bilibili.com/area/liveList?area={}&order=online'.format(short)
             room_query_list.append({'url': url, 'channel': short, 'page': 1})
         for room_query in room_query_list:
@@ -50,7 +49,7 @@ class BilibiliSpider(Spider):
                         'url': response.urljoin(rjson['link']),
                         'online': rjson['online'],
                         'host': rjson['uname'],
-                        'channel': response.meta['channel'],
+                        'channel': response.meta['channel']
                     })
             if len(room_list) > 0:
                 next_meta = dict(response.meta, page=response.meta['page'] + 1)
