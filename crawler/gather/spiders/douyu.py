@@ -19,7 +19,7 @@ class DouyuSpider(Spider):
             'description': '斗鱼-全民直播平台',
             'url': 'http://www.douyu.com',
             'image': 'http://staticlive.douyutv.com/common/douyu/images/logo_zb.png',
-            'show_seq': 1,
+            'show_seq': 1
         }
     }
 

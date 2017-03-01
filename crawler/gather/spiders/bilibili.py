@@ -19,7 +19,7 @@ class BilibiliSpider(Spider):
             'description': '哔哩哔哩-关注ACG直播互动平台',
             'url': 'http://live.bilibili.com',
             'image': 'http://static.hdslb.com/live-static/common/images/logo/logo-150-cyan.png',
-            'show_seq': 2,
+            'show_seq': 2
         }
     }
 
@@ -34,10 +34,9 @@ class BilibiliSpider(Spider):
             yield ChannelItem({'short': short, 'name': name, 'url': response.urljoin(url)})
             self.logger.debug('遍历频道 {}...'.format(name))
             url = 'http://live.bilibili.com/area/liveList?area={}&order=online'.format(short)
-            room_query_list.append({'url': url, 'channel': short, 'area': short, 'page': 1})
+            room_query_list.append({'url': url, 'channel': short, 'page': 1})
         for room_query in room_query_list:
-            yield Request('{}&page=1'.format(room_query['url']), callback=self.parse_room_list,
-                          meta=room_query)
+            yield Request('{}&page=1'.format(room_query['url']), callback=self.parse_room_list, meta=room_query)
 
     def parse_room_list(self, response):
         room_list = json.loads(response.text)['data']

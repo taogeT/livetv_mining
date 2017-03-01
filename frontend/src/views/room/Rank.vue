@@ -51,7 +51,7 @@ export default {
   data () {
     return {
       site: [],
-      rank_num: 20
+      rank_num: 15
     }
   },
   components: { SiteHeader },
