@@ -70,8 +70,14 @@ export default {
       }
     },
     get_site_rooms: function(index){
-      var data = { name: this.name, host: this.host, per_page: this.per_page }
-      SiteRes.query({ id: this.site[index].id, subType: 'room' }, data).then(
+      var data = {
+        id: this.site[index].id,
+        subType: 'room',
+        name: this.name,
+        host: this.host,
+        per_page: this.per_page
+      }
+      SiteRes.query(data).then(
         (resp) => {
           this.$set(this.site[index], 'rooms', resp.body)
         }, (resp) => {
