@@ -31,7 +31,7 @@ class PandaSpider(Spider):
                 continue
             short = url[url.rfind('/') + 1:]
             name = a_element.xpath('div[@class="cate-title"]/text()').extract_first()[1:].strip()
-            image = a_element.xpath('img/@src').extract_first()
+            image = a_element.xpath('div[@class="img-container"]/img/@src').extract_first()
             yield ChannelItem({
                 'short': short,
                 'name': name,
