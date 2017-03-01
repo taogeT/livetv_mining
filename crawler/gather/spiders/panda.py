@@ -23,7 +23,7 @@ class PandaSpider(Spider):
         }
     }
 
-    __pageNum = 110
+    __pageNum = 120
 
     def parse(self, response):
         room_query_list = []
@@ -53,7 +53,7 @@ class PandaSpider(Spider):
                     'host': rjson['userinfo']['nickName'],
                     'channel': response.meta['channel'],
                 })
-            if len(room_list) <= 0:
+            if len(room_list) > 0:
                 next_meta = dict(response.meta, pageno=response.meta['pageno'] + 1)
                 yield Request('{}&pageno={}'.format(next_meta['url'], str(next_meta['pageno'])),
                               callback=self.parse_room_list, meta=next_meta)
