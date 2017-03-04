@@ -49,7 +49,7 @@ class SqlalchemyPipeline(object):
                                  .update({'opened': False})
         self.session.commit()
         for channel in self.session.query(LiveTVChannel).filter(LiveTVChannel.site_id == site_dict['id']).all():
-            channel.total = site_dict['channels'][channel.short]['total']
+            channel.total = site_dict['channels'].get(channel.short, {}).get('total', 0)
             channel.valid = channel.total > 0
             self.session.add(channel)
             self.session.commit()
