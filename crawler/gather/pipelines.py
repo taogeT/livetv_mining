@@ -37,9 +37,10 @@ class SqlalchemyPipeline(object):
         if not site:
             site = LiveTVSite(code=site_setting['code'], name=site_setting['name'],
                               description=site_setting['description'], url=site_setting['url'],
-                              image=site_setting['image'], show_seq=site_setting['show_seq'])
-            self.session.add(site)
-            self.session.commit()
+                              image=site_setting['image'])
+        site.show_seq = site_setting['show_seq']
+        self.session.add(site)
+        self.session.commit()
         self.site[site.code] = {'id': site.id, 'starttime': datetime.utcnow(), 'channels': {}}
 
     def close_spider(self, spider):
