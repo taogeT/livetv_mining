@@ -3,7 +3,7 @@
     <div class="container" id="index_channel">
       <div class="row">
         <template v-for="item in site">
-          <div class="col-lg-3" style="text-align: center;">
+          <div class="col-lg-4" style="text-align: center;">
             <site-header :site="item"></site-header>
             <span style="text-align: left;">
               <h3>频道房间数 TOP{{ rank_num }}</h3>

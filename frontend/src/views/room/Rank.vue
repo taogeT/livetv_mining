@@ -3,7 +3,7 @@
     <div class="container">
       <div class="row">
         <template v-for="item in site">
-          <div class="col-lg-6" style="text-align: center;">
+          <div class="col-lg-4" style="text-align: center;">
             <site-header :site="item"></site-header>
             <span style="text-align: left;">
               <h3>房间人气 TOP{{ rank_num }}</h3>
@@ -11,7 +11,6 @@
                 <thead>
                   <th width="50px">排名</th>
                   <th>房间</th>
-                  <th>频道</th>
                   <th>人气</th>
                 </thead>
                 <tbody>
@@ -23,11 +22,6 @@
                       </router-link><br>
                       <router-link :to="{ name: 'room', params: { id: roomitem.id } }" v-if="index < 3">
                         <img width="250px" height="150px" :src="roomitem.image">
-                      </router-link>
-                    </td>
-                    <td>
-                      <router-link :to="{ name: 'channel', params: { id: roomitem.channel_id } }">
-                        {{ roomitem.channel }}
                       </router-link>
                     </td>
                     <td>{{ roomitem.online }}</td>
