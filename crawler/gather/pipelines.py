@@ -74,7 +74,8 @@ class SqlalchemyPipeline(object):
                 channel.office_id = channel.id
                 self.session.add(channel)
                 self.session.commit()
-            site_dict['channels'][channel.short] = {'id': channel.id, 'total': 0}
+            if channel.short not in site_dict['channels']:
+                site_dict['channels'][channel.short] = {'id': channel.id, 'total': 0}
         elif isinstance(item, RoomItem):
             room = self.session.query(LiveTVRoom) \
                 .filter(LiveTVRoom.site_id == site_dict['id']) \
