@@ -54,6 +54,7 @@ class LongZhuSpider(Spider):
                     continue
                 if cjson['tag'] in channel_list:
                     if not channel_list[cjson['tag']]['sent']:
+                        channel_list[cjson['tag']]['sent'] = True
                         yield ChannelItem({
                             'office_id': str(cjson['id']),
                             'short': channel_list[cjson['tag']]['short'],
