@@ -3,7 +3,7 @@
     <div class="container" id="index_channel">
       <template v-for="n_item in Math.ceil(site.length / columnnum)">
         <div class="row" style="text-align: center;">
-          <div v-for="item in site.slice((n_item - 1) * columnnum, n_item * columnnum)" class="col-lg-4 col-md-6">
+          <div v-for="item in site.slice((n_item - 1) * columnnum, n_item * columnnum)" class="col-lg-3 col-md-6">
             <site-header :site="item"></site-header>
             <span style="text-align: left;">
               <h3>频道房间数 TOP{{ rank_num }}</h3>
@@ -42,8 +42,8 @@ export default {
   data () {
     return {
       site: [],
-      rank_num: 15,
-      columnnum: 3
+      rank_num: 10,
+      columnnum: 4
     }
   },
   components: { SiteHeader },

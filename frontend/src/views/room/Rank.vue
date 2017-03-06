@@ -3,7 +3,7 @@
     <div class="container">
       <template v-for="n_item in Math.ceil(site.length / columnnum)">
         <div class="row" style="text-align: center;">
-          <div v-for="item in site.slice((n_item - 1) * columnnum, n_item * columnnum)" class="col-lg-4 col-md-6">
+          <div v-for="item in site.slice((n_item - 1) * columnnum, n_item * columnnum)" class="col-lg-6 col-md-6">
             <site-header :site="item"></site-header>
             <span style="text-align: left;">
               <h3>房间人气 TOP{{ rank_num }}</h3>
@@ -11,6 +11,7 @@
                 <thead>
                   <th width="50px">排名</th>
                   <th>房间</th>
+                  <th>频道</th>
                   <th>人气</th>
                 </thead>
                 <tbody>
@@ -22,6 +23,11 @@
                       </router-link><br>
                       <router-link :to="{ name: 'room', params: { id: roomitem.id } }" v-if="index < 3">
                         <img width="250px" height="150px" :src="roomitem.image">
+                      </router-link>
+                    </td>
+                    <td>
+                      <router-link :to="{ name: 'channel', params: { id: roomitem.channel_id } }">
+                        {{ roomitem.channel }}
                       </router-link>
                     </td>
                     <td>{{ roomitem.online }}</td>
@@ -46,7 +52,7 @@ export default {
     return {
       site: [],
       rank_num: 10,
-      columnnum: 3
+      columnnum: 2
     }
   },
   components: { SiteHeader },
