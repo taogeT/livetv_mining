@@ -1,43 +1,62 @@
 <template>
   <div class="room-rank">
     <div class="container">
-      <template v-for="n_item in Math.ceil(site.length / columnnum)">
-        <div class="row" style="text-align: center;">
-          <div v-for="item in site.slice((n_item - 1) * columnnum, n_item * columnnum)" class="col-lg-6 col-md-6">
-            <site-header :site="item"></site-header>
-            <span style="text-align: left;">
-              <h3>房间人气 TOP{{ rank_num }}</h3>
-              <table class="table table-striped">
-                <thead>
-                  <th width="50px">排名</th>
-                  <th>房间</th>
-                  <th>频道</th>
-                  <th>人气</th>
-                </thead>
-                <tbody>
-                  <tr v-for="(roomitem, index) in item.rooms">
-                    <td>{{ index + 1 }}</td>
-                    <td>
-                      <router-link :to="{ name: 'room', params: { id: roomitem.id } }">
-                        {{ roomitem.name }}
-                      </router-link><br>
-                      <router-link :to="{ name: 'room', params: { id: roomitem.id } }" v-if="index < 3">
-                        <img width="250px" height="150px" :src="roomitem.image">
-                      </router-link>
-                    </td>
-                    <td>
-                      <router-link :to="{ name: 'channel', params: { id: roomitem.channel_id } }">
-                        {{ roomitem.channel }}
-                      </router-link>
-                    </td>
-                    <td>{{ roomitem.online }}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </span>
+      <div class="row">
+
+        <!-- Nav tabs -->
+        <div class="col-md-2">
+          <ul class="nav nav-pills nav-stacked affix" role="tablist">
+            <li role="presentation" v-for="(site_item, site_index) in site" :class="{ active: site_index == 0}">
+              <a :href="'#' + site_item.code" :aria-controls="site_item.code" role="tab" data-toggle="tab">
+                <img height="50px" :src="site_item.image">
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Tab panes -->
+        <div class="col-md-10">
+          <div class="tab-content" style="margin-left: 30px;">
+            <div role="tabpanel" class="tab-pane" v-for="(item, site_index) in site"
+              :class="{ active: site_index == 0}" :id="item.code">
+              <site-header :site="item"></site-header>
+              <span style="text-align: left;">
+                <h3>房间人气 TOP{{ rank_num }}</h3>
+                <table class="table table-striped">
+                  <thead>
+                    <th width="50px">排名</th>
+                    <th>房间</th>
+                    <th>主持</th>
+                    <th>频道</th>
+                    <th>人气</th>
+                  </thead>
+                  <tbody>
+                    <tr v-for="(roomitem, index) in item.rooms">
+                      <td>{{ index + 1 }}</td>
+                      <td>
+                        <router-link :to="{ name: 'room', params: { id: roomitem.id } }">
+                          {{ roomitem.name }}
+                        </router-link><br>
+                        <router-link :to="{ name: 'room', params: { id: roomitem.id } }" v-if="index < 3">
+                          <img width="250px" height="150px" :src="roomitem.image">
+                        </router-link>
+                      </td>
+                      <td>{{ roomitem.host }}</td>
+                      <td>
+                        <router-link :to="{ name: 'channel', params: { id: roomitem.channel_id } }">
+                          {{ roomitem.channel }}
+                        </router-link>
+                      </td>
+                      <td>{{ roomitem.online }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </span>
+            </div>
           </div>
         </div>
-      </template>
+
+      </div>
     </div>
   </div>
 </template>
@@ -51,8 +70,7 @@ export default {
   data () {
     return {
       site: [],
-      rank_num: 10,
-      columnnum: 2
+      rank_num: 20
     }
   },
   components: { SiteHeader },

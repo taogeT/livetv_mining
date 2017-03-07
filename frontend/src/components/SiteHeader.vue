@@ -1,5 +1,5 @@
 <template>
-  <div class="site-header">
+  <div  style="text-align: center;">
     <router-link :to="{ name: 'site', params: { id: site.id } }">
       <img height="100px" :src="site.image">
     </router-link>
