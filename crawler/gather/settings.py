@@ -66,6 +66,8 @@ DOWNLOADER_MIDDLEWARES = {
     'gather.middlewares.RandomUserAgentMiddleware': 500
 }
 
+DOWNLOADER_CLIENTCONTEXTFACTORY = 'scrapy.core.downloader.contextfactory.BrowserLikeContextFactory'
+
 # Enable or disable extensions
 # See http://scrapy.readthedocs.org/en/latest/topics/extensions.html
 #EXTENSIONS = {

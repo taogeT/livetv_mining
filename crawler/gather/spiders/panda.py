@@ -10,7 +10,7 @@ class PandaSpider(Spider):
     name = 'panda'
     allowed_domains = ['panda.tv']
     start_urls = [
-        'http://www.panda.tv/cate'
+        'http://api.m.panda.tv/ajax_get_all_subcate'
     ]
     custom_settings = {
         'SITE': {
@@ -25,21 +25,15 @@ class PandaSpider(Spider):
 
     def parse(self, response):
         room_query_list = []
-        for a_element in response.xpath('//a[@class="video-list-item-wrap"]'):
-            url = a_element.xpath('@href').extract_first()
-            if not url.startswith('/'):
-                continue
-            short = url[url.rfind('/') + 1:]
-            name = a_element.xpath('div[@class="cate-title"]/text()').extract_first()[1:].strip()
-            image = a_element.xpath('div[@class="img-container"]/img/@src').extract_first()
+        for cjson in json.loads(response.text)['data']:
             yield ChannelItem({
-                'short': short,
-                'name': name,
-                'image': image,
-                'url': response.urljoin(url)
+                'short': cjson['ename'],
+                'name': cjson['cname'],
+                'image': cjson['img'],
+                'url': 'http://www.panda.tv/cate/' + cjson['ename']
             })
-            url = 'http://www.panda.tv/ajax_sort?classification={}&pagenum=120'.format(short)
-            room_query_list.append({'url': url, 'channel': short, 'pageno': 1})
+            url = 'http://www.panda.tv/ajax_sort?classification={}&pagenum=120'.format(cjson['ename'])
+            room_query_list.append({'url': url, 'channel': cjson['ename'], 'pageno': 1})
         for room_query in room_query_list:
             yield Request('{}&pageno=1'.format(room_query['url']), callback=self.parse_room_list, meta=room_query)
 
