@@ -7,7 +7,7 @@
             <td width="20%"><img :src="site.image"></td>
             <td align="left">
               <h1>{{ site.name }}<small><a :href="site.url" target="_blank">官网</a></small></h1>
-              <p><h4>频道数：{{ site.channel_total }}</p>
+              <p><h4>频道数：{{ site.channel_total }}</h4></p>
               <p><h4>正在直播房间数：{{ site.room_total }}</h4></p>
             </td>
           </tr>
