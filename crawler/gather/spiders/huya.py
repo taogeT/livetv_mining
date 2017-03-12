@@ -56,7 +56,7 @@ class HuyaSpider(Spider):
                     'url': response.urljoin(rjson['privateHost']),
                     'online': int(rjson['totalCount']) if rjson['totalCount'].isdigit() else 0,
                     'host': rjson['nick'],
-                    'channel': response.meta['channel']
+                    'channel': rjson['gameHostName']
                 })
             if len(room_list) > 0:
                 next_meta = dict(response.meta, page=response.meta['page'] + 1)
