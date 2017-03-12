@@ -13,14 +13,16 @@ if __name__ == '__main__':
                         help='set user agents file path.')
     parser.add_argument('--log-file', dest='log_file', action='store', default=None,
                         help='set log file path.')
-    parser.add_argument('--crawler', dest='crawler', action='append', nargs='*',
-                        help='run crawler name.')
+    parser.add_argument('--crawler', dest='crawler', action='append', help='run crawler name.')
     args = parser.parse_args()
 
     settings = get_project_settings()
-    settings.set('SQLALCHEMY_DATABASE_URI', args.db_uri)
-    settings.set('USER_AGENT_FILE', args.user_agents)
-    settings.set('LOG_FILE', args.log_file)
+    if args.db_uri:
+        settings.set('SQLALCHEMY_DATABASE_URI', args.db_uri)
+    if args.user_agents:
+        settings.set('USER_AGENT_FILE', args.user_agents)
+    if args.log_file:
+        settings.set('LOG_FILE', args.log_file)
 
     process = CrawlerProcess(settings)
     if args.crawler:
@@ -32,4 +34,5 @@ if __name__ == '__main__':
         process.crawl('longzhu')
         process.crawl('panda')
         process.crawl('zhanqi')
+        process.crawl('huya')
     process.start()
