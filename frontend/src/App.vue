@@ -13,11 +13,15 @@
 </template>
 
 <script>
+import store from 'store'
 import MenuNavbar from 'components/MenuNavbar'
 import Intro from 'components/Intro'
 
 export default {
   name: 'app',
-  components: { MenuNavbar, Intro }
+  components: { MenuNavbar, Intro },
+  mounted () {
+    store.dispatch('verify')
+  }
 }
 </script>
