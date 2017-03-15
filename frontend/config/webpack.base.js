@@ -24,7 +24,8 @@ module.exports = {
             resource: path.resolve(dirname, 'src', 'resource'),
             router: path.resolve(dirname, 'src', 'router'),
             store: path.resolve(dirname, 'src', 'store'),
-            views: path.resolve(dirname, 'src', 'views')
+            views: path.resolve(dirname, 'src', 'views'),
+            src: path.resolve(dirname, 'src')
         }
     },
     resolveLoader: {
