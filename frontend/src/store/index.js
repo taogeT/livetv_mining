@@ -13,9 +13,6 @@ const store = new Vuex.Store({
     },
     actions: {
         verify (context) {
-            if(!window.Cookies.get('session')){
-                return false;
-            }
             return UserRes.query({ subType: 'verify'}).then(
                 (resp) => {
                     if(context.state.user == null || context.state.user.username != resp.username){
@@ -31,7 +28,6 @@ const store = new Vuex.Store({
                     return true
                 }, (resp) => {
                     context.commit('modifyUser', null)
-                    window.Cookies.remove('session')
                     return false
                 }
             )

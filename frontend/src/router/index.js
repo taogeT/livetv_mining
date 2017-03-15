@@ -30,13 +30,17 @@ const router = new VueRouter({
 })
 
 router.beforeEach((to, from, next) => {
-    store.dispatch('verify').then((v) => {
-        if(!to.meta.auth || v){
-            next()
-        }else{
-            next({ path: '/login?next=' + to.path })
-        }
-    })
+    if(to.meta.auth){
+        store.dispatch('verify').then((v) => {
+            if(v){
+                next()
+            }else{
+                next({ path: '/login?next=' + to.path })
+            }
+        })
+    }else{
+        next()
+    }
 })
 
 export default router
