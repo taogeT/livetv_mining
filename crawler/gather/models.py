@@ -47,7 +47,6 @@ class LiveTVChannel(Base):
         self.name = item['name']
         self.url = item['url']
         self.image = item.get('image', '')
-        self.valid = True
         self.crawl_date = datetime.utcnow()
 
 
