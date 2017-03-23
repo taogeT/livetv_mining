@@ -3,11 +3,11 @@
     <form class="form form-horizontal" onsubmit="return false">
       <div class="form-group">
         <label class="control-label col-lg-2">站点</label>
-        <div class="col-lg-5">
+        <div class="col-lg-6">
           <div class="checkbox">
             <label v-for="(item, index) in site">
               <input type="checkbox" :value="index" v-model="checksite">
-              <img width="150px" height="50px" :src="item.image">
+              <img width="120px" height="50px" :src="item.image" :title="item.name">
             </label>
           </div>
         </div>
