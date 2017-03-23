@@ -13,6 +13,8 @@ if __name__ == '__main__':
                         help='set user agents file path.')
     parser.add_argument('--log-file', dest='log_file', action='store', default=None,
                         help='set log file path.')
+    parser.add_argument('--log-level', dest='log_level', action='store', default=None,
+                        help='set log level.')
     parser.add_argument('--crawler', dest='crawler', action='append', help='run crawler name.')
     args = parser.parse_args()
 
@@ -23,6 +25,8 @@ if __name__ == '__main__':
         settings.set('USER_AGENT_FILE', args.user_agents)
     if args.log_file:
         settings.set('LOG_FILE', args.log_file)
+    if args.log_level:
+        settings.set('LOG_LEVEL', args.log_level)
 
     process = CrawlerProcess(settings)
     if args.crawler:
@@ -35,4 +39,5 @@ if __name__ == '__main__':
         process.crawl('panda')
         process.crawl('zhanqi')
         process.crawl('huya')
+        process.crawl('quanmin')
     process.start()
