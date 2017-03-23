@@ -1,7 +1,7 @@
 <template>
-  <div  style="text-align: center;">
+  <div style="text-align: center;">
     <router-link :to="{ name: 'site', params: { id: site.id } }">
-      <img height="100px" :src="site.image">
+      <img height="100px" width="250px" :src="site.image">
     </router-link>
     <h4>
       <p>
