@@ -31,7 +31,7 @@ class QuanminSpider(Spider):
                 'short': cjson['slug'],
                 'name': cjson['name'],
                 'image': cjson['image'],
-                'url': response.urljoin('game/{}'.format(cjson['slug'])),
+                'url': response.urljoin('/game/{}'.format(cjson['slug'])),
             })
             url = 'http://www.quanmin.tv/json/categories/{}/list{{}}.json'.format(cjson['slug'])
             room_query_list.append({'url': url, 'page': 0, 'channel': cjson['slug']})
@@ -47,10 +47,10 @@ class QuanminSpider(Spider):
                         'office_id': rjson['id'],
                         'name': rjson['title'],
                         'image': rjson['thumb'],
-                        'url': response.urljoin(rjson['uid']),
+                        'url': response.urljoin('/'+rjson['uid']),
                         'online': rjson['view'],
                         'host': rjson['nick'],
-                        'channel': response.meta['channel']
+                        'channel': rjson['category_slug']
                     })
                 if len(room_list) > 0:
                     next_meta = dict(response.meta, page=response.meta['page'] + 1)
