@@ -19,7 +19,7 @@ class LongZhuSpider(Spider):
             'description': '龙珠直播-游戏直播平台',
             'url': 'http://www.longzhu.com',
             'image': 'http://r.plures.net/plu/images/small-longzhu-logo.png',
-            'show_seq': 4
+            'show_seq': 5
         }
     }
 

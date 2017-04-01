@@ -19,7 +19,7 @@ class HuyaSpider(Spider):
             'description': '虎牙直播-中国领先的互动直播平台',
             'url': 'http://www.huya.com',
             'image': 'http://a.dwstatic.com/huya/main/img/logo.png',
-            'show_seq': 6
+            'show_seq': 2
         }
     }
 

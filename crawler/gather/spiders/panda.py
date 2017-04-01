@@ -19,7 +19,7 @@ class PandaSpider(Spider):
             'description': '熊猫直播_泛娱乐直播平台',
             'url': 'http://www.panda.tv',
             'image': 'http://i9.pdim.gs/b2a97149ec43dfc95eb177508af29f6c.png',
-            'show_seq': 3
+            'show_seq': 4
         }
     }
 

@@ -19,7 +19,7 @@ class BilibiliSpider(Spider):
             'description': '哔哩哔哩-关注ACG直播互动平台',
             'url': 'http://live.bilibili.com',
             'image': 'http://static.hdslb.com/live-static/common/images/logo/logo-150-cyan.png',
-            'show_seq': 2
+            'show_seq': 3
         }
     }
 

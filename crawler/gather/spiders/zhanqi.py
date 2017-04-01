@@ -19,7 +19,7 @@ class ZhanqiSpider(Spider):
             'description': '战旗直播_高清流畅的游戏直播平台',
             'url': 'https://www.zhanqi.tv',
             'image': 'https://static.zhanqi.tv/assets/web/static/i/index/skin/logo.png',
-            'show_seq': 5
+            'show_seq': 6
         }
     }
 
