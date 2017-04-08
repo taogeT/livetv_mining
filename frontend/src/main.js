@@ -1,5 +1,4 @@
 import Vue from 'vue'
-import VueResource from 'vue-resource'
 import router from 'router'
 import store from 'store'
 import * as filters from 'filters'

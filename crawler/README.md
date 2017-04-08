@@ -12,3 +12,7 @@
 * SQLALCHEMY_DATABASE_URI  数据库连接
 * USER_AGENT_FILE  文件路径，随机选择文件中内容作为user-agent，不配置情况下默认使用USER_AGENT
 * REDIS_URL  redis服务
+
+#### 执行方式
+
+可使用 run.py 文件输入参数执行，或直接使用 scrapy 命令行进行操作。

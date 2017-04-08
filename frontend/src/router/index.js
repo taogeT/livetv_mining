@@ -1,4 +1,3 @@
-import Vue from 'vue'
 import VueRouter from 'vue-router'
 import RoomRank from 'views/room/Rank.vue'
 import RoomDetail from 'views/room/Detail.vue'
@@ -8,7 +7,7 @@ import Site from 'views/Site.vue'
 import Search from 'views/Search.vue'
 import Subscribe from 'views/Subscribe.vue'
 import Login from 'views/Login.vue'
-import About from '../../README.md'
+import About from '../../../README.md'
 import store from 'store'
 
 const router = new VueRouter({
