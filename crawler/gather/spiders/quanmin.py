@@ -53,7 +53,10 @@ class QuanminSpider(Spider):
                         'url': response.urljoin('/'+rjson['uid']),
                         'online': rjson['view'],
                         'host': rjson['nick'],
-                        'channel': rjson['category_slug']
+                        'channel': rjson['category_slug'],
+                        'followers': rjson['follow'],
+                        'description': rjson['intro'],
+                        'announcement': rjson['announcement']
                     })
                 if len(room_list) > 0:
                     next_meta = dict(response.meta, page=response.meta['page'] + 1)

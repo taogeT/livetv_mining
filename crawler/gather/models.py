@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 from datetime import datetime
-from sqlalchemy import Column, String, Integer, Boolean, DateTime, ForeignKey
+from sqlalchemy import Column, String, Integer, Boolean, DateTime, ForeignKey, TEXT
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 
@@ -42,11 +42,11 @@ class LiveTVChannel(Base):
     crawl_date = Column(DateTime, doc='最近一次扫描时间')
 
     def from_item(self, item):
-        self.office_id = item.get('office_id', '')
+        self.office_id = item.get('office_id', self.office_id)
         self.short = item['short']
         self.name = item['name']
         self.url = item['url']
-        self.image = item.get('image', '')
+        self.image = item.get('image', self.image)
         self.crawl_date = datetime.utcnow()
 
 
@@ -65,6 +65,9 @@ class LiveTVRoom(Base):
     online = Column(Integer, default=0, index=True, doc='观众数')
     opened = Column(Boolean, default=True, index=True, doc='是否正在直播')
     crawl_date = Column(DateTime, index=True, doc='最近一次扫描时间')
+    followers = Column(Integer, default=0, index=True, doc='关注者数')
+    description = Column(TEXT, doc='描述')
+    announcement = Column(String(1024), doc='公告')
 
     def from_item(self, item):
         self.office_id = item['office_id']
@@ -75,3 +78,6 @@ class LiveTVRoom(Base):
         self.online = item['online']
         self.opened = True
         self.crawl_date = datetime.utcnow()
+        self.followers = item.get('followers', self.followers)
+        self.description = item.get('description', self.description)
+        self.announcement = item.get('announcement', self.announcement)

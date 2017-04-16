@@ -80,6 +80,9 @@ class LiveTVRoom(db.Model):
     online = db.Column(db.Integer, default=0, index=True, doc='观众数')
     opened = db.Column(db.Boolean, default=True, index=True, doc='是否正在直播')
     crawl_date = db.Column(db.DateTime, index=True, doc='最近一次扫描时间')
+    followers = db.Column(db.Integer, default=0, index=True, doc='关注者数')
+    description = db.Column(db.TEXT, doc='描述')
+    announcement = db.Column(db.String(1024), doc='公告')
 
     def to_dict(self):
         return {
@@ -95,7 +98,10 @@ class LiveTVRoom(db.Model):
             'channel_id': self.channel_id,
             'site_id': self.site_id,
             'channel': self.channel.name,
-            'site': self.site.name
+            'site': self.site.name,
+            'followers': self.followers,
+            'description': self.description,
+            'announcement': self.announcement
         }
 
 

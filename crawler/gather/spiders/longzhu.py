@@ -78,7 +78,8 @@ class LongZhuSpider(Spider):
                     'url': rjson['url'],
                     'online': int(mixjson['viewers']) if mixjson['viewers'].isdigit() else 0,
                     'host': rjson['name'],
-                    'channel': cjson['tag']
+                    'channel': cjson['tag'],
+                    'followers': rjson['followers']
                 })
             if len(room_list) > 0:
                 next_meta = response.meta

@@ -24,3 +24,6 @@ class RoomItem(Item):
     online = Field()
     host = Field()
     channel = Field()
+    followers = Field()
+    description = Field()
+    announcement = Field()

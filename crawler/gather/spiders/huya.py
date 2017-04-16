@@ -51,7 +51,7 @@ class HuyaSpider(Spider):
             for rjson in room_list:
                 yield RoomItem({
                     'office_id': rjson['privateHost'],
-                    'name': rjson['roomName'],
+                    'name': rjson['introduction'],
                     'image': rjson['screenshot'],
                     'url': response.urljoin(rjson['privateHost']),
                     'online': int(rjson['totalCount']) if rjson['totalCount'].isdigit() else 0,
