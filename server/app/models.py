@@ -105,6 +105,31 @@ class LiveTVRoom(db.Model):
         }
 
 
+class LiveTVRoomPresent(db.Model):
+    """ 房间更新实时信息 """
+    __tablename__ = 'livetv_room_present'
+    id = db.Column(db.Integer, primary_key=True)
+    room_id = db.Column(db.Integer, db.ForeignKey('livetv_room.id'), index=True)
+
+    crawl_date = db.Column(db.DateTime, default=datetime.utcnow, index=True, doc='扫描时间')
+    online = db.Column(db.Integer, default=0, index=True, doc='观众数')
+    crawl_date_format = db.Column(db.String(30), default=lambda: datetime.utcnow().strftime('%Y%m%d'), index=True,
+                                  doc='扫描时间格式化')
+
+
+class LiveTVRoomDaily(db.Model):
+    """ 房间每日信息 """
+    __tablename__ = 'livetv_room_daily'
+    id = db.Column(db.Integer, primary_key=True)
+    room_id = db.Column(db.Integer, db.ForeignKey('livetv_room.id'), index=True)
+
+    summary_date = db.Column(db.String(20), index=True, doc='扫描时间')
+    online = db.Column(db.Integer, default=0, index=True, doc='观众数')
+    followers = db.Column(db.Integer, default=0, index=True, doc='关注者数')
+    description = db.Column(db.TEXT, doc='描述')
+    announcement = db.Column(db.String(1024), doc='公告')
+
+
 class User(UserMixin, db.Model):
     """ 用户 """
     __tablename__ = 'user'

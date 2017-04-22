@@ -9,8 +9,8 @@ from scrapy.exceptions import CloseSpider
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from .items import ChannelItem, RoomItem
-from .models import LiveTVSite, LiveTVChannel, LiveTVRoom
+from ..items import ChannelItem, RoomItem, DailyItem
+from ..models import LiveTVSite, LiveTVChannel, LiveTVRoom, LiveTVRoomPresent
 
 
 class SqlalchemyPipeline(object):
@@ -23,16 +23,16 @@ class SqlalchemyPipeline(object):
     @classmethod
     def from_crawler(cls, crawler):
         return cls(
-            sqlalchemy_database_uri=crawler.settings.get('SQLALCHEMY_DATABASE_URI'),
+            sqlalchemy_database_uri=crawler.settings.get('SQLALCHEMY_DATABASE_URI')
         )
 
     def open_spider(self, spider):
-        self.session = self.session_maker()
         site_setting = spider.settings.get('SITE')
         if not site_setting:
             error_msg = 'Can not find the website configuration from settings.'
             spider.logger.error(error_msg)
             raise CloseSpider(error_msg)
+        self.session = self.session_maker()
         site = self.session.query(LiveTVSite).filter(LiveTVSite.code == site_setting['code']).one_or_none()
         if not site:
             site = LiveTVSite(code=site_setting['code'], name=site_setting['name'],
@@ -90,5 +90,7 @@ class SqlalchemyPipeline(object):
                 channel_dict['total'] += 1
             room.from_item(item)
             self.session.add(room)
+            self.session.commit()
+            self.session.add(LiveTVRoomPresent(room_id=room.id, online=room.online))
             self.session.commit()
         return item

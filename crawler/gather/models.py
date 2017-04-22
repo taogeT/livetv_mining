@@ -81,3 +81,28 @@ class LiveTVRoom(Base):
         self.followers = item.get('followers', self.followers)
         self.description = item.get('description', self.description)
         self.announcement = item.get('announcement', self.announcement)
+
+
+class LiveTVRoomPresent(Base):
+    """ 房间更新实时信息 """
+    __tablename__ = 'livetv_room_present'
+    id = Column(Integer, primary_key=True)
+    room_id = Column(Integer, ForeignKey('livetv_room.id'), index=True)
+
+    crawl_date = Column(DateTime, default=datetime.utcnow, index=True, doc='扫描时间')
+    online = Column(Integer, default=0, index=True, doc='观众数')
+    crawl_date_format = Column(String(30), default=lambda: datetime.utcnow().strftime('%Y%m%d'), index=True,
+                               doc='扫描时间格式化')
+
+
+class LiveTVRoomDaily(Base):
+    """ 房间每日信息 """
+    __tablename__ = 'livetv_room_daily'
+    id = Column(Integer, primary_key=True)
+    room_id = Column(Integer, ForeignKey('livetv_room.id'), index=True)
+
+    summary_date = Column(String(20), index=True, doc='扫描时间')
+    online = Column(Integer, default=0, index=True, doc='观众数')
+    followers = Column(Integer, default=0, index=True, doc='关注者数')
+    description = Column(TEXT, doc='描述')
+    announcement = Column(String(1024), doc='公告')
