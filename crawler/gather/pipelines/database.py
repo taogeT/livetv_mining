@@ -9,7 +9,7 @@ from scrapy.exceptions import CloseSpider
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from ..items import ChannelItem, RoomItem, DailyItem
+from ..items import ChannelItem, RoomItem
 from ..models import LiveTVSite, LiveTVChannel, LiveTVRoom, LiveTVRoomPresent
 
 
