@@ -27,3 +27,14 @@ class RoomItem(Item):
     followers = Field()
     description = Field()
     announcement = Field()
+
+
+class DailyItem(Item):
+    site_id = Field()
+    room_id = Field()
+    summary_date = Field()
+    online = Field()
+    followers = Field()
+    description = Field()
+    announcement = Field()
+    fallback = Field()

@@ -10,7 +10,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from ..items import ChannelItem, RoomItem, DailyItem
-from ..models import LiveTVSite, LiveTVChannel, LiveTVRoom, LiveTVRoomPresent
+from ..models import LiveTVSite, LiveTVChannel, LiveTVRoom, LiveTVRoomPresent, LiveTVRoomDaily
 
 
 class SqlalchemyPipeline(object):
@@ -93,4 +93,18 @@ class SqlalchemyPipeline(object):
             self.session.commit()
             self.session.add(LiveTVRoomPresent(room_id=room.id, online=room.online))
             self.session.commit()
+        elif isinstance(item, DailyItem):
+            daily = LiveTVRoomDaily(site_id=item.site_id, room_id=item.room_id, summary_date=item.summary_date,
+                                    online=item.online, followers=item.followers, description=item.description,
+                                    announcement=item.announcement)
+            self.session.add(daily)
+            self.session.commit()
+            if item.fallback:
+                room = self.session.query(LiveTVRoom).filter_by(id=item.room_id).one_or_none()
+                if room:
+                    room.followers = item.followers
+                    room.description = item.description
+                    room.announcement = item.announcement
+                    self.session.add(room)
+                    self.session.commit()
         return item
