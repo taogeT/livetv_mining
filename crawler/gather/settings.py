@@ -62,8 +62,8 @@ CONCURRENT_REQUESTS = 32
 # See also autothrottle settings and docs
 DOWNLOAD_DELAY = 0.35
 # The download delay setting will honor only one of:
-CONCURRENT_REQUESTS_PER_DOMAIN = 8
-CONCURRENT_REQUESTS_PER_IP = 8
+CONCURRENT_REQUESTS_PER_DOMAIN = 12
+CONCURRENT_REQUESTS_PER_IP = 12
 
 # Disable cookies (enabled by default)
 #COOKIES_ENABLED = False
@@ -91,7 +91,8 @@ DEFAULT_REQUEST_HEADERS = {
 # See http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {
     'scrapy.downloadermiddleware.useragent.UserAgentMiddleware': None,
-    'gather.middlewares.RandomUserAgentMiddleware': 500
+    'gather.middlewares.RandomUserAgentMiddleware': 500,
+    'scrapy.downloadermiddlewares.retry.RetryMiddleware': 550
 }
 
 DOWNLOADER_CLIENTCONTEXTFACTORY = 'scrapy.core.downloader.contextfactory.BrowserLikeContextFactory'
@@ -196,3 +197,11 @@ REDIS_PORT = 6379
 
 # Default start urls key for RedisSpider and RedisCrawlSpider.
 #REDIS_START_URLS_KEY = '%(name)s:start_urls'
+
+# Enable or disable downloader middlewares RetryMiddleware
+# Whether the Retry middleware will be enabled.
+RETRY_ENABLED = True
+# Maximum number of times to retry, in addition to the first download.
+#RETRY_TIMES = 2
+# Which HTTP response codes to retry. Other errors (DNS lookup issues, connections lost, etc) are always retried.
+#RETRY_HTTP_CODES = [500, 502, 503, 504, 408]
