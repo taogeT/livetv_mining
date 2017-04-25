@@ -107,4 +107,6 @@ class SqlalchemyPipeline(object):
                     room.announcement = item.announcement
                     self.session.add(room)
                     self.session.commit()
+            self.session.query(LiveTVRoomPresent).filter_by(crawl_date_format=item.summary_date).delete()
+            self.session.commit()
         return item

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from scrapy import Spider, Request
+from datetime import datetime
 
 from ..items import ChannelItem, RoomItem
 
@@ -47,7 +48,7 @@ class QuanminSpider(Spider):
                     if image_url.startswith('http://'):
                         image_url = image_url.replace('http://', 'https://')
                     yield RoomItem({
-                        'office_id': rjson['id'],
+                        'office_id': rjson['uid'],
                         'name': rjson['title'],
                         'image': image_url,
                         'url': response.urljoin('/'+rjson['uid']),
@@ -56,7 +57,8 @@ class QuanminSpider(Spider):
                         'channel': rjson['category_slug'],
                         'followers': rjson['follow'],
                         'description': rjson['intro'],
-                        'announcement': rjson['announcement']
+                        'announcement': rjson['announcement'],
+                        'start_time': datetime.utcfromtimestamp(float(rjson['start_time']))
                     })
                 if len(room_list) > 0:
                     next_meta = dict(response.meta, page=response.meta['page'] + 1)

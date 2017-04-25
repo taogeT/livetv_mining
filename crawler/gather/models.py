@@ -68,6 +68,7 @@ class LiveTVRoom(Base):
     followers = Column(Integer, default=0, index=True, doc='关注者数')
     description = Column(TEXT, doc='描述')
     announcement = Column(String(1024), doc='公告')
+    start_time = Column(DateTime, index=True, doc='开播时间')
 
     def from_item(self, item):
         self.office_id = item['office_id']
@@ -81,6 +82,7 @@ class LiveTVRoom(Base):
         self.followers = item.get('followers', self.followers)
         self.description = item.get('description', self.description)
         self.announcement = item.get('announcement', self.announcement)
+        self.start_time = item.get('start_time', self.start_time)
 
 
 DAILY_DATE_FORMAT = '%Y%m%d'

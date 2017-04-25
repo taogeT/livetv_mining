@@ -12,7 +12,7 @@ from urllib.parse import quote
 
 BOT_NAME = 'gather'
 
-SPIDER_MODULES = ['gather.spiders', 'gather.task_spiders']
+SPIDER_MODULES = ['gather.spiders', 'gather.daily_spiders', 'gather.once_spiders']
 NEWSPIDER_MODULE = 'gather.spiders'
 
 LOG_LEVEL = 'INFO'
@@ -60,7 +60,7 @@ CONCURRENT_REQUESTS = 32
 # Configure a delay for requests for the same website (default: 0)
 # See http://scrapy.readthedocs.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
-DOWNLOAD_DELAY = 0.35
+DOWNLOAD_DELAY = 0.25
 # The download delay setting will honor only one of:
 CONCURRENT_REQUESTS_PER_DOMAIN = 12
 CONCURRENT_REQUESTS_PER_IP = 12
@@ -107,6 +107,7 @@ DOWNLOADER_CLIENTCONTEXTFACTORY = 'scrapy.core.downloader.contextfactory.Browser
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
     'gather.pipelines.SqlalchemyPipeline': 300,
+    'gather.pipelines.HardDiskPipeline': 350
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)

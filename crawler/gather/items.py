@@ -27,6 +27,7 @@ class RoomItem(Item):
     followers = Field()
     description = Field()
     announcement = Field()
+    start_time = Field()
 
 
 class DailyItem(Item):
@@ -38,3 +39,14 @@ class DailyItem(Item):
     description = Field()
     announcement = Field()
     fallback = Field()
+
+
+class OnceItem(Item):
+    room_url = Field()
+    channel_name = Field()
+    host = Field()
+    followers = Field()
+    start_time = Field()
+    donate = Field()
+    description = Field()
+    announcement = Field()

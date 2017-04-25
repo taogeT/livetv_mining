@@ -83,6 +83,7 @@ class LiveTVRoom(db.Model):
     followers = db.Column(db.Integer, default=0, index=True, doc='关注者数')
     description = db.Column(db.TEXT, doc='描述')
     announcement = db.Column(db.String(1024), doc='公告')
+    start_time = db.Column(db.DateTime, index=True, doc='开播时间')
 
     def to_dict(self):
         return {
@@ -101,7 +102,8 @@ class LiveTVRoom(db.Model):
             'site': self.site.name,
             'followers': self.followers,
             'description': self.description,
-            'announcement': self.announcement
+            'announcement': self.announcement,
+            'start_time': self.start_time
         }
 
 
