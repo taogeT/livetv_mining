@@ -47,6 +47,10 @@ class QuanminSpider(Spider):
                     image_url = rjson['thumb'][:rjson['thumb'].find('?')]
                     if image_url.startswith('http://'):
                         image_url = image_url.replace('http://', 'https://')
+                    try:
+                        start_time = datetime.utcfromtimestamp(float(rjson['start_time']))
+                    except ValueError:
+                        start_time = datetime.strptime(rjson['play_at'], '%Y-%m-%d %H:%M:%S')
                     yield RoomItem({
                         'office_id': rjson['uid'],
                         'name': rjson['title'],
@@ -58,7 +62,7 @@ class QuanminSpider(Spider):
                         'followers': rjson['follow'],
                         'description': rjson['intro'],
                         'announcement': rjson['announcement'],
-                        'start_time': datetime.utcfromtimestamp(float(rjson['start_time']))
+                        'start_time': start_time
                     })
                 if len(room_list) > 0:
                     next_meta = dict(response.meta, page=response.meta['page'] + 1)
