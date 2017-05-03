@@ -19,12 +19,11 @@ class QuanminOnceSpider(Spider):
         db_session_maker = sessionmaker(bind=db_engine)
         session = db_session_maker()
         utc_date = datetime.utcnow()
-        base_query = session.query(LiveTVRoom).join(LiveTVSite).filter(LiveTVSite.code == 'panda')\
+        base_query = session.query(LiveTVRoom).join(LiveTVSite).filter(LiveTVSite.code == 'quanmin')\
                             .filter(LiveTVRoom.crawl_date <= utc_date)
-        for room in base_query.filter(LiveTVRoom.crawl_date > utc_date - timedelta(days=1)):
+        for room in base_query.filter(LiveTVRoom.crawl_date > utc_date - timedelta(days=30)):
             meta_info = {
                 'room_url': room.url,
-                'channel_name': room.channel.name,
                 'host': room.host,
                 'followers': room.followers,
                 'start_time': room.start_time,
@@ -36,13 +35,14 @@ class QuanminOnceSpider(Spider):
 
     def parse(self, response):
         room_info = json.loads(response.text)
-        yield OnceItem({
-            'room_url': response.meta['room_url'],
-            'channel_name': response.meta['channel_name'],
-            'host': response.meta['host'],
-            'followers': response.meta['followers'],
-            'start_time': response.meta['start_time'],
-            'donate': str(room_info['weight']),
-            'description': room_info['intro'],
-            'announcement': response.meta['announcement'],
-        })
+        if 'code' not in room_info:
+            yield OnceItem({
+                'room_url': response.meta['room_url'],
+                'channel_name': room_info['category_name'],
+                'host': response.meta['host'],
+                'followers': response.meta['followers'],
+                'start_time': response.meta['start_time'],
+                'donate': str(room_info['weight']),
+                'description': room_info['intro'],
+                'announcement': response.meta['announcement'],
+            })

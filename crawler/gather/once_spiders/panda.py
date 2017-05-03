@@ -19,16 +19,14 @@ class QuanminOnceSpider(Spider):
         db_session_maker = sessionmaker(bind=db_engine)
         session = db_session_maker()
         utc_date = datetime.utcnow()
-        base_query = session.query(LiveTVRoom).join(LiveTVSite).filter(LiveTVSite.code == 'quanmin')\
+        base_query = session.query(LiveTVRoom).join(LiveTVSite).filter(LiveTVSite.code == 'panda')\
                             .filter(LiveTVRoom.crawl_date <= utc_date)
-        for room in base_query.filter(LiveTVRoom.crawl_date > utc_date - timedelta(days=1)):
+        for room in base_query.filter(LiveTVRoom.crawl_date > utc_date - timedelta(days=30)):
             meta_info = {
                 'room_url': room.url,
-                'channel_name': room.channel.name,
                 'host': room.host,
             }
-            yield Request('http://www.panda.tv/api_room?roomid=' + room.office_id,
-                          callback=self.parse, meta=meta_info)
+            yield Request('http://www.panda.tv/api_room?roomid=' + room.office_id, callback=self.parse, meta=meta_info)
         session.close()
 
     def parse(self, response):
@@ -37,7 +35,7 @@ class QuanminOnceSpider(Spider):
             main_info = resp_info['data']
             yield OnceItem({
                 'room_url': response.meta['room_url'],
-                'channel_name': response.meta['channel_name'],
+                'channel_name': main_info['roominfo']['classification'],
                 'host': response.meta['host'],
                 'followers': int(main_info['roominfo']['fans']),
                 'start_time': datetime.utcfromtimestamp(main_info['roominfo']['start_time']),

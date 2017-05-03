@@ -21,10 +21,9 @@ class DouyuOnceSpider(Spider):
         utc_date = datetime.utcnow()
         base_query = session.query(LiveTVRoom).join(LiveTVSite).filter(LiveTVSite.code == 'douyu') \
             .filter(LiveTVRoom.crawl_date <= utc_date)
-        for room in base_query.filter(LiveTVRoom.crawl_date > utc_date - timedelta(days=1)):
+        for room in base_query.filter(LiveTVRoom.crawl_date > utc_date - timedelta(days=30)):
             meta_info = {
                 'room_url': room.url,
-                'channel_name': room.channel.name,
                 'host': room.host,
             }
             yield Request('http://open.douyucdn.cn/api/RoomApi/room/' + room.office_id, callback=self.parse,
@@ -36,8 +35,8 @@ class DouyuOnceSpider(Spider):
         if resp_json['error'] == 0:
             room_json = resp_json['data']
             # maybe some filter
-            meta_info = dict(response.meta, start_time=room_json['start_time'], followers=room_json['fans_num'],
-                             donate=room_json['owner_weight'])
+            meta_info = dict(response.meta, channel_name=room_json['cate_name'], start_time=room_json['start_time'],
+                             followers=room_json['fans_num'], donate=room_json['owner_weight'])
             yield Request('https://m.douyu.com/html5/live?roomId=' + room_json['room_id'], callback=self.parse_html5,
                           meta=meta_info)
 
