@@ -103,7 +103,7 @@ class LiveTVRoom(db.Model):
             'followers': self.followers,
             'description': self.description,
             'announcement': self.announcement,
-            'start_time': self.start_time
+            'start_time': self.start_time.strftime('%Y-%m-%d %H:%M:%S')
         }
 
 
