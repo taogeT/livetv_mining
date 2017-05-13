@@ -23,5 +23,6 @@ class HardDiskPipeline(object):
 
     def process_item(self, item, spider):
         if isinstance(item, OnceItem):
-            self.csvwriter.writerow(item.values())
+            self.csvwriter.writerow((item['room_url'], item['channel_name'], item['host'], item['followers'],
+                                     item['start_time'], item['donate'], item['announcement'], item['description']))
         return item

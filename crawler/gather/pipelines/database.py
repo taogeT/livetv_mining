@@ -43,21 +43,23 @@ class SqlalchemyPipeline(object):
         self.site[site.code] = {'id': site.id, 'starttime': datetime.utcnow(), 'channels': {}}
 
     def close_spider(self, spider):
-        site_dict = self.site[spider.settings.get('SITE')['code']]
-        self.session.query(LiveTVRoom).filter(LiveTVRoom.crawl_date < site_dict['starttime']) \
-                                 .filter(LiveTVRoom.site_id == site_dict['id']) \
-                                 .update({'opened': False})
-        self.session.commit()
-        for channel in self.session.query(LiveTVChannel).filter(LiveTVChannel.site_id == site_dict['id']).all():
-            channel.total = site_dict['channels'].get(channel.short, {}).get('total', 0)
-            channel.valid = channel.total > 0
-            self.session.add(channel)
+        site_setting = spider.settings.get('SITE')
+        if site_setting:
+            site_dict = self.site[site_setting['code']]
+            self.session.query(LiveTVRoom).filter(LiveTVRoom.crawl_date < site_dict['starttime']) \
+                                     .filter(LiveTVRoom.site_id == site_dict['id']) \
+                                     .update({'opened': False})
             self.session.commit()
-        self.session.close()
+            for channel in self.session.query(LiveTVChannel).filter(LiveTVChannel.site_id == site_dict['id']).all():
+                channel.total = site_dict['channels'].get(channel.short, {}).get('total', 0)
+                channel.valid = channel.total > 0
+                self.session.add(channel)
+                self.session.commit()
+            self.session.close()
 
     def process_item(self, item, spider):
-        site_dict = self.site[spider.settings.get('SITE')['code']]
         if isinstance(item, ChannelItem):
+            site_dict = self.site[spider.settings.get('SITE')['code']]
             channel = self.session.query(LiveTVChannel) \
                 .filter(LiveTVChannel.site_id == site_dict['id']) \
                 .filter(LiveTVChannel.url == item['url']).one_or_none()
@@ -76,6 +78,7 @@ class SqlalchemyPipeline(object):
             if channel.short not in site_dict['channels']:
                 site_dict['channels'][channel.short] = {'id': channel.id, 'total': 0}
         elif isinstance(item, RoomItem):
+            site_dict = self.site[spider.settings.get('SITE')['code']]
             room = self.session.query(LiveTVRoom) \
                 .filter(LiveTVRoom.site_id == site_dict['id']) \
                 .filter(LiveTVRoom.office_id == item['office_id']).one_or_none()
@@ -94,19 +97,20 @@ class SqlalchemyPipeline(object):
             self.session.add(LiveTVRoomPresent(room_id=room.id, online=room.online))
             self.session.commit()
         elif isinstance(item, DailyItem):
-            daily = LiveTVRoomDaily(site_id=item.site_id, room_id=item.room_id, summary_date=item.summary_date,
-                                    online=item.online, followers=item.followers, description=item.description,
-                                    announcement=item.announcement)
+            daily = LiveTVRoomDaily(site_id=item['site_id'], room_id=item['room_id'],
+                                    summary_date=item['summary_date'], online=item['online'],
+                                    followers=item['followers'], description=item['description'],
+                                    announcement=item['announcement'])
             self.session.add(daily)
             self.session.commit()
-            if item.fallback:
-                room = self.session.query(LiveTVRoom).filter_by(id=item.room_id).one_or_none()
+            if item['fallback']:
+                room = self.session.query(LiveTVRoom).filter_by(id=item['room_id']).one_or_none()
                 if room:
-                    room.followers = item.followers
-                    room.description = item.description
-                    room.announcement = item.announcement
+                    room.followers = item['followers']
+                    room.description = item['description']
+                    room.announcement = item['announcement']
                     self.session.add(room)
                     self.session.commit()
-            self.session.query(LiveTVRoomPresent).filter_by(crawl_date_format=item.summary_date).delete()
+            self.session.query(LiveTVRoomPresent).filter_by(crawl_date_format=item['summary_date']).delete()
             self.session.commit()
         return item

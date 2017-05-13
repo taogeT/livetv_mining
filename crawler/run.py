@@ -44,4 +44,5 @@ if __name__ == '__main__':
         process.crawl('zhanqi')
         process.crawl('huya')
         process.crawl('quanmin')
+        process.crawl('huomao')
     process.start()

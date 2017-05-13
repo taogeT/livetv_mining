@@ -6,7 +6,7 @@ from ..items import ChannelItem, RoomItem
 import json
 
 
-class LongZhuSpider(Spider):
+class LongzhuSpider(Spider):
     name = 'longzhu'
     allowed_domains = ['longzhu.com', 'plu.cn']
     start_urls = [
