@@ -14,15 +14,20 @@ import csv
 class HardDiskPipeline(object):
 
     def open_spider(self, spider):
-        utc_date = datetime.utcnow()
-        self.csvfile = open(spider.name + '-' + utc_date.strftime('%Y%m%d') + '.csv', 'w')
-        self.csvwriter = csv.writer(self.csvfile)
+        self.utc_date = datetime.utcnow()
+        self.once_csvfile = None
+        self.once_csvwriter = None
 
     def close_spider(self, spider):
-        self.csvfile.close()
+        if self.once_csvfile:
+            self.once_csvfile.close()
 
     def process_item(self, item, spider):
         if isinstance(item, OnceItem):
-            self.csvwriter.writerow((item['room_url'], item['channel_name'], item['host'], item['followers'],
-                                     item['start_time'], item['donate'], item['announcement'], item['description']))
+            if not self.once_csvfile:
+                self.once_csvfile = open(spider.name + '-' + self.utc_date.strftime('%Y%m%d') + '.csv', 'w')
+                self.once_csvwriter = csv.writer(self.once_csvfile)
+            self.once_csvwriter.writerow((item['room_url'], item['channel_name'], item['host'], item['followers'],
+                                          item['start_time'], item['donate'], item['announcement'],
+                                          item['description']))
         return item

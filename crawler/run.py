@@ -16,7 +16,7 @@ if __name__ == '__main__':
     parser.add_argument('--log-level', dest='log_level', action='store', default=None,
                         help='set log level.')
     parser.add_argument('--crawler', dest='crawler', action='append', help='run crawler name.')
-    parser.add_argument('--daily', dest='daily', action='store_true', default=False, help='run daily crawler.')
+    parser.add_argument('--daily', dest='daily', action= 'store_true', default=False, help='run daily crawler.')
     args = parser.parse_args()
 
     settings = get_project_settings()
@@ -34,7 +34,9 @@ if __name__ == '__main__':
         for each_crawler in args.crawler:
             process.crawl(each_crawler)
     elif args.daily:
-        pass
+        process.crawl('douyu_daily')
+        process.crawl('panda_daily')
+        process.crawl('quanmin_daily')
     else:
         settings.set('CLOSESPIDER_TIMEOUT', 1000)
         process.crawl('bilibili')

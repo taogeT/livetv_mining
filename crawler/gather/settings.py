@@ -106,7 +106,8 @@ DOWNLOADER_CLIENTCONTEXTFACTORY = 'scrapy.core.downloader.contextfactory.Browser
 # Configure item pipelines
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-    'gather.pipelines.SqlalchemyPipeline': 300,
+    'gather.pipelines.CurrentPipeline': 300,
+    'gather.pipelines.StatisticPipeline': 320,
     'gather.pipelines.HardDiskPipeline': 350
 }
 
