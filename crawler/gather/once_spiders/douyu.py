@@ -13,6 +13,11 @@ import json
 class DouyuOnceSpider(Spider):
     name = 'douyu_once'
     allowed_domains = ['douyucdn.cn', 'douyu.com']
+    custom_settings = {
+        'ITEM_PIPELINES': {
+            'gather.pipelines.HardDiskPipeline': 300
+        }
+    }
 
     def start_requests(self):
         db_engine = create_engine(self.settings.get('SQLALCHEMY_DATABASE_URI'))

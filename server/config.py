@@ -1,9 +1,10 @@
 # -*- coding: UTF-8 -*-
-
-SECRET_KEY = ' Set Your Own Key '
-SQLALCHEMY_DATABASE_URI = 'sqlite:///database.db'
-GITHUB_CONSUMER_KEY = ''
-GITHUB_CONSUMER_SECRET = ''
+SECRET_KEY = ''
+SQLALCHEMY_DATABASE_URI = ''
+GITHUB_AUTH = {
+    'consumer_key': '',
+    'consumer_secret': '',
+}
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 FLASK_CHANNEL_PER_PAGE = 60
 FLASK_ROOM_PER_PAGE = 40

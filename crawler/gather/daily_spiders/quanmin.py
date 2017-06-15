@@ -10,9 +10,13 @@ from ..items import DailyItem
 import numpy
 
 
-class DailySpider(Spider):
-    name = 'daily'
-    custom_settings = {}
+class QuanminDailySpider(Spider):
+    name = 'quanmin_daily'
+    custom_settings = {
+        'ITEM_PIPELINES': {
+            'gather.pipelines.StatisticPipeline': 300
+        }
+    }
 
     def start_requests(self):
         summary_utc = datetime.utcnow() - timedelta(days=1)

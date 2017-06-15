@@ -13,6 +13,11 @@ import json
 class QuanminOnceSpider(Spider):
     name = 'quanmin_once'
     allowed_domains = ['quanmin.tv']
+    custom_settings = {
+        'ITEM_PIPELINES': {
+            'gather.pipelines.HardDiskPipeline': 300
+        }
+    }
 
     def start_requests(self):
         db_engine = create_engine(self.settings.get('SQLALCHEMY_DATABASE_URI'))

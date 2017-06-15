@@ -14,6 +14,11 @@ import json
 class DouyuDailySpider(Spider):
     name = 'douyu_daily'
     allowed_domains = ['douyucdn.cn', 'douyu.com']
+    custom_settings = {
+        'ITEM_PIPELINES': {
+            'gather.pipelines.StatisticPipeline': 300
+        }
+    }
 
     def start_requests(self):
         summary_utc = datetime.utcnow() - timedelta(days=1)

@@ -5,7 +5,7 @@ module.exports = {
     entry: path.join(dirname, 'src', 'main'),
     output: {
         path: path.join(dirname, 'dist'),
-        filename: '/[name].[hash:7].js',
+        filename: '/[name].[chunkhash:7].js',
         chunkFilename: '/[id].[chunkhash:7].js'
     },
     module: {

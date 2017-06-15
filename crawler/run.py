@@ -37,6 +37,7 @@ if __name__ == '__main__':
         process.crawl('douyu_daily')
         process.crawl('panda_daily')
         process.crawl('quanmin_daily')
+        process.crawl('bilibili_daily')
     else:
         settings.set('CLOSESPIDER_TIMEOUT', 1000)
         process.crawl('bilibili')
