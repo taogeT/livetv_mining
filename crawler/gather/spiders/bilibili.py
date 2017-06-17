@@ -27,13 +27,15 @@ class BilibiliSpider(Spider):
         panel_class = ['live-top-nav-panel', 'live-top-hover-panel']
         panel_xpath = ['contains(@class, "{}")'.format(pclass) for pclass in panel_class]
         room_query_list = []
-        for a_element in response.xpath('//div[{}]/a'.format(' and '.join(panel_xpath)))[1:]:
-            div_list = a_element.xpath('div[@class="nav-item"]')
-            if len(div_list) <= 0:
-                continue
-            div_element = div_list[0]
+        for a_element in response.xpath('//div[{}]/a'.format(' and '.join(panel_xpath)))[1:-2]:
+            div_element = a_element.xpath('div[@class="nav-item"]')[0]
             url = a_element.xpath('@href').extract_first()
-            short = url[url.rfind('/') + 1:]
+            if '/pages/area/' in url:
+                i_class = div_element.xpath('i/@class').extract()
+                short = i_class[-1]
+                url = self.custom_settings['SITE']['url'] + '/' + short
+            else:
+                short = url[url.rfind('/') + 1:]
             name = div_element.xpath('text()').extract_first()
             yield ChannelItem({'short': short, 'name': name, 'url': response.urljoin(url)})
             url = 'http://live.bilibili.com/area/liveList?area={}&order=online'.format(short)
