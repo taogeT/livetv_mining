@@ -31,7 +31,7 @@ class BilibiliSpider(Spider):
             div_element = a_element.xpath('div[@class="nav-item"]')[0]
             url = a_element.xpath('@href').extract_first()
             if '/pages/area/' in url:
-                i_class = div_element.xpath('i/@class').extract()
+                i_class = div_element.xpath('i/@class').extract_first().split(' ')
                 short = i_class[-1]
                 url = self.custom_settings['SITE']['url'] + '/' + short
             else:
