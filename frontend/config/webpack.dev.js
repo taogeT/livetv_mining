@@ -1,20 +1,22 @@
-var webpack = require('webpack')
-var merge = require('webpack-merge')
-var baseWebpackConfig = require('./webpack.base')
-var HtmlWebpackPlugin = require('html-webpack-plugin')
+const webpack = require('webpack')
+const merge = require('webpack-merge')
+const baseWebpackConfig = require('./webpack.base')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 module.exports = merge(baseWebpackConfig, {
+    output: {
+        filename: 'js/[name].[hash:7].js'
+    },
     devtool: '#eval-source-map',
     devServer: {
-        historyApiFallback: true,
-        hot: true,
-        inline: true,
-        progress: true,
+        overlay: {
+          warnings: true,
+          errors: true
+        }
     },
     plugins: [
-        new webpack.optimize.OccurrenceOrderPlugin(),
         new webpack.HotModuleReplacementPlugin(),
-        new webpack.NoErrorsPlugin(),
+        new webpack.NoEmitOnErrorsPlugin(),
         new HtmlWebpackPlugin({
             filename: 'index.html',
             template: 'index.html',

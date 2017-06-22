@@ -1,23 +1,32 @@
 const path = require('path')
 const dirname = path.join(__dirname, '..')
+const webpack = require('webpack')
+const ExtractTextPlugin = require("extract-text-webpack-plugin")
 
 module.exports = {
-    entry: path.join(dirname, 'src', 'main'),
+    entry: path.join(dirname, 'src', 'main.js'),
     output: {
         path: path.join(dirname, 'dist'),
-        filename: '/[name].[chunkhash:7].js',
-        chunkFilename: '/[id].[chunkhash:7].js'
+        filename: 'js/[name].[chunkhash:7].js',
+        chunkFilename: 'js/[name].[chunkhash:7].js'
     },
     module: {
-        loaders: [
-            { test: /\.js$/, exclude: /node_modules/, loader: 'babel' },
-            { test: /\.vue$/, loader: 'vue' },
-            { test: /\.md$/, loader: 'vue-markdown' }
+        rules: [
+            { test: /\.js$/, exclude: /node_modules/, use: [{ loader: 'babel-loader' }] },
+            { test: /\.vue$/, use: [{ loader: 'vue-loader' }] },
+            { test: /\.md$/, use: [{ loader: 'vue-markdown-loader' }] },
+            {
+                test: /\.css$/,
+                use: ExtractTextPlugin.extract({
+                    fallback: "style-loader",
+                    use: "css-loader"
+                })
+            }
         ]
     },
     resolve: {
-        extensions: ['', '.js', '.vue', '.json'],
-        fallback: [path.join(dirname, 'node_modules')],
+        extensions: ['.js', '.vue', '.json'],
+        modules: [path.join(dirname, 'node_modules')],
         alias: {
             components: path.resolve(dirname, 'src', 'components'),
             filters: path.resolve(dirname, 'src', 'filters'),
@@ -29,7 +38,7 @@ module.exports = {
         }
     },
     resolveLoader: {
-        fallback: [path.join(dirname, 'node_modules')]
+        modules: [path.join(dirname, 'node_modules')]
     },
     externals: {
         'jquery': 'jQuery',
@@ -38,5 +47,17 @@ module.exports = {
         'vuex': 'Vuex',
         'vue-resource': 'VueResource',
         'moment': 'moment'
-    }
+    },
+    plugins: [
+        new webpack.optimize.CommonsChunkPlugin({
+            name: 'vendor',
+            minChunks: function(module){
+                return module.context && module.context.indexOf("node_modules") !== -1;
+            }
+        }),
+        new webpack.optimize.CommonsChunkPlugin({
+            name: "manifest",
+            minChunks: Infinity
+        }),
+    ]
 }
