@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
-SECRET_KEY = ''
-SQLALCHEMY_DATABASE_URI = ''
+SECRET_KEY = ' Set Your Own Key '
+SQLALCHEMY_DATABASE_URI = 'sqlite:///database.db'
 GITHUB_AUTH = {
     'consumer_key': '',
     'consumer_secret': '',
