@@ -12,7 +12,8 @@ module.exports = merge(baseWebpackConfig, {
         overlay: {
           warnings: true,
           errors: true
-        }
+        },
+        hot: true
     },
     plugins: [
         new webpack.HotModuleReplacementPlugin(),

@@ -2,9 +2,12 @@ const path = require('path')
 const dirname = path.join(__dirname, '..')
 const webpack = require('webpack')
 const ExtractTextPlugin = require("extract-text-webpack-plugin")
+const CleanWebpackPlugin = require('clean-webpack-plugin')
 
 module.exports = {
-    entry: path.join(dirname, 'src', 'main.js'),
+    entry: {
+        app: path.join(dirname, 'src', 'main.js')
+    },
     output: {
         path: path.join(dirname, 'dist'),
         filename: 'js/[name].[chunkhash:7].js',
@@ -49,15 +52,24 @@ module.exports = {
         'moment': 'moment'
     },
     plugins: [
+        new CleanWebpackPlugin(['dist'], { root: dirname }),
         new webpack.optimize.CommonsChunkPlugin({
             name: 'vendor',
             minChunks: function(module){
-                return module.context && module.context.indexOf("node_modules") !== -1;
+                return module.context && module.context.indexOf("node_modules") != -1;
             }
         }),
         new webpack.optimize.CommonsChunkPlugin({
+            name: 'components',
+            minChunks: function(module){
+                return module.context && module.context.indexOf("src/components") != -1;
+            },
+            chunks: ['app']
+        }),
+        new webpack.optimize.CommonsChunkPlugin({
             name: "manifest",
-            minChunks: Infinity
+            minChunks: Infinity,
+            chunks: ['components', 'vendor']
         }),
     ]
 }
