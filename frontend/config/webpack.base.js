@@ -20,14 +20,18 @@ module.exports = {
             {
                 test: /\.css$/,
                 use: ExtractTextPlugin.extract({
-                    fallback: "style-loader",
-                    use: "css-loader"
+                    use: {
+                        loader: 'css-loader',
+                        options: {
+                            minimize: true
+                        }
+                    }
                 })
             }
         ]
     },
     resolve: {
-        extensions: ['.js', '.vue', '.json'],
+        extensions: ['.js', '.vue', '.json', '*'],
         modules: [path.join(dirname, 'node_modules')],
         alias: {
             components: path.resolve(dirname, 'src', 'components'),
@@ -36,6 +40,7 @@ module.exports = {
             router: path.resolve(dirname, 'src', 'router'),
             store: path.resolve(dirname, 'src', 'store'),
             views: path.resolve(dirname, 'src', 'views'),
+            css: path.resolve(dirname, 'src', 'css'),
             src: path.resolve(dirname, 'src')
         }
     },
@@ -63,6 +68,9 @@ module.exports = {
             name: 'components',
             minChunks: (module, count) => module.context && module.context.indexOf("src/components") != -1,
             chunks: ['app']
+        }),
+        new ExtractTextPlugin({
+            filename: 'css/[name].[chunkhash:7].css'
         })
     ]
 }

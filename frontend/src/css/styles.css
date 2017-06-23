@@ -1,0 +1,19 @@
+body {
+    padding-top: 70px;
+}
+
+.page-header {
+    padding-bottom: 9px;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.footer {
+    padding-top: 20px;
+    padding-bottom: 20px;
+    margin-top: 20px;
+    color: #777;
+    text-align: center;
+    border-top: 1px solid #e5e5e5;
+    background-image: linear-gradient(to bottom,#fff 0,#f8f8f8 100%);
+}

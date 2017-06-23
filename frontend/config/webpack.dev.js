@@ -18,6 +18,9 @@ module.exports = merge(baseWebpackConfig, {
     plugins: [
         new webpack.HotModuleReplacementPlugin(),
         new webpack.NoEmitOnErrorsPlugin(),
+        new webpack.SourceMapDevToolPlugin({
+            filename: '[file].map',
+        }),
         new HtmlWebpackPlugin({
             filename: 'index.html',
             template: 'index.html',

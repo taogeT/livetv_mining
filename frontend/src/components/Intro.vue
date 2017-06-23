@@ -19,15 +19,3 @@ export default {
   name: 'intro'
 }
 </script>
-
-<style>
-.footer {
-    padding-top: 20px;
-    padding-bottom: 20px;
-    margin-top: 20px;
-    color: #777;
-    text-align: center;
-    border-top: 1px solid #e5e5e5;
-    background-image: linear-gradient(to bottom,#fff 0,#f8f8f8 100%);
-}
-</style>

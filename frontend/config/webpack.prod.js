@@ -11,6 +11,7 @@ module.exports = merge(baseWebpackConfig, {
     plugins: [
         new CleanWebpackPlugin(['dist'], { root: dirname }),
         new webpack.optimize.UglifyJsPlugin({
+            sourceMap: true,
             compress: {
                 warnings: false
             }
