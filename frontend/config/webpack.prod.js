@@ -1,11 +1,15 @@
+const path = require('path')
+const dirname = path.join(__dirname, '..')
 const webpack = require('webpack')
 const merge = require('webpack-merge')
 const baseWebpackConfig = require('./webpack.base')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
+const CleanWebpackPlugin = require('clean-webpack-plugin')
 
 module.exports = merge(baseWebpackConfig, {
     devtool: '#source-map',
     plugins: [
+        new CleanWebpackPlugin(['dist'], { root: dirname }),
         new webpack.optimize.UglifyJsPlugin({
             compress: {
                 warnings: false

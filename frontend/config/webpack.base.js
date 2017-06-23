@@ -2,7 +2,6 @@ const path = require('path')
 const dirname = path.join(__dirname, '..')
 const webpack = require('webpack')
 const ExtractTextPlugin = require("extract-text-webpack-plugin")
-const CleanWebpackPlugin = require('clean-webpack-plugin')
 
 module.exports = {
     entry: {
@@ -52,7 +51,6 @@ module.exports = {
         'moment': 'moment'
     },
     plugins: [
-        new CleanWebpackPlugin(['dist'], { root: dirname }),
         new webpack.optimize.CommonsChunkPlugin({
             name: 'vendor',
             minChunks: (module, count) => module.context && module.context.indexOf("node_modules") != -1
