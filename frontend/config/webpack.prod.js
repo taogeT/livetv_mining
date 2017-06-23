@@ -14,11 +14,14 @@ module.exports = merge(baseWebpackConfig, {
         new HtmlWebpackPlugin({
             filename: 'index.html',
             template: 'index.html',
-            inject: true,
             minify: {
                 removeComments: true,
                 collapseWhitespace: true,
                 removeAttributeQuotes: true
+            },
+            chunksSortMode: (a, b) => {
+                const orders = ['manifest', 'vendor', 'components', 'app']
+                return orders.indexOf(a.names[0]) - orders.indexOf(b.names[0])
             }
         })
     ]

@@ -55,21 +55,16 @@ module.exports = {
         new CleanWebpackPlugin(['dist'], { root: dirname }),
         new webpack.optimize.CommonsChunkPlugin({
             name: 'vendor',
-            minChunks: function(module){
-                return module.context && module.context.indexOf("node_modules") != -1;
-            }
-        }),
-        new webpack.optimize.CommonsChunkPlugin({
-            name: 'components',
-            minChunks: function(module){
-                return module.context && module.context.indexOf("src/components") != -1;
-            },
-            chunks: ['app']
+            minChunks: (module, count) => module.context && module.context.indexOf("node_modules") != -1
         }),
         new webpack.optimize.CommonsChunkPlugin({
             name: "manifest",
-            minChunks: Infinity,
-            chunks: ['components', 'vendor']
+            minChunks: Infinity
         }),
+        new webpack.optimize.CommonsChunkPlugin({
+            name: 'components',
+            minChunks: (module, count) => module.context && module.context.indexOf("src/components") != -1,
+            chunks: ['app']
+        })
     ]
 }
